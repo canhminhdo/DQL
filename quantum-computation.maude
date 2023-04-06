@@ -403,12 +403,15 @@ fmod DYNAMIC-QUANTUM-LOGIC is
 
     --- quantum dynamic logic furmulas
     op _/\_ : Formula Formula -> Formula .
-    op _\/_ : Formula Formula -> Formula .
     op neg_ : Formula -> Formula .
     op `[_`]_ : Prog Formula -> Formula .
-    op <_>_ : Prog Formula -> Formula .
     --- [IMPORTANT] only prjective measurements are used for test
+    op P`(_,_`) : Nat Ket -> Formula .
+
+    --- conventional notations
     op M`(_,_`) : Nat Matrix -> Formula .
+    eq P(N:Nat, |0>) = M(N:Nat, P0) .
+    eq P(N:Nat, |1>) = M(N:Nat, P1) .
 
     --- guard commands
     sort Guard .
@@ -442,6 +445,7 @@ mod QUANTUM-COMPUTATION is
 
     rl [and] : Q |= Phi /\ Psi => (Q |= Phi) /\ (Q |= Psi) .
     --- atomic formulae
+    eq Q |= [skip] Phi = Q |= Phi .
     eq Q |= [I(N)] Phi = Q |= Phi .
     ceq Q |= [X(N)] Phi = Q' |= Phi if Q' := (Q).X(N) .
     ceq Q |= [Y(N)] Phi = Q' |= Phi if Q' := (Q).Y(N) .
