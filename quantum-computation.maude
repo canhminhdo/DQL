@@ -1,0 +1,488 @@
+fmod SCALAR is
+    pr CONVERSION .
+    pr EXT-BOOL .
+
+    sort Scalar .
+    sort iNumber .
+    subsort Rat iNumber < Scalar .
+
+    --- imaginary unit
+    op i : -> iNumber [ctor].
+
+    --- basic operators
+    op _.*_ : Scalar Scalar -> Scalar [comm assoc prec 32] .
+    op _./_ : Scalar Scalar -> Scalar [prec 31] .
+    op _.+_ : Scalar Scalar -> Scalar [comm assoc prec 33] .
+    op (_)^* : Scalar -> Scalar [prec 30] .
+
+    --- comparative operators
+    op _.>_ : Scalar Scalar -> Bool .
+    op _.>=_ : Scalar Scalar -> Bool .
+    op _.<_ : Scalar Scalar -> Bool .
+    op _.<=_ : Scalar Scalar -> Bool .
+
+    --- error scalar
+    op errS : -> Scalar .
+
+    --- some functions
+    op Sqrt : Scalar -> Scalar .
+    op Abs : Scalar -> Scalar .
+    op Pow : Scalar Rat -> Scalar .
+
+    vars R R1 R2 : Rat .
+    vars S S1 S2 S3 S4 : Scalar .
+
+    --- imaginary properties
+    eq i .* i = -1 .
+    eq Abs(i) = 1 .
+
+    --- Pow properties
+    eq Pow(R1, R2) = (R1)^(R2) .
+
+    --- rational number calculation.
+    eq R1 .* R2 = R1 * R2 .
+    eq R1 ./ R2 = R1 / R2 .
+    eq R1 .+ R2 = R1 + R2 .
+    eq R1 .< R2 = R1 < R2 .
+    eq R1 .<= R2 = R1 <= R2 .
+    eq R1 .> R2 = R1 > R2 .
+    eq R1 .>= R2 = R1 >= R2 .
+
+    --- c . c* = |c|^2
+    eq S .* (S)^* = Pow(Abs(S), 2) .
+
+    --- distributive properties
+    eq S1 .* (S2 .+ S3) = S1 .* S2 .+ S1 .* S3 .
+
+    --- constructing normal form: R .* S
+    ceq (S .* R1 .+ S .* R2) = S .* (R1 .+ R2) if not S :: Rat .
+    ceq S .+ R .* S = S .* (R .+ 1) if not S :: Rat .
+    ceq S .+ S = S .* 2 if not S :: Rat .
+
+    --- constructing normal form: S1 .* (1 ./ S2)
+    ceq S1 ./ S2 = S1 .* (1 ./ S2) if not S1 :: Rat .
+    ceq R ./ S = R .* (1 ./ S) if not S :: Rat /\ R =/= 1 .
+
+    --- multiplicative properties
+    eq S .* 1 = S .
+    eq S .* 0 = 0 .
+    ceq S .* (1 ./ S) = 1 if not S :: Rat .
+    ceq (1 ./ S1) .* (1 ./ S2) = 1 ./ (S1 .* S2)
+    if not S1 :: Rat /\ not S2 :: Rat .
+
+    --- additive properties
+    eq S .+ 0 = S .
+
+    --- fraction properties
+    eq 0 ./ S = 0 .
+    eq S ./ 1 = S .
+    ceq S ./ 0 = errS if S =/= 0 .
+    eq 1 ./ (1 ./ S) =  S .
+    eq 1 ./ (S1 .* (1 ./ S2)) =  S2 .* (1 ./ S1) .
+    eq 1 ./ (S .* (R1 / R2)) =  (R2 / R1) .* (1 ./ S) .
+
+    --- Sqrt calculation
+    eq Sqrt(1) = 1 .
+    eq Sqrt(0) = 0 .
+    eq Sqrt(S) .* Sqrt(S) = S .
+    eq Sqrt(R1 / R2) = Sqrt(R1) .* (1 ./ Sqrt(R2)) .
+    ceq Sqrt(1 ./ S) = 1 ./ Sqrt(S) if not S :: Rat .
+    ceq Sqrt(S1 .* S2) = Sqrt(S1) .* Sqrt(S2) if not S1 :: Rat or-else not S2 :: Rat .
+    eq Sqrt(S) .* (R ./ S) = R .* (1 ./ Sqrt(S)) .
+    eq Sqrt(S1) .* (S2 / S1) = S2 .* (1 ./ Sqrt(S1)) .
+
+    --- transpose of Sqrt
+    eq (Sqrt(R))^* = Sqrt(R) .
+    eq (S1 .* S2)^* = (S1)^* .* (S2)^* .
+    eq (S1 ./ S2)^* = (S1)^* ./ (S2)^* .
+    eq (S1 .+ S2)^* = (S1)^* .+ (S2)^* .
+    eq (R)^* = R .
+endfm
+
+fmod DIRAC is
+    pr SCALAR .
+    sorts Ket Bra .
+
+    ops |0> |1> : -> Ket [ctor] .
+    ops <0| <1| : -> Bra [ctor] .
+endfm
+
+fmod MATRIX is
+    pr DIRAC .
+    sorts Matrix .
+    subsorts Ket Bra < Matrix .
+
+    --- zero matrix
+    op O : -> Matrix [ctor] .
+    --- identity matrix
+    op I : -> Matrix [ctor] .
+    --- fake matrix
+    op nil : -> Matrix [ctor] .
+    --- error matrix
+    op errM : -> Matrix [ctor] .
+    --- scalar multiplication with matrix
+    op _._ : Scalar Matrix -> Matrix [prec 31] .
+    --- matrix product
+    op _x_ : Matrix Matrix -> Matrix [assoc prec 31] .
+    --- matrix addition
+    op _+_ : Matrix Matrix -> Matrix [comm assoc prec 33] .
+    --- tensor product
+    op _(x)_ : Matrix Matrix -> Matrix [assoc prec 31] .
+    --- dagger
+    op (_)^+ : Matrix -> Matrix [prec 30] .
+
+    vars M M1 M2 M3 M4 : Matrix .
+    vars S S1 S2 : Scalar .
+
+    --- zero matrix properties
+    eq 0 . M = O .
+    eq S . O = O .
+    eq 1 . M = M .
+
+    eq O + M = M .
+    eq M + O = M .
+
+    eq O x M = O .
+    eq M x O = O .
+
+    eq M (x) O = O .
+    eq O (x) M = O .
+
+    --- nil matrix
+    eq nil (x) M = M .
+    eq M (x) nil = M .
+    eq M + nil = M .
+    eq S . nil = nil .
+
+    --- identity matrix properties
+    eq I x M = M .
+    eq M x I = M .
+    eq <0| x |0> = I .
+    eq <1| x |1> = I .
+    eq <0| x |1> = O .
+    eq <1| x |0> = O .
+
+    --- dagger properties
+    eq (I)^+ = I .
+    eq (O)^+ = O .
+    eq (|0>)^+ = <0| .
+    eq (|1>)^+ = <1| .
+    eq (<0|)^+ = |0> .
+    eq (<1|)^+ = |1> .
+    eq (S . M)^+ = ((S)^*) . (M)^+ .
+    eq (M1 x M2)^+ = (M2)^+ x (M1)^+ .
+    eq (M1 + M2)^+ = (M1)^+ + (M2)^+ .
+    eq (M1 (x) M2)^+ = (M1)^+ (x) (M2)^+ .
+    eq ((M)^+)^+ = M .
+
+    --- ditributive properties
+    eq M1 x (M2 + M3) = M1 x M2 + M1 x M3 .
+    eq (M1 + M2) x M3 = M1 x M3 + M2 x M3 .
+
+    --- additive normal forms
+    eq S . (M1 + M2) = S . M1 + S . M2 .
+    eq (S1 . M) + (S2 . M) = (S1 .+ S2) . M .
+    --- multiplicative normal forms
+    eq (S1 . M1) x (S2 . M2) = (S1 .* S2) . (M1 x M2) .
+    eq (S . M1) x M2 = S . (M1 x M2) .
+    eq M1 x (S . M2) = S . (M1 x M2) .
+    --- scalar normal forms
+    eq S1 . (S2 . M) = (S1 .* S2) . M .
+    --- tensor product normal forms
+    --- eq (S1 . M1) (x) (S2 . M2) = (S1 .* S2) . (M1 (x) M2) . --- may ignore
+    eq (S . M1) (x) M2 = S . (M1 (x) M2) .
+    eq M1 (x) (S . M2) = S . (M1 (x) M2) .
+
+    --- tensor product properties
+    eq (M1 (x) M2) x (M3 (x) M4) = (M1 x M3) (x) (M2 x M4) .
+    eq M1 (x) (M2 + M3) = M1 (x) M2 + M1 (x) M3 .
+    eq (M1 + M2) (x) M3 = M1 (x) M3 + M2 (x) M3 .
+
+    --- basic matrices
+    ops B0 B1 B2 B3 P0 P1 : -> Matrix .
+    eq B0 = |0> x <0| .
+    eq B1 = |0> x <1| .
+    eq B2 = |1> x <0| .
+    eq B3 = |1> x <1| .
+    eq P0 = B0 .
+    eq P1 = B3 .
+
+    --- basic gates
+    ops X Y Z H CX : -> Matrix .
+    eq X = B1 + B2 .
+    eq Y = ((-1) .* i) . B1 + i . B2 .
+    eq Z = B0  + (-1) . B3 .
+    eq H = 1 ./ Sqrt(2) . B0 + 1 ./ Sqrt(2) . B1 + 1 ./ Sqrt(2) . B2 + (-1) ./ Sqrt(2) . B3 .
+    eq CX = B0 (x) I + B3 (x) X .
+endfm
+
+fmod QUBIT is
+    pr MATRIX .
+    pr NAT-LIST .
+
+    sorts OneQubit EnQubit Qubit .
+    subsort OneQubit EnQubit < Qubit .
+
+    vars N N1 N2 : Nat .
+    vars M M1 M2 M3 G G1 G2 P : Matrix .
+    vars NL NL1 NL2 NL3 NL4 : NatList .
+    var NeNL : NeNatList .
+    var QS : Qubit .
+    vars S Prob : Scalar .
+    vars Ket Ket1 Ket2 : Ket .
+    var Bra : Bra .
+
+    op (q[_]:_) : NatList Matrix -> Qubit .
+    mb(q[N]: M) : OneQubit .
+    mb(q[N1 N2 NL]: M) : EnQubit .
+
+    --- empty qubit
+    op emp : -> Qubit [ctor] .
+    --- error qubit
+    op errQ : -> Qubit [ctor] .
+    op __ : Qubit Qubit -> Qubit [ctor assoc comm id: emp] .
+
+    --- remove unnecessary qubits
+    eq (q[nil]: M) = emp .
+
+    --- applying gates on zero matrix
+    --- eq ((q[NL1 N NL2]: O) QS).H(N) = (q[NL1 N NL2]: O) QS .
+    --- eq (O).I(N) = O .
+    --- eq (O).X(N) = O .
+    --- eq (O).Z(N) = O .
+    --- eq (O).CX(N1, N2) = O .
+    --- eq (O).M(P, N) = {qstate: O, prob: 0} .
+
+    --- applying hadmard gate
+    op _.H(_) : Qubit Nat -> Qubit .
+    ceq ((q[NL1 N NL2]: M) QS).H(N) = (q[NL1 N NL2]: G x M) QS
+    if G := iGates(size(NL1)) (x) H (x) iGates(size(NL2)) .
+
+    --- applying I gate
+    op _.I(_) : Qubit Nat -> Qubit .
+    eq (QS).I(N) = QS .
+
+    --- applying X gate
+    op _.X(_) : Qubit Nat -> Qubit .
+    ceq ((q[NL1 N NL2]: M) QS).X(N) = (q[NL1 N NL2]: G x M) QS
+    if G := iGates(size(NL1)) (x) X (x) iGates(size(NL2)) .
+
+    --- applying Y gate
+    op _.Y(_) : Qubit Nat -> Qubit .
+    ceq ((q[NL1 N NL2]: M) QS).Y(N) = (q[NL1 N NL2]: G x M) QS
+    if G := iGates(size(NL1)) (x) Y (x) iGates(size(NL2)) .
+
+    --- applying Z gate
+    op _.Z(_) : Qubit Nat -> Qubit .
+    ceq ((q[NL1 N NL2]: M) QS).Z(N) = (q[NL1 N NL2]: G x M) QS
+    if G := iGates(size(NL1)) (x) Z (x) iGates(size(NL2)) .
+
+    --- applying CX gate
+    op _.CX(_,_) : Qubit Nat Nat -> Qubit .
+    ceq ((q[NL1 N1 NL2]: M1) (q[NL3 N2 NL4]: M2) QS).CX(N1, N2)
+    = (q[NL1 N1 NL2 NL3 N2 NL4]: G x M) QS
+    if M := M1 (x) M2
+    /\ G1 := iGates(size(NL1)) (x) B0 (x) iGates(size(NL2)) (x)
+            iGates(size(NL3)) (x) I (x) iGates(size(NL4))
+    /\ G2 := iGates(size(NL1)) (x) B3 (x) iGates(size(NL2)) (x)
+            iGates(size(NL3)) (x) X (x) iGates(size(NL4))
+    /\ G := G1 + G2 .
+
+    ceq ((q[NL1 N1 NL2 N2 NL3]: M) QS).CX(N1, N2) = (q[NL1 N1 NL2 N2 NL3]: G x M) QS
+    if G1 := iGates(size(NL1)) (x) B0 (x) iGates(size(NL2)) (x) I (x) iGates(size(NL3))
+    /\ G2 := iGates(size(NL1)) (x) B3 (x) iGates(size(NL2)) (x) X (x) iGates(size(NL3))
+    /\ G := G1 + G2 .
+
+    --- measurement
+    sort StateProb .
+    op {qstate:_, prob:_} : Qubit Scalar -> StateProb .
+    op getState : StateProb -> Qubit .
+    op getProb : StateProb -> Scalar .
+    eq getState({qstate: QS, prob: Prob}) = QS .
+    eq getProb({qstate: QS, prob: Prob}) = Prob .
+
+    --- applying a measurement with a specific matrix at a specific position
+    op _.M(_,_) : Qubit Matrix Nat -> StateProb .
+    ceq ((q[NL1 N NL2]: M1) QS).M(P, N)
+    =   if Prob == 0 and-then M3 == O then {qstate: ((q[NL1 N NL2]: (M3)) QS), prob: Prob}
+        else {
+            qstate: (
+                (q[N]: if P == P0 then |0> else |1> fi)
+                (q[NL1 NL2]: ((1 ./ Sqrt(Prob)) . rmQubitAt(NL1 N NL2, N, M3)))
+                QS
+            ), prob: Prob
+        }
+        fi
+    if M2 := ((M1)^+) x
+            ((iGates(size(NL1)) (x) P (x) iGates(size(NL2)))^+) x
+            (iGates(size(NL1)) (x) P (x) iGates(size(NL2))) x
+            M1
+    /\ Prob := scalar(M2)
+    /\ M3 := (iGates(size(NL1)) (x) P (x) iGates(size(NL2))) x M1 .
+    --- qstate: ((q[NL1 N NL2]: ((1 ./ Sqrt(Prob)) . M3)) QS), prob: Prob
+
+    --- obtaining scalar for inner product:  S . I (x) I (x) I -> S
+    op scalar : Matrix -> Scalar .
+    eq scalar(O) = 0 .
+    eq scalar(S . M) = if isIdens(M) then S else errS fi .
+    eq scalar(M) = if isIdens(M) then 1 else errS fi .
+
+    --- I (x) I (x) I ...
+    op isIdens : Matrix -> Bool .
+    eq isIdens(M1 (x) M2) = isIdens(M1) and isIdens(M2) .
+    eq isIdens(|1>) = false .
+    eq isIdens(|0>) = false .
+    eq isIdens(I) = true .
+
+    --- N -> I (x) I (x) ...
+    op iGates : Nat -> Matrix .
+    eq iGates(0) = nil .
+    ceq iGates(N) = I (x) iGates(sd(N, 1)) if N > 0 .
+
+    --- qubit information
+    op qubitAt : Qubit Nat -> Matrix .
+    eq qubitAt((q[NL1 N NL2]: M) QS, N) = qubitAt*(NL1 N NL2, N, M) .
+    eq qubitAt(QS, N) = errM [owise] .
+
+    op qubitAt* : NatList Nat Matrix -> Matrix .
+    eq qubitAt*(NL, N, S . M) = S . qubitAt**(NL, N, M) .
+    eq qubitAt*(NL, N, S . M1 + M2) = S . qubitAt**(NL, N, M1) + qubitAt*(NL, N, M2) .
+
+    op qubitAt** : NatList Nat Matrix -> Matrix .
+    eq qubitAt**(N1 NL, N2, Ket (x) M) = if N1 == N2 then Ket else qubitAt**(NL, N2, M) fi .
+    eq qubitAt**(N, N, Ket) = Ket .
+
+    --- remove qubit at a index after a measurement
+    op rmQubitAt : NatList Nat Matrix -> Matrix .
+    eq rmQubitAt(NL, N, S . M) = S . rmQubitAt*(NL, N, M) .
+    eq rmQubitAt(NL, N, S . M1 + M2) = rmQubitAt(NL, N, S . M1) + rmQubitAt(NL, N, M2) .
+    eq rmQubitAt(NL, N, Ket (x) M) = rmQubitAt*(NL, N, Ket (x) M) .
+
+    op rmQubitAt* : NatList Nat Matrix -> Matrix .
+    eq rmQubitAt*(N1 NL, N2, Ket (x) M) = if N1 == N2 then M else Ket (x) rmQubitAt*(NL, N2, M) fi .
+    eq rmQubitAt*(N, N, Ket) = nil .
+
+    --- checking if qubit is solely |0> or |1>
+    op isQubitAt : NatList Nat Matrix Ket -> Bool .
+    eq isQubitAt(NL, N, S . M, Ket) = isQubitAt*(NL, N, M, Ket) .
+    eq isQubitAt(NL, N, S . M1 + M2, Ket) = isQubitAt(NL, N, S . M1, Ket) and isQubitAt(NL, N, M2, Ket) .
+
+    op isQubitAt* : NatList Nat Matrix Ket -> Bool .
+    eq isQubitAt*(N1 NL, N2, Ket1 (x) M, Ket2) = if N1 == N2 then Ket1 == Ket2 else isQubitAt*(NL, N2, M, Ket2) fi .
+    eq isQubitAt*(N, N, Ket1, Ket2) = Ket1 == Ket2 .
+endfm
+
+fmod DYNAMIC-QUANTUM-LOGIC is
+    pr NAT .
+    pr MATRIX .
+
+    --- programs
+    sorts AtomicProg Prog .
+    subsort AtomicProg < Prog .
+
+    --- atomic programs
+    op I`(_`) : Nat -> AtomicProg .
+    op X`(_`) : Nat -> AtomicProg .
+    op Y`(_`) : Nat -> AtomicProg .
+    op Z`(_`) : Nat -> AtomicProg .
+    op H`(_`) : Nat -> AtomicProg .
+    op CX`(_,_`) : Nat Nat -> AtomicProg .
+    op M`(_`) : Nat -> AtomicProg .
+
+    --- idenity denotes the end of programs
+    op nil : -> Prog [ctor] .
+    ops abort skip : -> Prog [ctor] .
+    op _;_ : Prog Prog -> Prog [ctor assoc id: nil prec 25] .
+    op _U_ : Prog Prog -> Prog .
+    op _* : Prog -> Prog .
+    op _? : Formula -> Prog [prec 24] .
+
+    --- formulas
+    sorts AtomicFormula Formula .
+    subsort AtomicFormula < Formula .
+
+    --- quantum dynamic logic furmulas
+    op _/\_ : Formula Formula -> Formula .
+    op _\/_ : Formula Formula -> Formula .
+    op neg_ : Formula -> Formula .
+    op `[_`]_ : Prog Formula -> Formula .
+    op <_>_ : Prog Formula -> Formula .
+    --- [IMPORTANT] only prjective measurements are used for test
+    op M`(_,_`) : Nat Matrix -> Formula .
+
+    --- guard commands
+    sort Guard .
+    op _->_ : Formula Prog -> Guard .
+    op if _|_ fi : Guard Guard -> Prog .
+    eq if (F1:Formula -> P1:Prog) | (F2:Formula -> P2:Prog) fi = (F1:Formula ? ; P1:Prog) U (F2:Formula ? ; P2:Prog) .
+endfm
+
+fmod MODELS is
+    pr DYNAMIC-QUANTUM-LOGIC .
+    pr QUBIT .
+
+    sorts Judgement JudgementSet .
+    subsort Judgement < JudgementSet .
+
+    op _|=_ : Qubit Formula -> Judgement .
+    op emptyJS : -> JudgementSet .
+    op _/\_ : JudgementSet JudgementSet -> JudgementSet [ctor comm assoc id: emptyJS] .
+endfm
+
+mod QUANTUM-COMPUTATION is
+    pr MODELS .
+
+    vars PROG PROG' : Prog .
+    vars Q Q' : Qubit .
+    vars N N1 N2 : Nat .
+    vars Prob Prob' : Scalar .
+    var B : Bool .
+    var P : Matrix . --- projective measurement operations whose value is either P0 or P1
+    vars Phi Psi : Formula .
+
+    rl [and] : Q |= Phi /\ Psi => (Q |= Phi) /\ (Q |= Psi) .
+    --- atomic formulae
+    eq Q |= [I(N)] Phi = Q |= Phi .
+    ceq Q |= [X(N)] Phi = Q' |= Phi if Q' := (Q).X(N) .
+    ceq Q |= [Y(N)] Phi = Q' |= Phi if Q' := (Q).Y(N) .
+    ceq Q |= [Z(N)] Phi = Q' |= Phi if Q' := (Q).Z(N) .
+    ceq Q |= [H(N)] Phi = Q' |= Phi if Q' := (Q).H(N) .
+    ceq Q |= [CX(N1, N2)] Phi = Q' |= Phi if Q' := (Q).CX(N1, N2) .
+    --- program composition
+    ceq Q |= [PROG' ; PROG] Phi = Q |= [PROG']([PROG] Phi) if PROG' =/= nil and-then PROG =/= nil .
+    --- non-deterministic programs
+    rl [non-deter] : Q |= [PROG' U PROG] Phi => (Q |= [PROG'] Phi) /\ (Q |= [PROG] Phi) .
+    --- measurement operator as test
+    ceq Q |= [M(N, P)?] Phi = Q' |= Phi if {qstate: Q', prob: Prob'} := (Q).M(P, N) .
+endm
+
+--- specifying closed subspaces for atomic formulas
+view Qubit from TRIV to QUBIT is
+    sort Elt to Matrix .
+endv
+
+fmod QUBIT-SET is
+    pr SET{Qubit} * (
+        sort NeSet{Qubit} to NeQubitSet,
+        sort Set{Qubit} to QubitSet
+    ) .
+endfm
+
+fmod CLOSED-SUBSPACES is
+    pr QUBIT-SET .
+    pr MODELS .
+
+    sort ClosedSS .
+
+    --- an interpretation for atomic formulas
+    op V : AtomicFormula -> ClosedSS .
+    op `{_`} : QubitSet -> ClosedSS [ctor] .
+    op _in_ : Matrix ClosedSS -> JudgementSet .
+
+    vars M M1 M2 : Matrix .
+
+    --- tailored to check whether a qubit belong to one dimentional subspaces
+    --- [todo] developing a function to check whether a vector $v$ belongs to a sub-statespace spaned by {v_1, ..., v_n}
+    eq M in { M } = emptyJS .
+    ceq M1 in { M2 } = emptyJS if (-1) . M1 == M2 .
+endfm
