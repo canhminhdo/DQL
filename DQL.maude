@@ -1,0 +1,117 @@
+in symbolic-reasoning.maude .
+
+fmod DQL is
+    pr NAT .
+    pr MATRIX .
+
+    --- programs
+    sorts AtomicProg Prog .
+    subsort AtomicProg < Prog .
+
+    --- atomic programs
+    op I`(_`) : Nat -> AtomicProg .
+    op X`(_`) : Nat -> AtomicProg .
+    op Y`(_`) : Nat -> AtomicProg .
+    op Z`(_`) : Nat -> AtomicProg .
+    op H`(_`) : Nat -> AtomicProg .
+    op CX`(_,_`) : Nat Nat -> AtomicProg .
+
+    --- idenity denotes the end of programs
+    op nil : -> Prog [ctor] .
+    ops abort skip : -> Prog [ctor] .
+    op _;_ : Prog Prog -> Prog [ctor assoc id: nil prec 25] .
+    op _U_ : Prog Prog -> Prog .
+    op _* : Prog -> Prog .
+    op _? : Formula -> Prog [prec 24] .
+
+    --- formulas
+    sorts AtomicFormula Formula .
+    subsort AtomicFormula < Formula .
+
+    --- quantum dynamic logic furmulas
+    op _/\_ : Formula Formula -> Formula .
+    op neg_ : Formula -> Formula .
+    op `[_`]_ : Prog Formula -> Formula .
+    --- [IMPORTANT] only projective measurements are used for test
+    op P`(_,_`) : Nat Ket -> Formula .
+
+    --- conventional notations
+    op M`(_,_`) : Nat Matrix -> Formula .
+    eq P(N:Nat, |0>) = M(N:Nat, P0) .
+    eq P(N:Nat, |1>) = M(N:Nat, P1) .
+
+    --- guard commands
+    sort Guard .
+    op _->_ : Formula Prog -> Guard .
+    op if _|_ fi : Guard Guard -> Prog .
+    eq if (F1:Formula -> P1:Prog) | (F2:Formula -> P2:Prog) fi = (F1:Formula ? ; P1:Prog) U (F2:Formula ? ; P2:Prog) .
+endfm
+
+mod DQL-SEMANTICS is
+    pr DQL .
+    pr SYMBOLIC-REASONING .
+
+    sorts Judgement JudgementSet .
+    subsort Judgement < JudgementSet .
+
+    op _|=_ : Qubit Formula -> Judgement .
+    op emptyJS : -> JudgementSet .
+    op _/\_ : JudgementSet JudgementSet -> JudgementSet [ctor comm assoc id: emptyJS] .
+
+    vars PROG PROG' : Prog .
+    vars Q Q' : Qubit .
+    vars N N1 N2 : Nat .
+    vars Prob Prob' : Scalar .
+    var B : Bool .
+    var P : Matrix . --- projective measurement operations whose value is either P0 or P1
+    vars Phi Psi : Formula .
+
+    rl [and] : Q |= Phi /\ Psi => (Q |= Phi) /\ (Q |= Psi) .
+    --- atomic formulae
+    eq Q |= [skip] Phi = Q |= Phi .
+    eq Q |= [I(N)] Phi = Q |= Phi .
+    ceq Q |= [X(N)] Phi = Q' |= Phi if Q' := (Q).X(N) .
+    ceq Q |= [Y(N)] Phi = Q' |= Phi if Q' := (Q).Y(N) .
+    ceq Q |= [Z(N)] Phi = Q' |= Phi if Q' := (Q).Z(N) .
+    ceq Q |= [H(N)] Phi = Q' |= Phi if Q' := (Q).H(N) .
+    ceq Q |= [CX(N1, N2)] Phi = Q' |= Phi if Q' := (Q).CX(N1, N2) .
+    --- program composition
+    ceq Q |= [PROG' ; PROG] Phi = Q |= [PROG']([PROG] Phi) if PROG' =/= nil and-then PROG =/= nil .
+    --- non-deterministic programs
+    rl [non-deter] : Q |= [PROG' U PROG] Phi => (Q |= [PROG'] Phi) /\ (Q |= [PROG] Phi) .
+    --- measurement operator as test
+    ceq Q |= [M(N, P)?] Phi = Q' |= Phi if {qstate: Q', prob: Prob'} := (Q).M(P, N) [print "Prob = " Prob'] .
+endm
+
+--- specifying closed subspaces for atomic formulas
+view Qubit from TRIV to QUBIT is
+    sort Elt to Matrix .
+endv
+
+fmod QUBIT-SET is
+    pr SET{Qubit} * (
+        sort NeSet{Qubit} to NeQubitSet,
+        sort Set{Qubit} to QubitSet
+    ) .
+endfm
+
+mod CLOSED-SUBSPACES is
+    pr QUBIT-SET .
+    pr DQL-SEMANTICS .
+
+    sort ClosedSS .
+
+    --- an interpretation for atomic formulas
+    op V : AtomicFormula -> ClosedSS .
+    op `{_`} : QubitSet -> ClosedSS [ctor] .
+    op _in_ : Matrix ClosedSS -> JudgementSet .
+
+    vars M M1 M2 : Matrix .
+
+    --- tailored to check whether a qubit belong to one dimentional subspaces
+    --- [todo] developing a function to check whether a vector $v$ belongs to a sub-statespace spaned by {v_1, ..., v_n}
+    eq M in { M } = emptyJS .
+    ceq M1 in { M2 } = emptyJS if (-1) . M1 == M2 .
+    ceq M1 in { M2 } = emptyJS if (i) . M1 == M2 .
+    ceq M1 in { M2 } = emptyJS if (i .* -1) . M1 == M2 .
+endm

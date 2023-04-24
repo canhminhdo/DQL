@@ -1,0 +1,48 @@
+load DQL.maude
+
+mod SUPERDENSE is
+    pr DQL-SEMANTICS .
+
+    --- defining initial states
+    op initQState : -> Qubit .
+    eq initQState = (q[0]: |0>) (q[1]: |0>) .
+endm
+
+mod SUPERDENSE-CHECK is
+    pr SUPERDENSE .
+    pr CLOSED-SUBSPACES .
+
+    --- defining the subspaces for atomic formulas
+    ops p0 p1 : -> AtomicFormula [ctor] .
+    eq V(p0) = { |0> } .
+    eq V(p1) = { |1> } .
+
+    ops prop00 prop01 prop10 prop11 : -> AtomicFormula [ctor] .
+
+    var Q : Qubit .
+    var PROP : AtomicFormula .
+
+    --- checking atomic formulas for superdense coding
+    eq Q |= prop00 = (qubitAt(Q, 0) in V(p0)) /\ (qubitAt(Q, 1) in V(p0)) [print "Q = " Q] .
+    eq Q |= prop01 = (qubitAt(Q, 0) in V(p0)) /\ (qubitAt(Q, 1) in V(p1)) [print "Q = " Q] .
+    eq Q |= prop10 = (qubitAt(Q, 0) in V(p1)) /\ (qubitAt(Q, 1) in V(p0)) [print "Q = " Q] .
+    eq Q |= prop11 = (qubitAt(Q, 0) in V(p1)) /\ (qubitAt(Q, 1) in V(p1)) [print "Q = " Q] .
+endm
+
+in debug.maude .
+
+search in SUPERDENSE-CHECK : initQState |=
+[ H(0) ; CX(0, 1) ; CX(0, 1) ; H(0)]
+prop00 =>! JS:JudgementSet such that JS:JudgementSet =/= emptyJS .
+
+search in SUPERDENSE-CHECK : initQState |=
+[ H(0) ; CX(0, 1) ; X(0); CX(0, 1) ; H(0)]
+prop01 =>! JS:JudgementSet such that JS:JudgementSet =/= emptyJS .
+
+search in SUPERDENSE-CHECK : initQState |=
+[ H(0) ; CX(0, 1) ; Z(0); CX(0, 1) ; H(0)]
+prop10 =>! JS:JudgementSet such that JS:JudgementSet =/= emptyJS .
+
+search in SUPERDENSE-CHECK : initQState |=
+[ H(0) ; CX(0, 1) ; Y(0); CX(0, 1) ; H(0)]
+prop11 =>! JS:JudgementSet such that JS:JudgementSet =/= emptyJS .

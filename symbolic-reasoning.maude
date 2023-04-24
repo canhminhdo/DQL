@@ -31,10 +31,14 @@ fmod SCALAR is
 
     vars R R1 R2 : Rat .
     vars S S1 S2 S3 S4 : Scalar .
+    vars N : Nat .
 
     --- imaginary properties
     eq i .* i = -1 .
     eq Abs(i) = 1 .
+    --- absolute values of a postive number is a positive number
+    eq Abs((Abs(S))) = Abs(S) .
+    eq Abs((Pow(Abs(S), N))) = Pow(Abs(S), N) .
 
     --- Pow properties
     eq Pow(R1, R2) = (R1)^(R2) .
@@ -69,6 +73,8 @@ fmod SCALAR is
     ceq S .* (1 ./ S) = 1 if not S :: Rat .
     ceq (1 ./ S1) .* (1 ./ S2) = 1 ./ (S1 .* S2)
     if not S1 :: Rat /\ not S2 :: Rat .
+    ceq S1 .* (1 ./ (S1 .* S2)) = 1 ./ S2
+    if not S1 :: Rat /\ not S2 :: Rat .
 
     --- additive properties
     eq S .+ 0 = S .
@@ -90,6 +96,8 @@ fmod SCALAR is
     ceq Sqrt(S1 .* S2) = Sqrt(S1) .* Sqrt(S2) if not S1 :: Rat or-else not S2 :: Rat .
     eq Sqrt(S) .* (R ./ S) = R .* (1 ./ Sqrt(S)) .
     eq Sqrt(S1) .* (S2 / S1) = S2 .* (1 ./ Sqrt(S1)) .
+    eq Sqrt(Pow(Abs(S), 2)) = Abs(S) .
+    eq Sqrt(Pow(Pow(S, 2), 2)) = Pow(S, 2) .
 
     --- transpose of Sqrt
     eq (Sqrt(R))^* = Sqrt(R) .
@@ -224,6 +232,25 @@ fmod QUBIT is
     subsort OneQubit EnQubit < Qubit .
 
     vars N N1 N2 : Nat .
+    var M : Matrix .
+    var NL : NatList .
+
+    --- empty qubit
+    op emp : -> Qubit [ctor] .
+    --- error qubit
+    op errQ : -> Qubit [ctor] .
+    op (q[_]:_) : NatList Matrix -> Qubit .
+    op __ : Qubit Qubit -> Qubit [ctor assoc comm id: emp] .
+    mb(q[N]: M) : OneQubit .
+    mb(q[N1 N2 NL]: M) : EnQubit .
+    --- remove unnecessary qubits
+    eq (q[nil]: M) = emp .
+endfm
+
+fmod SYMBOLIC-REASONING is
+    pr QUBIT .
+
+    vars N N1 N2 : Nat .
     vars M M1 M2 M3 G G1 G2 P : Matrix .
     vars NL NL1 NL2 NL3 NL4 : NatList .
     var NeNL : NeNatList .
@@ -231,27 +258,6 @@ fmod QUBIT is
     vars S Prob : Scalar .
     vars Ket Ket1 Ket2 : Ket .
     var Bra : Bra .
-
-    op (q[_]:_) : NatList Matrix -> Qubit .
-    mb(q[N]: M) : OneQubit .
-    mb(q[N1 N2 NL]: M) : EnQubit .
-
-    --- empty qubit
-    op emp : -> Qubit [ctor] .
-    --- error qubit
-    op errQ : -> Qubit [ctor] .
-    op __ : Qubit Qubit -> Qubit [ctor assoc comm id: emp] .
-
-    --- remove unnecessary qubits
-    eq (q[nil]: M) = emp .
-
-    --- applying gates on zero matrix
-    --- eq ((q[NL1 N NL2]: O) QS).H(N) = (q[NL1 N NL2]: O) QS .
-    --- eq (O).I(N) = O .
-    --- eq (O).X(N) = O .
-    --- eq (O).Z(N) = O .
-    --- eq (O).CX(N1, N2) = O .
-    --- eq (O).M(P, N) = {qstate: O, prob: 0} .
 
     --- applying hadmard gate
     op _.H(_) : Qubit Nat -> Qubit .
@@ -280,7 +286,7 @@ fmod QUBIT is
     --- applying CX gate
     op _.CX(_,_) : Qubit Nat Nat -> Qubit .
     ceq ((q[NL1 N1 NL2]: M1) (q[NL3 N2 NL4]: M2) QS).CX(N1, N2)
-    = (q[NL1 N1 NL2 NL3 N2 NL4]: G x M) QS
+    = simplified((q[NL1 N1 NL2 NL3 N2 NL4]: G x M)) QS
     if M := M1 (x) M2
     /\ G1 := iGates(size(NL1)) (x) B0 (x) iGates(size(NL2)) (x)
             iGates(size(NL3)) (x) I (x) iGates(size(NL4))
@@ -288,7 +294,7 @@ fmod QUBIT is
             iGates(size(NL3)) (x) X (x) iGates(size(NL4))
     /\ G := G1 + G2 .
 
-    ceq ((q[NL1 N1 NL2 N2 NL3]: M) QS).CX(N1, N2) = (q[NL1 N1 NL2 N2 NL3]: G x M) QS
+    ceq ((q[NL1 N1 NL2 N2 NL3]: M) QS).CX(N1, N2) = simplified((q[NL1 N1 NL2 N2 NL3]: G x M)) QS
     if G1 := iGates(size(NL1)) (x) B0 (x) iGates(size(NL2)) (x) I (x) iGates(size(NL3))
     /\ G2 := iGates(size(NL1)) (x) B3 (x) iGates(size(NL2)) (x) X (x) iGates(size(NL3))
     /\ G := G1 + G2 .
@@ -339,154 +345,71 @@ fmod QUBIT is
     eq iGates(0) = nil .
     ceq iGates(N) = I (x) iGates(sd(N, 1)) if N > 0 .
 
+    --- not zero vector
+    op isZero : Qubit -> Bool .
+    eq isZero((q[NL1 N NL2]: O) QS) = true .
+    eq isZero(QS) = false [owise] .
+
+    --- simplified a multiple qubit
+    op simplified : Qubit -> Qubit .
+    eq simplified((q[NL]: M) QS) = simplified(QS)
+    if size(NL) > 1 then simplified*(NL, (q[NL]: M)) else (q[NL]: M) fi .
+    eq simplified(emp) = emp .
+
+    op simplified* : NatList Qubit -> Qubit .
+    ceq simplified*(N NL1, (q[NL2]: M)) = if sameKet?*(NL2, N, M, Ket) then
+        (q[N] : Ket)
+        simplified*(NL1, q[rmIndex(NL2, N)]: rmQubitAt(NL2, N, M))
+    else
+        simplified*(NL1, (q[NL2]: M))
+    fi
+    if Ket := firstKetAt*(NL2, N, M) .
+
+    eq simplified*(nil, QS) = QS .
+
+    --- remove an index from a natural list
+    op rmIndex : NatList Nat -> NatList .
+    eq rmIndex(N1 NL, N2) = if N1 == N2 then NL else N1 rmIndex(NL, N2) fi .
+    eq rmIndex(nil, N) = nil .
+
+    --- get a first ket at a single qubit with an index
+    op firstKetAt : Qubit Nat -> Ket .
+    eq firstKetAt((q[NL1 N NL2]: M), N) = firstKetAt*(NL1 N NL2, N, M) .
+
+    op firstKetAt* : NatList Nat Matrix -> Ket .
+    eq firstKetAt*(NL, N, S . M) = firstKetAt**(NL, N, M) .
+    eq firstKetAt*(NL, N, S . M1 + M2) = firstKetAt**(NL, N, M1) .
+    eq firstKetAt*(NL, N, M) = firstKetAt**(NL, N, M) [owise] .
+
+    op firstKetAt** : NatList Nat Matrix -> Ket .
+    eq firstKetAt**(N1 NL, N2, Ket (x) M) = if N1 == N2 then Ket else firstKetAt**(NL, N2, M) fi .
+    eq firstKetAt**(N, N, Ket) = Ket .
+
+    --- checking if a single qubit is solely |0> or |1> in a multiple qubits
+    op sameKet? : Qubit Nat Ket -> Bool .
+    eq sameKet?((q[NL1 N NL2]: M), N, Ket) = sameKet?*(NL1 N NL2, N, M, Ket) .
+
+    op sameKet?* : NatList Nat Matrix Ket -> Bool .
+    eq sameKet?*(NL, N, S . M, Ket) = sameKet?*(NL, N, M, Ket) .
+    eq sameKet?*(NL, N, S . M1 + M2, Ket) = sameKet?*(NL, N, S . M1, Ket) and sameKet?*(NL, N, M2, Ket) .
+    eq sameKet?*(NL, N, M, Ket) = sameKet?**(NL, N, M, Ket) [owise] .
+
+    op sameKet?** : NatList Nat Matrix Ket -> Bool .
+    eq sameKet?**(N1 NL, N2, Ket1 (x) M, Ket2) = if N1 == N2 then Ket1 == Ket2 else sameKet?**(NL, N2, M, Ket2) fi .
+    eq sameKet?**(N, N, Ket1, Ket2) = Ket1 == Ket2 .
+
     --- qubit information
-    op qubitAt : Qubit Nat -> Matrix .
-    eq qubitAt((q[NL1 N NL2]: M) QS, N) = qubitAt*(NL1 N NL2, N, M) .
-    eq qubitAt(QS, N) = errM [owise] .
-
-    op qubitAt* : NatList Nat Matrix -> Matrix .
-    eq qubitAt*(NL, N, S . M) = S . qubitAt**(NL, N, M) .
-    eq qubitAt*(NL, N, S . M1 + M2) = S . qubitAt**(NL, N, M1) + qubitAt*(NL, N, M2) .
-
-    op qubitAt** : NatList Nat Matrix -> Matrix .
-    eq qubitAt**(N1 NL, N2, Ket (x) M) = if N1 == N2 then Ket else qubitAt**(NL, N2, M) fi .
-    eq qubitAt**(N, N, Ket) = Ket .
+    op qubitAt : Qubit NatList -> Matrix .
+    ceq qubitAt((q[NL]: M) QS, NL) = M if NL =/= nil .
+    eq qubitAt(QS, NL) = errM [owise] .
 
     --- remove qubit at a index after a measurement
     op rmQubitAt : NatList Nat Matrix -> Matrix .
-    eq rmQubitAt(NL, N, S . M) = S . rmQubitAt*(NL, N, M) .
+    eq rmQubitAt(NL, N, S . M) = S . rmQubitAt(NL, N, M) .
     eq rmQubitAt(NL, N, S . M1 + M2) = rmQubitAt(NL, N, S . M1) + rmQubitAt(NL, N, M2) .
-    eq rmQubitAt(NL, N, Ket (x) M) = rmQubitAt*(NL, N, Ket (x) M) .
+    eq rmQubitAt(NL, N, M) = rmQubitAt*(NL, N, M) [owise] .
 
     op rmQubitAt* : NatList Nat Matrix -> Matrix .
     eq rmQubitAt*(N1 NL, N2, Ket (x) M) = if N1 == N2 then M else Ket (x) rmQubitAt*(NL, N2, M) fi .
     eq rmQubitAt*(N, N, Ket) = nil .
-
-    --- checking if qubit is solely |0> or |1>
-    op isQubitAt : NatList Nat Matrix Ket -> Bool .
-    eq isQubitAt(NL, N, S . M, Ket) = isQubitAt*(NL, N, M, Ket) .
-    eq isQubitAt(NL, N, S . M1 + M2, Ket) = isQubitAt(NL, N, S . M1, Ket) and isQubitAt(NL, N, M2, Ket) .
-
-    op isQubitAt* : NatList Nat Matrix Ket -> Bool .
-    eq isQubitAt*(N1 NL, N2, Ket1 (x) M, Ket2) = if N1 == N2 then Ket1 == Ket2 else isQubitAt*(NL, N2, M, Ket2) fi .
-    eq isQubitAt*(N, N, Ket1, Ket2) = Ket1 == Ket2 .
-endfm
-
-fmod DYNAMIC-QUANTUM-LOGIC is
-    pr NAT .
-    pr MATRIX .
-
-    --- programs
-    sorts AtomicProg Prog .
-    subsort AtomicProg < Prog .
-
-    --- atomic programs
-    op I`(_`) : Nat -> AtomicProg .
-    op X`(_`) : Nat -> AtomicProg .
-    op Y`(_`) : Nat -> AtomicProg .
-    op Z`(_`) : Nat -> AtomicProg .
-    op H`(_`) : Nat -> AtomicProg .
-    op CX`(_,_`) : Nat Nat -> AtomicProg .
-    op M`(_`) : Nat -> AtomicProg .
-
-    --- idenity denotes the end of programs
-    op nil : -> Prog [ctor] .
-    ops abort skip : -> Prog [ctor] .
-    op _;_ : Prog Prog -> Prog [ctor assoc id: nil prec 25] .
-    op _U_ : Prog Prog -> Prog .
-    op _* : Prog -> Prog .
-    op _? : Formula -> Prog [prec 24] .
-
-    --- formulas
-    sorts AtomicFormula Formula .
-    subsort AtomicFormula < Formula .
-
-    --- quantum dynamic logic furmulas
-    op _/\_ : Formula Formula -> Formula .
-    op neg_ : Formula -> Formula .
-    op `[_`]_ : Prog Formula -> Formula .
-    --- [IMPORTANT] only prjective measurements are used for test
-    op P`(_,_`) : Nat Ket -> Formula .
-
-    --- conventional notations
-    op M`(_,_`) : Nat Matrix -> Formula .
-    eq P(N:Nat, |0>) = M(N:Nat, P0) .
-    eq P(N:Nat, |1>) = M(N:Nat, P1) .
-
-    --- guard commands
-    sort Guard .
-    op _->_ : Formula Prog -> Guard .
-    op if _|_ fi : Guard Guard -> Prog .
-    eq if (F1:Formula -> P1:Prog) | (F2:Formula -> P2:Prog) fi = (F1:Formula ? ; P1:Prog) U (F2:Formula ? ; P2:Prog) .
-endfm
-
-fmod MODELS is
-    pr DYNAMIC-QUANTUM-LOGIC .
-    pr QUBIT .
-
-    sorts Judgement JudgementSet .
-    subsort Judgement < JudgementSet .
-
-    op _|=_ : Qubit Formula -> Judgement .
-    op emptyJS : -> JudgementSet .
-    op _/\_ : JudgementSet JudgementSet -> JudgementSet [ctor comm assoc id: emptyJS] .
-endfm
-
-mod QUANTUM-COMPUTATION is
-    pr MODELS .
-
-    vars PROG PROG' : Prog .
-    vars Q Q' : Qubit .
-    vars N N1 N2 : Nat .
-    vars Prob Prob' : Scalar .
-    var B : Bool .
-    var P : Matrix . --- projective measurement operations whose value is either P0 or P1
-    vars Phi Psi : Formula .
-
-    rl [and] : Q |= Phi /\ Psi => (Q |= Phi) /\ (Q |= Psi) .
-    --- atomic formulae
-    eq Q |= [skip] Phi = Q |= Phi .
-    eq Q |= [I(N)] Phi = Q |= Phi .
-    ceq Q |= [X(N)] Phi = Q' |= Phi if Q' := (Q).X(N) .
-    ceq Q |= [Y(N)] Phi = Q' |= Phi if Q' := (Q).Y(N) .
-    ceq Q |= [Z(N)] Phi = Q' |= Phi if Q' := (Q).Z(N) .
-    ceq Q |= [H(N)] Phi = Q' |= Phi if Q' := (Q).H(N) .
-    ceq Q |= [CX(N1, N2)] Phi = Q' |= Phi if Q' := (Q).CX(N1, N2) .
-    --- program composition
-    ceq Q |= [PROG' ; PROG] Phi = Q |= [PROG']([PROG] Phi) if PROG' =/= nil and-then PROG =/= nil .
-    --- non-deterministic programs
-    rl [non-deter] : Q |= [PROG' U PROG] Phi => (Q |= [PROG'] Phi) /\ (Q |= [PROG] Phi) .
-    --- measurement operator as test
-    ceq Q |= [M(N, P)?] Phi = Q' |= Phi if {qstate: Q', prob: Prob'} := (Q).M(P, N) .
-endm
-
---- specifying closed subspaces for atomic formulas
-view Qubit from TRIV to QUBIT is
-    sort Elt to Matrix .
-endv
-
-fmod QUBIT-SET is
-    pr SET{Qubit} * (
-        sort NeSet{Qubit} to NeQubitSet,
-        sort Set{Qubit} to QubitSet
-    ) .
-endfm
-
-fmod CLOSED-SUBSPACES is
-    pr QUBIT-SET .
-    pr MODELS .
-
-    sort ClosedSS .
-
-    --- an interpretation for atomic formulas
-    op V : AtomicFormula -> ClosedSS .
-    op `{_`} : QubitSet -> ClosedSS [ctor] .
-    op _in_ : Matrix ClosedSS -> JudgementSet .
-
-    vars M M1 M2 : Matrix .
-
-    --- tailored to check whether a qubit belong to one dimentional subspaces
-    --- [todo] developing a function to check whether a vector $v$ belongs to a sub-statespace spaned by {v_1, ..., v_n}
-    eq M in { M } = emptyJS .
-    ceq M1 in { M2 } = emptyJS if (-1) . M1 == M2 .
 endfm

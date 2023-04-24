@@ -1,7 +1,7 @@
-load quantum-computation.maude
+load DQL.maude
 
 mod TELEPORT is
-    pr QUANTUM-COMPUTATION .
+    pr DQL-SEMANTICS .
 
     var S : Scalar .
 
@@ -25,8 +25,10 @@ mod TELEPORT-CHECK is
     var Q : Qubit .
 
     --- checking atomic formulas for Teleportation
-    eq Q |= prop = qubitAt(Q, 2) in V(prop) .
+    eq Q |= prop = qubitAt(Q, 2) in V(prop) [print "Q = " Q] .
 endm
+
+in debug.maude
 
 search in TELEPORT-CHECK : initQState |= [ H(1) ; CX(1, 2) ; CX(0, 1) ; H(0) ;
 (
