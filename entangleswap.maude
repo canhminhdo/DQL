@@ -10,8 +10,8 @@ mod ENTAGLE-SWAP is
     eq Pow(Abs(a), 2) .+ Pow(Abs(b), 2) = 1 .
     eq S .* Pow(Abs(a), 2) .+ S .* Pow(Abs(b), 2) = S .
 
-    ops ERP : -> Matrix .
-    eq ERP = (1 ./ Sqrt(2)) . |0>(x)|0> + (1 ./ Sqrt(2)) . |1>(x)|1> .
+    ops EPR : -> Matrix .
+    eq EPR = (1 ./ Sqrt(2)) . |0>(x)|0> + (1 ./ Sqrt(2)) . |1>(x)|1> .
 
     op initQState : -> Qubit .
     eq initQState = (q[0]: |0>) (q[1]: |0>) (q[2]: |0>) (q[3]: |0>) .
@@ -23,30 +23,30 @@ mod ENTAGLE-SWAP-CHECK is
 
     --- defining the subspaces for atomic formulas
     op prop : -> AtomicFormula [ctor] .
-    eq V(prop) = { ERP } .
+    eq V(prop) = { EPR } .
 
     var Q : Qubit .
 
     --- checking atomic formulas for Teleportation
-    eq Q |= prop = qubitAt(Q, 0 3) in V(prop) [print "Q = " Q] .
+    eq Q |= prop = qubitAt(Q, 1 2) in V(prop) [print "Q = " Q] .
 endm
 
 in debug.maude
 
-search in ENTAGLE-SWAP-CHECK : initQState |= [ H(0) ; CX(0, 1) ; H(2) ; CX(2, 3) ; CX(1, 2) ; H(1) ;
+search in ENTAGLE-SWAP-CHECK : initQState |= [ H(1) ; CX(1, 0) ; H(3) ; CX(3, 2) ; CX(0, 3) ; H(0) ;
 if
-    P(2, |0>) ->
+    P(3, |0>) ->
         if
-            P(1, |0>) -> skip
+            P(0, |0>) -> skip
             |
-            P(1, |1>) -> Z(3)
+            P(0, |1>) -> Z(2)
         fi
     |
-    P(2, |1>) -> X(3) ;
+    P(3, |1>) -> X(2) ;
         if
-            P(1, |0>) -> skip
+            P(0, |0>) -> skip
             |
-            P(1, |1>) -> Z(3)
+            P(0, |1>) -> Z(2)
         fi
 fi
 ] prop =>! JS:JudgementSet such that JS:JudgementSet =/= emptyJS .
