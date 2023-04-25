@@ -61,8 +61,7 @@ mod DQL-SEMANTICS is
     vars PROG PROG' : Prog .
     vars Q Q' : Qubit .
     vars N N1 N2 : Nat .
-    vars Prob Prob' : Scalar .
-    var B : Bool .
+    var Prob : Scalar .
     var P : Matrix . --- projective measurement operations whose value is either P0 or P1
     vars Phi Psi : Formula .
 
@@ -74,7 +73,7 @@ mod DQL-SEMANTICS is
     ceq Q |= [H(N)] Phi = Q' |= Phi if Q' := (Q).H(N) .
     ceq Q |= [CX(N1, N2)] Phi = Q' |= Phi if Q' := (Q).CX(N1, N2) .
     --- measurement operator as test
-    ceq Q |= [M(N, P)?] Phi = Q' |= Phi if {qstate: Q', prob: Prob'} := (Q).M(P, N) [print "Prob = " Prob'] .
+    ceq Q |= [M(N, P)?] Phi = Q' |= Phi if {qstate: Q', prob: Prob} := (Q).M(P, N) [print "Prob = " Prob] .
     --- other programs
     eq Q |= [skip] Phi = Q |= Phi .
     --- program composition
