@@ -66,21 +66,23 @@ mod DQL-SEMANTICS is
     var P : Matrix . --- projective measurement operations whose value is either P0 or P1
     vars Phi Psi : Formula .
 
-    rl [and] : Q |= Phi /\ Psi => (Q |= Phi) /\ (Q |= Psi) .
-    --- atomic formulae
-    eq Q |= [skip] Phi = Q |= Phi .
+    --- atomic programs
     eq Q |= [I(N)] Phi = Q |= Phi .
     ceq Q |= [X(N)] Phi = Q' |= Phi if Q' := (Q).X(N) .
     ceq Q |= [Y(N)] Phi = Q' |= Phi if Q' := (Q).Y(N) .
     ceq Q |= [Z(N)] Phi = Q' |= Phi if Q' := (Q).Z(N) .
     ceq Q |= [H(N)] Phi = Q' |= Phi if Q' := (Q).H(N) .
     ceq Q |= [CX(N1, N2)] Phi = Q' |= Phi if Q' := (Q).CX(N1, N2) .
+    --- measurement operator as test
+    ceq Q |= [M(N, P)?] Phi = Q' |= Phi if {qstate: Q', prob: Prob'} := (Q).M(P, N) [print "Prob = " Prob'] .
+    --- other programs
+    eq Q |= [skip] Phi = Q |= Phi .
     --- program composition
     ceq Q |= [PROG' ; PROG] Phi = Q |= [PROG']([PROG] Phi) if PROG' =/= nil and-then PROG =/= nil .
     --- non-deterministic programs
     rl [non-deter] : Q |= [PROG' U PROG] Phi => (Q |= [PROG'] Phi) /\ (Q |= [PROG] Phi) .
-    --- measurement operator as test
-    ceq Q |= [M(N, P)?] Phi = Q' |= Phi if {qstate: Q', prob: Prob'} := (Q).M(P, N) [print "Prob = " Prob'] .
+    --- conjective formulas
+    rl [and] : Q |= Phi /\ Psi => (Q |= Phi) /\ (Q |= Psi) .
 endm
 
 --- specifying closed subspaces for atomic formulas
