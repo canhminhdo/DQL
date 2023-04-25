@@ -29,7 +29,7 @@ fmod DQL is
     subsort AtomicFormula < Formula .
 
     --- quantum dynamic logic furmulas
-    op _/\_ : Formula Formula -> Formula .
+    op _/\_ : Formula Formula -> Formula [assoc comm] .
     op neg_ : Formula -> Formula .
     op `[_`]_ : Prog Formula -> Formula .
     --- [IMPORTANT] only projective measurements are used for test

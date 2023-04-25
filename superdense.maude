@@ -31,14 +31,9 @@ endm
 
 in debug.maude .
 
-search in SUPERDENSE-CHECK : initQState |= [ H(0) ; CX(0, 1) ; CX(0, 1) ; H(0)]
-prop00 =>! JS:JudgementSet such that JS:JudgementSet =/= emptyJS .
-
-search in SUPERDENSE-CHECK : initQState |= [ H(0) ; CX(0, 1) ; X(0); CX(0, 1) ; H(0)]
-prop01 =>! JS:JudgementSet such that JS:JudgementSet =/= emptyJS .
-
-search in SUPERDENSE-CHECK : initQState |= [ H(0) ; CX(0, 1) ; Z(0); CX(0, 1) ; H(0)]
-prop10 =>! JS:JudgementSet such that JS:JudgementSet =/= emptyJS .
-
-search in SUPERDENSE-CHECK : initQState |= [ H(0) ; CX(0, 1) ; Y(0); CX(0, 1) ; H(0)]
-prop11 =>! JS:JudgementSet such that JS:JudgementSet =/= emptyJS .
+search in SUPERDENSE-CHECK : initQState |=
+([ H(0) ; CX(0, 1) ; CX(0, 1) ; H(0)] prop00) /\
+([ H(0) ; CX(0, 1) ; X(0); CX(0, 1) ; H(0)] prop01) /\
+([ H(0) ; CX(0, 1) ; Z(0); CX(0, 1) ; H(0)] prop10) /\
+([ H(0) ; CX(0, 1) ; Y(0); CX(0, 1) ; H(0)] prop11)
+=>! JS:JudgementSet such that JS:JudgementSet =/= emptyJS .
