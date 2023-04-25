@@ -34,19 +34,6 @@ endm
 in debug.maude
 
 search in ENTAGLE-SWAP-CHECK : initQState |= [ H(1) ; CX(1, 0) ; H(3) ; CX(3, 2) ; CX(0, 3) ; H(0) ;
-if
-    P(3, |0>) ->
-        if
-            P(0, |0>) -> skip
-            |
-            P(0, |1>) -> Z(2)
-        fi
-    |
-    P(3, |1>) -> X(2) ;
-        if
-            P(0, |0>) -> skip
-            |
-            P(0, |1>) -> Z(2)
-        fi
-fi
+if P(3, |0>) -> skip | P(3, |1>) -> X(2) fi ;
+if P(0, |0>) -> skip | P(0, |1>) -> Z(2) fi
 ] prop =>! JS:JudgementSet such that JS:JudgementSet =/= emptyJS .
