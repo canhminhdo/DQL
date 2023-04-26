@@ -228,8 +228,8 @@ fmod QUBIT is
     pr MATRIX .
     pr NAT-LIST .
 
-    sorts OneQubit EnQubit Qubit .
-    subsort OneQubit EnQubit < Qubit .
+    sorts OneQubit EnQubit Qubit QState .
+    subsort OneQubit EnQubit < Qubit < QState .
 
     vars N N1 N2 : Nat .
     var M : Matrix .
@@ -306,6 +306,11 @@ fmod SYMBOLIC-REASONING is
     op getProb : StateProb -> Scalar .
     eq getState({qstate: QS, prob: Prob}) = QS .
     eq getProb({qstate: QS, prob: Prob}) = Prob .
+
+    --- conventional notations for projective measurement with Ket notation
+    op _.P(_,_) : Qubit Ket Nat -> StateProb .
+    eq (QS).P(|0>, N) = (QS).M(P0, N) .
+    eq (QS).P(|1>, N) = (QS).M(P1, N) .
 
     --- applying a measurement with a specific matrix at a specific position
     op _.M(_,_) : Qubit Matrix Nat -> StateProb .

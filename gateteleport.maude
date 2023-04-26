@@ -39,16 +39,16 @@ in debug.maude
 
 --- Following the circuit from wikipedia
 search in GATE-TELEPORT-CHECK : initQState |= [ H(1) ; CX(1, 2) ; H(3) ; CX(3, 4); CX(3, 2) ; CX(0, 1) ; H(0) ; CX(4, 5) ; H(4) ;
-if P(0, |0>) -> skip | P(0, |1>) -> Z(2) ; Z(3) fi ;
-if P(1, |0>) -> skip | P(1, |1>) -> X(2) fi ;
-if P(5, |0>) -> skip | P(5, |1>) -> X(2) ; X(3) fi ;
-if P(4, |0>) -> skip | P(4, |1>) -> Z(3) fi
+if P(0, |0>) then skip else Z(2) ; Z(3) fi ;
+if P(1, |0>) then skip else X(2) fi ;
+if P(5, |0>) then skip else X(2) ; X(3) fi ;
+if P(4, |0>) then skip else Z(3) fi
 ] prop =>! JS:JudgementSet such that JS:JudgementSet =/= emptyJS .
 
 --- Following the circuit from the paper of D. Gottesman and I. L. Chuang with a revision
 --- search in GATE-TELEPORT-CHECK : initQState |= [ H(1) ; CX(1, 2) ; H(3) ; CX(3, 4) ; CX(3, 2) ; CX(1, 0) ; H(1) ; CX(5, 4) ; H(5) ;
---- if P(4, |0>) -> skip | P(4, |1>) -> X(2) ; X(3) fi ;
---- if P(5, |0>) -> skip | P(5, |1>) -> Z(3) fi ;
---- if P(0, |0>) -> skip | P(0, |1>) -> X(2) fi ;
---- if P(1, |0>) -> skip | P(1, |1>) -> Z(2) ; Z(3) fi
+--- if P(4, |0>) then skip else X(2) ; X(3) fi ;
+--- if P(5, |0>) then skip else Z(3) fi ;
+--- if P(0, |0>) then skip else X(2) fi ;
+--- if P(1, |0>) then skip else Z(2) ; Z(3) fi
 --- ] prop =>! JS:JudgementSet such that JS:JudgementSet =/= emptyJS .

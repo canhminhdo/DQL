@@ -1,8 +1,7 @@
 ==========================================
 search in TELEPORT-CHECK : initQState |= [H(1) ; CX(1,2) ; CX(0,1) ; H(0) ; if
-    P(1,|0>) -> skip | P(1,|1>) -> X(2) fi ; if P(0,|0>) -> skip | P(0,|1>) ->
-    Z(2) fi]prop =>! JS:JudgementSet such that JS:JudgementSet =/= emptyJS =
-    true .
+    P(1,|0>) then skip else X(2) fi ; if P(0,|0>) then skip else Z(2) fi]prop
+    =>! JS:JudgementSet such that JS:JudgementSet =/= emptyJS = true .
 Prob = 1/2
 Prob = 1/2
 Prob = 1/2
