@@ -299,38 +299,14 @@ fmod SYMBOLIC-REASONING is
     /\ G2 := iGates(size(NL1)) (x) B3 (x) iGates(size(NL2)) (x) X (x) iGates(size(NL3))
     /\ G := G1 + G2 .
 
-    --- measurement
-    sort StateProb .
-    op {qstate:_, prob:_} : Qubit Scalar -> StateProb .
-    op getState : StateProb -> Qubit .
-    op getProb : StateProb -> Scalar .
-    eq getState({qstate: QS, prob: Prob}) = QS .
-    eq getProb({qstate: QS, prob: Prob}) = Prob .
+    --- projections
+    op _.P(_,_) : Qubit Nat Matrix -> Qubit .
+    ceq ((q[NL1 N NL2]: M1) QS).P(N, P) = simplified((q[NL1 N NL2]: M2) QS)
+    if M2 := (iGates(size(NL1)) (x) (P x (P)^+) (x) iGates(size(NL2))) x M1 .
 
-    --- conventional notations for projective measurement with Ket notation
-    op _.P(_,_) : Qubit Ket Nat -> StateProb .
-    eq (QS).P(|0>, N) = (QS).M(P0, N) .
-    eq (QS).P(|1>, N) = (QS).M(P1, N) .
-
-    --- applying a measurement with a specific matrix at a specific position
-    op _.M(_,_) : Qubit Matrix Nat -> StateProb .
-    ceq ((q[NL1 N NL2]: M1) QS).M(P, N)
-    =   if Prob == 0 and-then M3 == O then {qstate: ((q[NL1 N NL2]: (M3)) QS), prob: Prob}
-        else {
-            qstate: (
-                (q[N]: if P == P0 then |0> else |1> fi)
-                (q[NL1 NL2]: ((1 ./ Sqrt(Prob)) . rmQubitAt(NL1 N NL2, N, M3)))
-                QS
-            ), prob: Prob
-        }
-        fi
-    if M2 := ((M1)^+) x
-            ((iGates(size(NL1)) (x) P (x) iGates(size(NL2)))^+) x
-            (iGates(size(NL1)) (x) P (x) iGates(size(NL2))) x
-            M1
-    /\ Prob := scalar(M2)
-    /\ M3 := (iGates(size(NL1)) (x) P (x) iGates(size(NL2))) x M1 .
-    --- qstate: ((q[NL1 N NL2]: ((1 ./ Sqrt(Prob)) . M3)) QS), prob: Prob
+    op _.P(_,_,_) : Qubit Nat Nat Matrix -> Qubit .
+    ceq ((q[NL1 N1 N2 NL2]: M1) QS).P(N1, N2, P) = simplified((q[NL1 N1 N2 NL2]: M2) QS)
+    if M2 := (iGates(size(NL1)) (x) (P x (P)^+) (x) iGates(size(NL2))) x M1 .
 
     --- obtaining scalar for inner product:  S . I (x) I (x) I -> S
     op scalar : Matrix -> Scalar .

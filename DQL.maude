@@ -54,7 +54,6 @@ mod DQL-SEMANTICS is
     vars PROG PROG' : Prog .
     vars Q Q' : QState .
     vars N N1 N2 : Nat .
-    var Prob : Scalar .
     var Ket : Ket .
     vars Phi Psi : Formula .
 
@@ -66,7 +65,7 @@ mod DQL-SEMANTICS is
     ceq Q |= [H(N)] Phi = Q' |= Phi if Q' := (Q).H(N) .
     ceq Q |= [CX(N1, N2)] Phi = Q' |= Phi if Q' := (Q).CX(N1, N2) .
     --- measurement operator as test
-    ceq Q |= [P(N, Ket)?] Phi = Q' |= Phi if {qstate: Q', prob: Prob} := (Q).P(Ket, N) [print "Prob = " Prob] .
+    ceq Q |= [P(N, Ket)?] Phi = Q' |= Phi if Q' := (Q).P(N, Ket) .
     --- other programs
     eq Q |= [skip] Phi = Q |= Phi .
     --- program composition
@@ -78,37 +77,4 @@ mod DQL-SEMANTICS is
     --- negation
     eq neg P(N, |0>) = P(N, |1>) .
     eq neg P(N, |1>) = P(N, |0>) .
-endm
-
---- specifying closed subspaces for atomic formulas
-view Qubit from TRIV to QUBIT is
-    sort Elt to Matrix .
-endv
-
-fmod QUBIT-SET is
-    pr SET{Qubit} * (
-        sort NeSet{Qubit} to NeQubitSet,
-        sort Set{Qubit} to QubitSet
-    ) .
-endfm
-
-mod CLOSED-SUBSPACES is
-    pr QUBIT-SET .
-    pr DQL-SEMANTICS .
-
-    sort ClosedSS .
-
-    --- an interpretation for atomic formulas
-    op V : AtomicFormula -> ClosedSS .
-    op `{_`} : QubitSet -> ClosedSS [ctor] .
-    op _in_ : Matrix ClosedSS -> JudgementSet .
-
-    vars M M1 M2 : Matrix .
-
-    --- tailored to check whether a qubit belong to one dimentional subspaces
-    --- [todo] developing a function to check whether a vector $v$ belongs to a sub-statespace spaned by {v_1, ..., v_n}
-    eq M in { M } = emptyJS .
-    ceq M1 in { M2 } = emptyJS if (-1) . M1 == M2 .
-    ceq M1 in { M2 } = emptyJS if (i) . M1 == M2 .
-    ceq M1 in { M2 } = emptyJS if (i .* -1) . M1 == M2 .
 endm

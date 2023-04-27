@@ -16,16 +16,11 @@ endm
 
 mod TELEPORT-CHECK is
     pr TELEPORT .
-    pr CLOSED-SUBSPACES .
 
-    --- defining the subspaces for atomic formulas
     op prop : -> AtomicFormula [ctor] .
-    eq V(prop) = { qubitAt(initQState, 0) } .
-
     var Q : Qubit .
-
     --- checking atomic formulas for Teleportation
-    eq Q |= prop = qubitAt(Q, 2) in V(prop) [print "Q = " Q] .
+    ceq Q |= prop = emptyJS if (Q).P(2, qubitAt(initQState, 0)) == Q [print "Q = " Q] .
 endm
 
 in debug.maude

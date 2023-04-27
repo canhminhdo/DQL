@@ -10,23 +10,14 @@ endm
 
 mod SUPERDENSE-CHECK is
     pr SUPERDENSE .
-    pr CLOSED-SUBSPACES .
-
-    --- defining the subspaces for atomic formulas
-    ops p0 p1 : -> AtomicFormula [ctor] .
-    eq V(p0) = { |0> } .
-    eq V(p1) = { |1> } .
 
     ops prop00 prop01 prop10 prop11 : -> AtomicFormula [ctor] .
-
     var Q : Qubit .
-    var PROP : AtomicFormula .
-
     --- checking atomic formulas for superdense coding
-    eq Q |= prop00 = (qubitAt(Q, 0) in V(p0)) /\ (qubitAt(Q, 1) in V(p0)) [print "Q = " Q] .
-    eq Q |= prop01 = (qubitAt(Q, 0) in V(p0)) /\ (qubitAt(Q, 1) in V(p1)) [print "Q = " Q] .
-    eq Q |= prop10 = (qubitAt(Q, 0) in V(p1)) /\ (qubitAt(Q, 1) in V(p0)) [print "Q = " Q] .
-    eq Q |= prop11 = (qubitAt(Q, 0) in V(p1)) /\ (qubitAt(Q, 1) in V(p1)) [print "Q = " Q] .
+    ceq Q |= prop00 = emptyJS if (Q).P(0, |0>) == Q /\ (Q).P(1, |0>) == Q [print "Q = " Q] .
+    ceq Q |= prop01 = emptyJS if (Q).P(0, |0>) == Q /\ (Q).P(1, |1>) == Q [print "Q = " Q] .
+    ceq Q |= prop10 = emptyJS if (Q).P(0, |1>) == Q /\ (Q).P(1, |0>) == Q [print "Q = " Q] .
+    ceq Q |= prop11 = emptyJS if (Q).P(0, |1>) == Q /\ (Q).P(1, |1>) == Q [print "Q = " Q] .
 endm
 
 in debug.maude .
