@@ -1,7 +1,7 @@
-load DQL.maude
+load BDQL.maude
 
 mod SUPERDENSE is
-    pr DQL-SEMANTICS .
+    pr BDQL-SEMANTICS .
 
     --- defining initial states
     op initQState : -> Qubit .

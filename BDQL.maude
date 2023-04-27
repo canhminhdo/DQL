@@ -1,7 +1,6 @@
 in symbolic-reasoning.maude .
 
-fmod DQL is
-    pr NAT .
+fmod BDQL is
     pr MATRIX .
 
     --- programs
@@ -15,6 +14,7 @@ fmod DQL is
     op Z`(_`) : Nat -> AtomicProg .
     op H`(_`) : Nat -> AtomicProg .
     op CX`(_,_`) : Nat Nat -> AtomicProg .
+    op P`(_,_`) : Nat Ket -> AtomicFormula .
 
     --- idenity denotes the end of programs
     ops abort skip : -> Prog [ctor] .
@@ -31,8 +31,6 @@ fmod DQL is
     op _/\_ : Formula Formula -> Formula [assoc comm] .
     op neg_ : Formula -> Formula .
     op `[_`]_ : Prog Formula -> Formula .
-    --- [IMPORTANT] only projective measurements are used for test
-    op P`(_,_`) : Nat Ket -> Formula .
 
     --- if_then_else_fi commands
     op if_then_else_ fi : Formula Prog Prog -> Prog .
@@ -40,9 +38,9 @@ fmod DQL is
     (F:Formula ? ; P1:Prog) U ((neg F:Formula) ? ; P2:Prog) .
 endfm
 
-mod DQL-SEMANTICS is
-    pr DQL .
+mod BDQL-SEMANTICS is
     pr SYMBOLIC-REASONING .
+    pr BDQL .
 
     sorts Judgement JudgementSet .
     subsort Judgement < JudgementSet .

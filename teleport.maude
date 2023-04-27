@@ -1,7 +1,7 @@
-load DQL.maude
+load BDQL.maude
 
 mod TELEPORT is
-    pr DQL-SEMANTICS .
+    pr BDQL-SEMANTICS .
 
     var S : Scalar .
 

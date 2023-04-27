@@ -2,8 +2,7 @@ fmod SCALAR is
     pr CONVERSION .
     pr EXT-BOOL .
 
-    sort Scalar .
-    sort iNumber .
+    sorts Scalar iNumber .
     subsort Rat iNumber < Scalar .
 
     --- imaginary unit
@@ -31,7 +30,7 @@ fmod SCALAR is
 
     vars R R1 R2 : Rat .
     vars S S1 S2 S3 S4 : Scalar .
-    vars N : Nat .
+    var N : Nat .
 
     --- imaginary properties
     eq i .* i = -1 .
@@ -109,6 +108,7 @@ endfm
 
 fmod DIRAC is
     pr SCALAR .
+
     sorts Ket Bra .
 
     ops |0> |1> : -> Ket [ctor] .
@@ -117,7 +117,8 @@ endfm
 
 fmod MATRIX is
     pr DIRAC .
-    sorts Matrix .
+
+    sort Matrix .
     subsorts Ket Bra < Matrix .
 
     --- zero matrix
@@ -253,11 +254,9 @@ fmod SYMBOLIC-REASONING is
     vars N N1 N2 : Nat .
     vars M M1 M2 M3 G G1 G2 P : Matrix .
     vars NL NL1 NL2 NL3 NL4 : NatList .
-    var NeNL : NeNatList .
     var QS : Qubit .
-    vars S Prob : Scalar .
+    var S : Scalar .
     vars Ket Ket1 Ket2 : Ket .
-    var Bra : Bra .
 
     --- applying hadmard gate
     op _.H(_) : Qubit Nat -> Qubit .
@@ -308,19 +307,6 @@ fmod SYMBOLIC-REASONING is
     ceq ((q[NL1 N1 N2 NL2]: M1) QS).P(N1, N2, P) = simplified((q[NL1 N1 N2 NL2]: M2) QS)
     if M2 := (iGates(size(NL1)) (x) (P x (P)^+) (x) iGates(size(NL2))) x M1 .
 
-    --- obtaining scalar for inner product:  S . I (x) I (x) I -> S
-    op scalar : Matrix -> Scalar .
-    eq scalar(O) = 0 .
-    eq scalar(S . M) = if isIdens(M) then S else errS fi .
-    eq scalar(M) = if isIdens(M) then 1 else errS fi .
-
-    --- I (x) I (x) I ...
-    op isIdens : Matrix -> Bool .
-    eq isIdens(M1 (x) M2) = isIdens(M1) and isIdens(M2) .
-    eq isIdens(|1>) = false .
-    eq isIdens(|0>) = false .
-    eq isIdens(I) = true .
-
     --- N -> I (x) I (x) ...
     op iGates : Nat -> Matrix .
     eq iGates(0) = nil .
@@ -328,7 +314,7 @@ fmod SYMBOLIC-REASONING is
 
     --- not zero vector
     op isZero : Qubit -> Bool .
-    eq isZero((q[NL1 N NL2]: O) QS) = true .
+    eq isZero((q[NL]: O) QS) = true .
     eq isZero(QS) = false [owise] .
 
     --- simplified a multiple qubit
