@@ -14,7 +14,6 @@ fmod BDQL is
     op Z`(_`) : Nat -> AtomicProg .
     op H`(_`) : Nat -> AtomicProg .
     op CX`(_,_`) : Nat Nat -> AtomicProg .
-    op P`(_,_`) : Nat Ket -> AtomicFormula .
 
     --- idenity denotes the end of programs
     ops abort skip : -> Prog [ctor] .
@@ -27,7 +26,8 @@ fmod BDQL is
     sorts AtomicFormula Formula .
     subsort AtomicFormula < Formula .
 
-    --- quantum dynamic logic furmulas
+    --- quantum dynamic logic formulas
+    op P`(_,_`) : Nat Ket -> AtomicFormula .
     op _/\_ : Formula Formula -> Formula [assoc comm] .
     op neg_ : Formula -> Formula .
     op `[_`]_ : Prog Formula -> Formula .
