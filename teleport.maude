@@ -14,18 +14,9 @@ mod TELEPORT is
     eq initQState = (q[0]: a . |0> + b . |1>) (q[1]: |0>) (q[2]: |0>) .
 endm
 
-mod TELEPORT-CHECK is
-    pr TELEPORT .
-
-    op prop : -> AtomicFormula [ctor] .
-    var Q : Qubit .
-    --- checking atomic formulas for Teleportation
-    ceq Q |= prop = emptyJS if (Q).P(2, qubitAt(initQState, 0)) == Q [print "Q = " Q] .
-endm
-
 in debug.maude
 
-search in TELEPORT-CHECK : initQState |= [ H(1) ; CX(1, 2) ; CX(0, 1) ; H(0) ;
+red in TELEPORT : initQState |= [ H(1) ; CX(1, 2) ; CX(0, 1) ; H(0) ;
 if P(1, |0>) then skip else X(2) fi ;
 if P(0, |0>) then skip else Z(2) fi
-] prop =>! JS:JudgementSet such that JS:JudgementSet =/= emptyJS .
+] P(2, qubitAt(initQState, 0)) .

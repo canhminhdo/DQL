@@ -299,11 +299,11 @@ fmod SYMBOLIC-REASONING is
     /\ G := G1 + G2 .
 
     --- projections
-    op _.P(_,_) : Qubit Nat Matrix -> Qubit .
+    op _.P`(_,_`) : Qubit Nat Matrix -> Qubit .
     ceq ((q[NL1 N NL2]: M1) QS).P(N, P) = simplified((q[NL1 N NL2]: M2) QS)
     if M2 := (iGates(size(NL1)) (x) (P x (P)^+) (x) iGates(size(NL2))) x M1 .
 
-    op _.P(_,_,_) : Qubit Nat Nat Matrix -> Qubit .
+    op _.P`(_,_,_`) : Qubit Nat Nat Matrix -> Qubit .
     ceq ((q[NL1 N1 N2 NL2]: M1) QS).P(N1, N2, P) = simplified((q[NL1 N1 N2 NL2]: M2) QS)
     if M2 := (iGates(size(NL1)) (x) (P x (P)^+) (x) iGates(size(NL2))) x M1 .
 

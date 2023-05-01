@@ -8,23 +8,10 @@ mod SUPERDENSE is
     eq initQState = (q[0]: |0>) (q[1]: |0>) .
 endm
 
-mod SUPERDENSE-CHECK is
-    pr SUPERDENSE .
-
-    ops prop00 prop01 prop10 prop11 : -> AtomicFormula [ctor] .
-    var Q : Qubit .
-    --- checking atomic formulas for superdense coding
-    ceq Q |= prop00 = emptyJS if (Q).P(0, |0>) == Q /\ (Q).P(1, |0>) == Q [print "Q = " Q] .
-    ceq Q |= prop01 = emptyJS if (Q).P(0, |0>) == Q /\ (Q).P(1, |1>) == Q [print "Q = " Q] .
-    ceq Q |= prop10 = emptyJS if (Q).P(0, |1>) == Q /\ (Q).P(1, |0>) == Q [print "Q = " Q] .
-    ceq Q |= prop11 = emptyJS if (Q).P(0, |1>) == Q /\ (Q).P(1, |1>) == Q [print "Q = " Q] .
-endm
-
 in debug.maude .
 
-search in SUPERDENSE-CHECK : initQState |=
-([ H(0) ; CX(0, 1) ; CX(0, 1) ; H(0)] prop00) /\
-([ H(0) ; CX(0, 1) ; X(0); CX(0, 1) ; H(0)] prop01) /\
-([ H(0) ; CX(0, 1) ; Z(0); CX(0, 1) ; H(0)] prop10) /\
-([ H(0) ; CX(0, 1) ; Y(0); CX(0, 1) ; H(0)] prop11)
-=>! JS:JudgementSet such that JS:JudgementSet =/= emptyJS .
+red in SUPERDENSE : initQState |=
+([ H(0) ; CX(0, 1) ; CX(0, 1) ; H(0)] (P(0, |0>) /\ P(1, |0>))) /\
+([ H(0) ; CX(0, 1) ; X(0); CX(0, 1) ; H(0)] (P(0, |0>) /\ P(1, |1>))) /\
+([ H(0) ; CX(0, 1) ; Z(0); CX(0, 1) ; H(0)] (P(0, |1>) /\ P(1, |0>))) /\
+([ H(0) ; CX(0, 1) ; Y(0); CX(0, 1) ; H(0)] (P(0, |1>) /\ P(1, |1>))) .

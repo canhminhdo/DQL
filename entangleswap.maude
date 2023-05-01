@@ -17,18 +17,9 @@ mod ENTAGLE-SWAP is
     eq initQState = (q[0]: |0>) (q[1]: |0>) (q[2]: |0>) (q[3]: |0>) .
 endm
 
-mod ENTAGLE-SWAP-CHECK is
-    pr ENTAGLE-SWAP .
-
-    op prop : -> AtomicFormula [ctor] .
-    var Q : Qubit .
-    --- checking atomic formulas for Teleportation
-    ceq Q |= prop = emptyJS if (Q).P(1, 2, EPR) == Q [print "Q = " Q] .
-endm
-
 in debug.maude
 
-search in ENTAGLE-SWAP-CHECK : initQState |= [ H(1) ; CX(1, 0) ; H(3) ; CX(3, 2) ; CX(0, 3) ; H(0) ;
+red in ENTAGLE-SWAP : initQState |= [ H(1) ; CX(1, 0) ; H(3) ; CX(3, 2) ; CX(0, 3) ; H(0) ;
 if P(3, |0>) then skip else X(2) fi ;
 if P(0, |0>) then skip else Z(2) fi
-] prop =>! JS:JudgementSet such that JS:JudgementSet =/= emptyJS .
+] P(1, 2, EPR) .

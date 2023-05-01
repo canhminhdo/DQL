@@ -27,7 +27,8 @@ fmod BDQL is
     subsort AtomicFormula < Formula .
 
     --- quantum dynamic logic formulas
-    op P`(_,_`) : Nat Ket -> AtomicFormula .
+    op P`(_,_`) : Nat Matrix -> AtomicFormula .
+    op P`(_,_,_`) : Nat Nat Matrix -> AtomicFormula .
     op _/\_ : Formula Formula -> Formula [assoc comm] .
     op neg_ : Formula -> Formula .
     op `[_`]_ : Prog Formula -> Formula .
@@ -52,7 +53,7 @@ mod BDQL-SEMANTICS is
     vars PROG PROG' : Prog .
     vars Q Q' : QState .
     vars N N1 N2 : Nat .
-    var Ket : Ket .
+    var M : Matrix .
     vars Phi Psi : Formula .
 
     --- atomic programs
@@ -62,17 +63,20 @@ mod BDQL-SEMANTICS is
     ceq Q |= [Z(N)] Phi = Q' |= Phi if Q' := (Q).Z(N) .
     ceq Q |= [H(N)] Phi = Q' |= Phi if Q' := (Q).H(N) .
     ceq Q |= [CX(N1, N2)] Phi = Q' |= Phi if Q' := (Q).CX(N1, N2) .
-    --- measurement operator as test
-    ceq Q |= [P(N, Ket)?] Phi = Q' |= Phi if Q' := (Q).P(N, Ket) .
+    --- a projection as test operator
+    ceq Q |= [P(N, M)?] Phi = Q' |= Phi if Q' := (Q).P(N, M) .
     --- other programs
     eq Q |= [skip] Phi = Q |= Phi .
     --- program composition
     ceq Q |= [PROG' ; PROG] Phi = Q |= [PROG']([PROG] Phi) if PROG' =/= skip and-then PROG =/= skip .
     --- choice programs
-    rl [choice] : Q |= [PROG' U PROG] Phi => (Q |= [PROG'] Phi) /\ (Q |= [PROG] Phi) .
+    eq [choice] : Q |= [PROG' U PROG] Phi = (Q |= [PROG'] Phi) /\ (Q |= [PROG] Phi) .
     --- conjunction
-    rl [and] : Q |= Phi /\ Psi => (Q |= Phi) /\ (Q |= Psi) .
+    eq Q |= Phi /\ Psi = (Q |= Phi) /\ (Q |= Psi) .
     --- negation
     eq neg P(N, |0>) = P(N, |1>) .
     eq neg P(N, |1>) = P(N, |0>) .
+    --- projection
+    ceq Q |= P(N, M) = emptyJS if (Q).P(N, M) == Q .
+    ceq Q |= P(N1, N2, M) = emptyJS if (Q).P(N1, N2, M) == Q .
 endm
