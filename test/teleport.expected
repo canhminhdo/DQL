@@ -1,15 +1,6 @@
 ==========================================
-search in TELEPORT-CHECK : initQState |= [H(1) ; CX(1,2) ; CX(0,1) ; H(0) ; if
-    P(1,|0>) then skip else X(2) fi ; if P(0,|0>) then skip else Z(2) fi]prop
-    =>! JS:JudgementSet such that JS:JudgementSet =/= emptyJS = true .
-Q = (q[0]: |1>) (q[1]: |0>) q[2]: (a .* 1/2) . |0> + (b .* 1/2) . |1>
-Q = (q[0]: |0>) (q[1]: |0>) q[2]: (a .* 1/2) . |0> + (b .* 1/2) . |1>
-Q = (q[0]: |1>) (q[1]: |1>) q[2]: (a .* 1/2) . |0> + (b .* 1/2) . |1>
-Q = (q[0]: |0>) (q[1]: |1>) q[2]: (a .* 1/2) . |0> + (b .* 1/2) . |1>
-Q = (q[0]: |1>) (q[1]: |1>) q[2]: (a .* 1/2) . |0> + (b .* 1/2) . |1>
-Q = (q[0]: |0>) (q[1]: |1>) q[2]: (a .* 1/2) . |0> + (b .* 1/2) . |1>
-Q = (q[0]: |1>) (q[1]: |0>) q[2]: (a .* 1/2) . |0> + (b .* 1/2) . |1>
-Q = (q[0]: |0>) (q[1]: |0>) q[2]: (a .* 1/2) . |0> + (b .* 1/2) . |1>
-
-No solution.
+reduce in TELEPORT : initQState |= [H(1) ; CX(1,2) ; CX(0,1) ; H(0) ; if P(1,
+    |0>) then skip else X(2) fi ; if P(0,|0>) then skip else Z(2) fi]P(2,
+    qubitAt(initQState, 0)) .
+result JudgementSet: emptyJS
 Bye.

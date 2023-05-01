@@ -1,24 +1,6 @@
 ==========================================
-search in ENTAGLE-SWAP-CHECK : initQState |= [H(1) ; CX(1,0) ; H(3) ; CX(3,2) ;
-    CX(0,3) ; H(0) ; if P(3,|0>) then skip else X(2) fi ; if P(0,|0>) then skip
-    else Z(2) fi]prop =>! JS:JudgementSet such that JS:JudgementSet =/= emptyJS
-    = true .
-Q = (q[0]: |1>) (q[3]: |0>) q[1 2]: (1/2 .* 1 ./ Sqrt(2)) . |0>(x)|0> + (1/2 .*
-    1 ./ Sqrt(2)) . |1>(x)|1>
-Q = (q[0]: |0>) (q[3]: |0>) q[1 2]: (1/2 .* 1 ./ Sqrt(2)) . |0>(x)|0> + (1/2 .*
-    1 ./ Sqrt(2)) . |1>(x)|1>
-Q = (q[0]: |1>) (q[3]: |1>) q[1 2]: (1/2 .* 1 ./ Sqrt(2)) . |0>(x)|0> + (1/2 .*
-    1 ./ Sqrt(2)) . |1>(x)|1>
-Q = (q[0]: |0>) (q[3]: |1>) q[1 2]: (1/2 .* 1 ./ Sqrt(2)) . |0>(x)|0> + (1/2 .*
-    1 ./ Sqrt(2)) . |1>(x)|1>
-Q = (q[0]: |1>) (q[3]: |1>) q[1 2]: (1/2 .* 1 ./ Sqrt(2)) . |0>(x)|0> + (1/2 .*
-    1 ./ Sqrt(2)) . |1>(x)|1>
-Q = (q[0]: |0>) (q[3]: |1>) q[1 2]: (1/2 .* 1 ./ Sqrt(2)) . |0>(x)|0> + (1/2 .*
-    1 ./ Sqrt(2)) . |1>(x)|1>
-Q = (q[0]: |1>) (q[3]: |0>) q[1 2]: (1/2 .* 1 ./ Sqrt(2)) . |0>(x)|0> + (1/2 .*
-    1 ./ Sqrt(2)) . |1>(x)|1>
-Q = (q[0]: |0>) (q[3]: |0>) q[1 2]: (1/2 .* 1 ./ Sqrt(2)) . |0>(x)|0> + (1/2 .*
-    1 ./ Sqrt(2)) . |1>(x)|1>
-
-No solution.
+reduce in ENTAGLE-SWAP : initQState |= [H(1) ; CX(1,0) ; H(3) ; CX(3,2) ; CX(0,
+    3) ; H(0) ; if P(3,|0>) then skip else X(2) fi ; if P(0,|0>) then skip else
+    Z(2) fi]P(1,2,EPR) .
+result JudgementSet: emptyJS
 Bye.
