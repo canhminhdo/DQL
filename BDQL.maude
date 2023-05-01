@@ -67,6 +67,7 @@ mod BDQL-SEMANTICS is
     ceq Q |= [P(N, M)?] Phi = Q' |= Phi if Q' := (Q).P(N, M) .
     --- other programs
     eq Q |= [skip] Phi = Q |= Phi .
+    eq Q |= [abort] Phi = emptyJS .
     --- program composition
     ceq Q |= [PROG' ; PROG] Phi = Q |= [PROG']([PROG] Phi) if PROG' =/= skip and-then PROG =/= skip .
     --- choice programs

@@ -1,3 +1,3 @@
-### Dynamic Quantum Logic to Verify Quantum Programs in Maude
+### Automated Quantum Program Verification in a Dynamic Quantum Logic
 ---
-This presents a support tool to verify quantum program in Maude by using dynamic quantum logic.
+This presents a support tool to verify quantum programs in Maude by using a Dynamic Quantum Logic.
