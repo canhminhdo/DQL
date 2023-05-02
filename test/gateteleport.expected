@@ -4,5 +4,5 @@ reduce in GATE-TELEPORT : initQState |= [H(1) ; CX(1,2) ; H(3) ; CX(3,4) ; CX(
     Z(3) fi ; if P(1,|0>) then skip else X(2) fi ; if P(5,|0>) then skip else
     X(2) ; X(3) fi ; if P(4,|0>) then skip else Z(3) fi]P(3,2,qubitAt(
     targetQState, 0 1)) .
-result JudgementSet: emptyJS
+result JudgmentSet: emptyJS
 Bye.

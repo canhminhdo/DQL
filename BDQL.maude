@@ -43,12 +43,12 @@ mod BDQL-SEMANTICS is
     pr SYMBOLIC-REASONING .
     pr BDQL .
 
-    sorts Judgement JudgementSet .
-    subsort Judgement < JudgementSet .
+    sorts Judgment JudgmentSet .
+    subsort Judgment < JudgmentSet .
 
-    op _|=_ : QState Formula -> Judgement .
-    op emptyJS : -> JudgementSet .
-    op _/\_ : JudgementSet JudgementSet -> JudgementSet [ctor comm assoc id: emptyJS] .
+    op _|=_ : QState Formula -> Judgment .
+    op emptyJS : -> JudgmentSet .
+    op _/\_ : JudgmentSet JudgmentSet -> JudgmentSet [ctor comm assoc id: emptyJS] .
 
     vars PROG PROG' : Prog .
     vars Q Q' : QState .
@@ -56,6 +56,14 @@ mod BDQL-SEMANTICS is
     var M : Matrix .
     vars Phi Psi : Formula .
 
+    --- projections
+    ceq Q |= P(N, M) = emptyJS if (Q).P(N, M) == Q .
+    ceq Q |= P(N1, N2, M) = emptyJS if (Q).P(N1, N2, M) == Q .
+    --- negation
+    eq neg P(N, |0>) = P(N, |1>) .
+    eq neg P(N, |1>) = P(N, |0>) .
+    --- conjunction
+    eq Q |= Phi /\ Psi = (Q |= Phi) /\ (Q |= Psi) .
     --- atomic programs
     eq Q |= [I(N)] Phi = Q |= Phi .
     ceq Q |= [X(N)] Phi = Q' |= Phi if Q' := (Q).X(N) .
@@ -65,19 +73,11 @@ mod BDQL-SEMANTICS is
     ceq Q |= [CX(N1, N2)] Phi = Q' |= Phi if Q' := (Q).CX(N1, N2) .
     --- a projection as test operator
     ceq Q |= [P(N, M)?] Phi = Q' |= Phi if Q' := (Q).P(N, M) .
-    --- other programs
+    --- constant programs
     eq Q |= [skip] Phi = Q |= Phi .
     eq Q |= [abort] Phi = emptyJS .
     --- program composition
     ceq Q |= [PROG' ; PROG] Phi = Q |= [PROG']([PROG] Phi) if PROG' =/= skip and-then PROG =/= skip .
     --- choice programs
     eq [choice] : Q |= [PROG' U PROG] Phi = (Q |= [PROG'] Phi) /\ (Q |= [PROG] Phi) .
-    --- conjunction
-    eq Q |= Phi /\ Psi = (Q |= Phi) /\ (Q |= Psi) .
-    --- negation
-    eq neg P(N, |0>) = P(N, |1>) .
-    eq neg P(N, |1>) = P(N, |0>) .
-    --- projection
-    ceq Q |= P(N, M) = emptyJS if (Q).P(N, M) == Q .
-    ceq Q |= P(N1, N2, M) = emptyJS if (Q).P(N1, N2, M) == Q .
 endm
