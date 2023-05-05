@@ -1,6 +1,6 @@
 load BDQL.maude
 
-mod TELEPORT is
+fmod TELEPORT is
     pr BDQL-SEMANTICS .
 
     var S : Scalar .
@@ -12,7 +12,7 @@ mod TELEPORT is
 
     op initQState : -> Qubit .
     eq initQState = (q[0]: a . |0> + b . |1>) (q[1]: |0>) (q[2]: |0>) .
-endm
+endfm
 
 in debug.maude
 

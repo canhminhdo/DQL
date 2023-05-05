@@ -1,6 +1,6 @@
 load BDQL.maude
 
-mod GATE-TELEPORT is
+fmod GATE-TELEPORT is
     pr BDQL-SEMANTICS .
 
     var S : Scalar .
@@ -18,7 +18,7 @@ mod GATE-TELEPORT is
 
     op targetQState : -> Qubit .
     eq targetQState = ((q[0]: c . |0> + d . |1>) (q[1]: a . |0> + b . |1>)).CX(0, 1) .
-endm
+endfm
 
 in debug.maude
 

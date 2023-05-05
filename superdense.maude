@@ -1,12 +1,12 @@
 load BDQL.maude
 
-mod SUPERDENSE is
+fmod SUPERDENSE is
     pr BDQL-SEMANTICS .
 
     --- defining initial states
     op initQState : -> Qubit .
     eq initQState = (q[0]: |0>) (q[1]: |0>) .
-endm
+endfm
 
 in debug.maude .
 

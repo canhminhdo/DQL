@@ -8,30 +8,30 @@ fmod BDQL is
     subsort AtomicProg < Prog .
 
     --- atomic programs
-    op I`(_`) : Nat -> AtomicProg .
-    op X`(_`) : Nat -> AtomicProg .
-    op Y`(_`) : Nat -> AtomicProg .
-    op Z`(_`) : Nat -> AtomicProg .
-    op H`(_`) : Nat -> AtomicProg .
-    op CX`(_,_`) : Nat Nat -> AtomicProg .
+    op I`(_`) : Nat -> AtomicProg [ctor] .
+    op X`(_`) : Nat -> AtomicProg [ctor] .
+    op Y`(_`) : Nat -> AtomicProg [ctor] .
+    op Z`(_`) : Nat -> AtomicProg [ctor] .
+    op H`(_`) : Nat -> AtomicProg [ctor] .
+    op CX`(_,_`) : Nat Nat -> AtomicProg [ctor] .
 
     --- idenity denotes the end of programs
     ops abort skip : -> Prog [ctor] .
-    op _;_ : Prog Prog -> Prog [ctor assoc id: skip prec 25] .
-    op _U_ : Prog Prog -> Prog .
-    op _* : Prog -> Prog .
-    op _? : Formula -> Prog [prec 24] .
+    op _;_ : Prog Prog -> Prog [assoc id: skip prec 25] .
+    op _U_ : Prog Prog -> Prog [ctor] .
+    op _* : Prog -> Prog [ctor] .
+    op _? : Formula -> Prog [ctor prec 24] .
 
     --- formulas
     sorts AtomicFormula Formula .
     subsort AtomicFormula < Formula .
 
     --- quantum dynamic logic formulas
-    op P`(_,_`) : Nat Matrix -> AtomicFormula .
-    op P`(_,_,_`) : Nat Nat Matrix -> AtomicFormula .
-    op _/\_ : Formula Formula -> Formula [assoc comm] .
+    op P`(_,_`) : Nat Matrix -> AtomicFormula [ctor] .
+    op P`(_,_,_`) : Nat Nat Matrix -> AtomicFormula [ctor] .
+    op _/\_ : Formula Formula -> Formula [ctor assoc comm] .
     op neg_ : Formula -> Formula .
-    op `[_`]_ : Prog Formula -> Formula .
+    op `[_`]_ : Prog Formula -> Formula [ctor] .
 
     --- if_then_else_fi commands
     op if_then_else_ fi : Formula Prog Prog -> Prog .
@@ -39,7 +39,7 @@ fmod BDQL is
     (F:Formula ? ; P1:Prog) U ((neg F:Formula) ? ; P2:Prog) .
 endfm
 
-mod BDQL-SEMANTICS is
+fmod BDQL-SEMANTICS is
     pr SYMBOLIC-REASONING .
     pr BDQL .
 
@@ -47,8 +47,8 @@ mod BDQL-SEMANTICS is
     subsort Judgment < JudgmentSet .
 
     op _|=_ : QState Formula -> Judgment .
-    op emptyJS : -> JudgmentSet .
-    op _/\_ : JudgmentSet JudgmentSet -> JudgmentSet [ctor comm assoc id: emptyJS] .
+    op emptyJS : -> JudgmentSet [ctor] .
+    op _/\_ : JudgmentSet JudgmentSet -> JudgmentSet [comm assoc id: emptyJS] .
 
     vars PROG PROG' : Prog .
     vars Q Q' : QState .
@@ -80,4 +80,4 @@ mod BDQL-SEMANTICS is
     ceq Q |= [PROG' ; PROG] Phi = Q |= [PROG']([PROG] Phi) if PROG' =/= skip and-then PROG =/= skip .
     --- choice programs
     eq [choice] : Q |= [PROG' U PROG] Phi = (Q |= [PROG'] Phi) /\ (Q |= [PROG] Phi) .
-endm
+endfm
