@@ -20,8 +20,6 @@ fmod GATE-TELEPORT is
     eq targetQState = ((q[0]: c . |0> + d . |1>) (q[1]: a . |0> + b . |1>)).CX(0, 1) .
 endfm
 
-in debug.maude
-
 --- Following the circuit from wikipedia
 red in GATE-TELEPORT : initQState |= [ H(1) ; CX(1, 2) ; H(3) ; CX(3, 4); CX(3, 2) ; CX(0, 1) ; H(0) ; CX(4, 5) ; H(4) ;
 if P(0, |0>) then skip else Z(2) ; Z(3) fi ;
