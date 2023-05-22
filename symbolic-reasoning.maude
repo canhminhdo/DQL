@@ -251,11 +251,11 @@ endfm
 fmod SYMBOLIC-REASONING is
     pr QUBIT .
 
-    vars N N1 N2 : Nat .
+    vars N N1 N2 N3 N4 : Nat .
     vars M M1 M2 M3 G G1 G2 P : Matrix .
     vars NL NL1 NL2 NL3 NL4 : NatList .
     var QS : Qubit .
-    var S : Scalar .
+    vars S S1 S2 : Scalar .
     vars Ket Ket1 Ket2 : Ket .
 
     --- applying hadmard gate
@@ -285,7 +285,7 @@ fmod SYMBOLIC-REASONING is
     --- applying CX gate
     op _.CX(_,_) : Qubit Nat Nat -> Qubit .
     ceq ((q[NL1 N1 NL2]: M1) (q[NL3 N2 NL4]: M2) QS).CX(N1, N2)
-    = simplified((q[NL1 N1 NL2 NL3 N2 NL4]: G x M)) QS
+    = simplify((q[NL1 N1 NL2 NL3 N2 NL4]: G x M)) QS
     if M := M1 (x) M2
     /\ G1 := iGates(size(NL1)) (x) B0 (x) iGates(size(NL2)) (x)
             iGates(size(NL3)) (x) I (x) iGates(size(NL4))
@@ -293,18 +293,23 @@ fmod SYMBOLIC-REASONING is
             iGates(size(NL3)) (x) X (x) iGates(size(NL4))
     /\ G := G1 + G2 .
 
-    ceq ((q[NL1 N1 NL2 N2 NL3]: M) QS).CX(N1, N2) = simplified((q[NL1 N1 NL2 N2 NL3]: G x M)) QS
+    ceq ((q[NL1 N1 NL2 N2 NL3]: M) QS).CX(N1, N2) = simplify((q[NL1 N1 NL2 N2 NL3]: G x M)) QS
     if G1 := iGates(size(NL1)) (x) B0 (x) iGates(size(NL2)) (x) I (x) iGates(size(NL3))
     /\ G2 := iGates(size(NL1)) (x) B3 (x) iGates(size(NL2)) (x) X (x) iGates(size(NL3))
     /\ G := G1 + G2 .
 
+    ceq ((q[NL1 N2 NL2 N1 NL3]: M) QS).CX(N1, N2) = simplify((q[NL1 N2 NL2 N1 NL3]: G x M)) QS
+    if G1 := iGates(size(NL1)) (x) I (x) iGates(size(NL2)) (x) B0 (x) iGates(size(NL3))
+    /\ G2 := iGates(size(NL1)) (x) X (x) iGates(size(NL2)) (x) B3 (x) iGates(size(NL3))
+    /\ G := G1 + G2 .
+
     --- projections
     op _.P`(_,_`) : Qubit Nat Matrix -> Qubit .
-    ceq ((q[NL1 N NL2]: M1) QS).P(N, P) = simplified((q[NL1 N NL2]: M2) QS)
+    ceq ((q[NL1 N NL2]: M1) QS).P(N, P) = simplify((q[NL1 N NL2]: M2) QS)
     if M2 := (iGates(size(NL1)) (x) (P x (P)^+) (x) iGates(size(NL2))) x M1 .
 
     op _.P`(_,_,_`) : Qubit Nat Nat Matrix -> Qubit .
-    ceq ((q[NL1 N1 N2 NL2]: M1) QS).P(N1, N2, P) = simplified((q[NL1 N1 N2 NL2]: M2) QS)
+    ceq ((q[NL1 N1 N2 NL2]: M1) QS).P(N1, N2, P) = simplify((q[NL1 N1 N2 NL2]: M2) QS)
     if M2 := (iGates(size(NL1)) (x) (P x (P)^+) (x) iGates(size(NL2))) x M1 .
 
     --- N -> I (x) I (x) ...
@@ -317,22 +322,44 @@ fmod SYMBOLIC-REASONING is
     eq isZero((q[NL]: O) QS) = true .
     eq isZero(QS) = false [owise] .
 
-    --- simplified a multiple qubit
-    op simplified : Qubit -> Qubit .
-    eq simplified((q[NL]: M) QS) = simplified(QS)
-    if size(NL) > 1 then simplified*(NL, (q[NL]: M)) else (q[NL]: M) fi .
-    eq simplified(emp) = emp .
+    --- simplify a multiple qubit
+    op simplify : Qubit -> Qubit .
+    eq simplify(QS) = simplifyEPR(simplifyOne(QS)) .
 
-    op simplified* : NatList Qubit -> Qubit .
-    ceq simplified*(N NL1, (q[NL2]: M)) = if sameKet?*(NL2, N, M, Ket) then
+    op simplifyOne : Qubit -> Qubit .
+    eq simplifyOne((q[NL]: M) QS) = simplifyOne(QS)
+    if size(NL) > 1 then simplifyOne*(NL, (q[NL]: M)) else (q[NL]: M) fi .
+    eq simplifyOne(emp) = emp .
+
+    op simplifyOne* : NatList Qubit -> Qubit .
+    ceq simplifyOne*(N NL1, (q[NL2]: M)) = if sameKet?*(NL2, N, M, Ket) then
         (q[N] : Ket)
-        simplified*(NL1, q[rmIndex(NL2, N)]: rmQubitAt(NL2, N, M))
+        simplifyOne*(NL1, q[rmIndex(NL2, N)]: rmQubitAt(NL2, N, M))
     else
-        simplified*(NL1, (q[NL2]: M))
+        simplifyOne*(NL1, (q[NL2]: M))
     fi
     if Ket := firstKetAt*(NL2, N, M) .
 
-    eq simplified*(nil, QS) = QS .
+    eq simplifyOne*(nil, QS) = QS .
+
+    --- simplify the multiplication of two ERP states
+    --- [TODO] only support some specific cases
+    op simplifyEPR : Qubit -> Qubit .
+    eq simplifyEPR((q[NL]: M) QS) = simplifyEPR*((q[NL]: M)) simplifyEPR(QS) .
+    eq simplifyEPR(emp) = emp .
+
+    op simplifyEPR* : Qubit -> Qubit .
+    --- case 1
+    eq simplifyEPR*((q[N1 N2 N3 N4]: S . |0>(x)|0>(x)|0>(x)|0> + S . |0>(x)|1>(x)|1>(x)|0> +
+                                     S . |1>(x)|0>(x)|0>(x)|1> + S . |1>(x)|1>(x)|1>(x)|1>))
+    = (q[N1 N4]: Sqrt(S) . (|0>(x)|0> + |1>(x) |1>)) (q[N2 N3]: Sqrt(S) . (|0>(x)|0> + |1>(x) |1>)) .
+    --- case 2
+    ceq simplifyEPR*((q[N1 N2 N3 N4]: S1 . |0>(x)|0>(x)|0>(x)|0> + S1 . |0>(x)|1>(x)|1>(x)|0> +
+                                     S2 . |1>(x)|0>(x)|0>(x)|1> + S2 . |1>(x)|1>(x)|1>(x)|1>))
+    = (q[N1 N4]: Sqrt(S1) . (|0>(x)|0> + (-1) . |1>(x) |1>)) (q[N2 N3]: Sqrt(S2) . (|0>(x)|0> + |1>(x) |1>))
+    if S1 == (-1) .* S2 .
+    --- otherwise
+    eq simplifyEPR*(QS) = QS [owise] .
 
     --- remove an index from a natural list
     op rmIndex : NatList Nat -> NatList .
