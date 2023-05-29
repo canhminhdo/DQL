@@ -56,16 +56,18 @@ fmod BDQL-SEMANTICS is
     var M : Matrix .
     vars Phi Psi : Formula .
 
-    --- skip axioms
+    --- skip is the identity element for ;
     eq PROG ; skip = PROG .
     eq skip ; PROG = PROG .
-    --- abort axioms
+    --- abort is the identity element for U
     eq PROG U abort = PROG .
     eq abort U PROG = PROG .
+    --- annihilation by abort
     eq PROG ; abort = abort .
     eq abort ; PROG = abort .
-    --- choice axioms
+    --- choice is idempotent
     eq PROG U PROG = PROG .
+    --- ; distributes over U
     eq PROG ; (PROG' U PROG'') = (PROG ; PROG') U (PROG ; PROG'') .
     eq (PROG U PROG') ; PROG'' = (PROG ; PROG'') U (PROG' ; PROG'') .
 
