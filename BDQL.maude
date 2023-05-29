@@ -1,6 +1,6 @@
 in symbolic-reasoning.maude .
 
-fmod BDQL is
+fmod BDQL-SYNTAX is
     pr MATRIX .
 
     --- programs
@@ -17,8 +17,8 @@ fmod BDQL is
 
     --- idenity denotes the end of programs
     ops abort skip : -> Prog [ctor] .
-    op _;_ : Prog Prog -> Prog [assoc id: skip prec 25] .
-    op _U_ : Prog Prog -> Prog [ctor] .
+    op _;_ : Prog Prog -> Prog [ctor assoc prec 25] .
+    op _U_ : Prog Prog -> Prog [ctor assoc comm prec 26] .
     op _* : Prog -> Prog [ctor] .
     op _? : Formula -> Prog [ctor prec 24] .
 
@@ -41,7 +41,7 @@ endfm
 
 fmod BDQL-SEMANTICS is
     pr SYMBOLIC-REASONING .
-    pr BDQL .
+    pr BDQL-SYNTAX .
 
     sorts Judgment JudgmentSet .
     subsort Judgment < JudgmentSet .
@@ -50,11 +50,24 @@ fmod BDQL-SEMANTICS is
     op emptyJS : -> JudgmentSet [ctor] .
     op _/\_ : JudgmentSet JudgmentSet -> JudgmentSet [comm assoc id: emptyJS] .
 
-    vars PROG PROG' : Prog .
+    vars PROG PROG' PROG'' : Prog .
     vars Q Q' : QState .
     vars N N1 N2 : Nat .
     var M : Matrix .
     vars Phi Psi : Formula .
+
+    --- skip axioms
+    eq PROG ; skip = PROG .
+    eq skip ; PROG = PROG .
+    --- abort axioms
+    eq PROG U abort = PROG .
+    eq abort U PROG = PROG .
+    eq PROG ; abort = abort .
+    eq abort ; PROG = abort .
+    --- choice axioms
+    eq PROG U PROG = PROG .
+    eq PROG ; (PROG' U PROG'') = (PROG ; PROG') U (PROG ; PROG'') .
+    eq (PROG U PROG') ; PROG'' = (PROG ; PROG'') U (PROG' ; PROG'') .
 
     --- projections
     ceq Q |= P(N, M) = emptyJS if (Q).P(N, M) == Q .
