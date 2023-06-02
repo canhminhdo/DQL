@@ -17,7 +17,7 @@ fmod BDQL-SYNTAX is
 
     --- idenity denotes the end of programs
     ops abort skip : -> Prog [ctor] .
-    op _;_ : Prog Prog -> Prog [ctor assoc prec 25] .
+    op _;_ : Prog Prog -> Prog [ctor assoc id: skip prec 25] .
     op _U_ : Prog Prog -> Prog [ctor assoc comm prec 26] .
     op _* : Prog -> Prog [ctor] .
     op _? : Formula -> Prog [ctor prec 24] .
@@ -56,20 +56,17 @@ fmod BDQL-SEMANTICS is
     var M : Matrix .
     vars Phi Psi : Formula .
 
-    --- skip is the identity element for ;
-    eq PROG ; skip = PROG .
-    eq skip ; PROG = PROG .
     --- abort is the identity element for U
     eq PROG U abort = PROG .
     eq abort U PROG = PROG .
     --- annihilation by abort
-    eq PROG ; abort = abort .
-    eq abort ; PROG = abort .
+    ceq PROG ; abort = abort if PROG =/= skip .
+    ceq abort ; PROG = abort if PROG =/= skip .
     --- choice is idempotent
     eq PROG U PROG = PROG .
     --- ; distributes over U
-    eq PROG ; (PROG' U PROG'') = (PROG ; PROG') U (PROG ; PROG'') .
-    eq (PROG U PROG') ; PROG'' = (PROG ; PROG'') U (PROG' ; PROG'') .
+    ceq PROG ; (PROG' U PROG'') = (PROG ; PROG') U (PROG ; PROG'') if PROG =/= skip .
+    ceq (PROG U PROG') ; PROG'' = (PROG ; PROG'') U (PROG' ; PROG'') if PROG'' =/= skip .
 
     --- projections
     ceq Q |= P(N, M) = emptyJS if (Q).P(N, M) == Q .
