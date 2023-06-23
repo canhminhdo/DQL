@@ -1,0 +1,52 @@
+in ../BDQL.maude .
+
+fmod BDQL-FULL is
+    pr BDQL-SEMANTICS .
+
+    --- merge operator (parallel composition), left-merge operator, communcation operator
+    op _||_ : Prog Prog -> Prog [comm assoc] .
+    op _||'_ : Prog Prog -> Prog .
+    op _|_ : Prog Prog -> Prog [comm] .
+
+    sort Channel .
+    --- sending
+    op _<:_ : Channel Nat -> AtomicProg [ctor] .
+    --- receiving
+    op _:>_ : Channel Nat -> AtomicProg [ctor] .
+
+    vars C C1 C2 : Channel .
+    vars N N1 N2 : Nat .
+    vars AP AP' : AtomicProg .
+    vars PROG PROG' PROG'' : Prog .
+
+    --- communication operator
+    eq ((C <: N) ; PROG) | ((C :> N) ; PROG') = PROG || PROG' .
+    eq (PROG U PROG') | PROG'' = (PROG | PROG'') U (PROG' | PROG'') .
+    eq PROG | PROG' = abort [owise] .
+
+    --- merge operator (or parallel composition)
+    eq PROG || PROG' = (PROG ||' PROG') U (PROG' ||' PROG) U (PROG | PROG') .
+
+    --- left-merge operator
+    eq skip ||' PROG = PROG .
+    eq abort ||' PROG = abort .
+    eq (C <: N) ||' PROG = abort .
+    eq (C :> N) ||' PROG = abort .
+    eq AP ||' PROG = AP ; PROG [owise] .
+
+    eq (abort ; PROG) ||' PROG' = abort .
+    eq ((C <: N) ; PROG) ||' PROG' = abort .
+    eq ((C :> N) ; PROG) ||' PROG' = abort .
+    eq (PROG U PROG') ||' PROG'' = (PROG ||' PROG'') U (PROG' ||' PROG'') .
+    eq (AP ; PROG) ||' PROG' = AP ; (PROG || PROG') [owise] .
+endfm
+
+fmod BDQL-FULL-TEST is
+    pr BDQL-FULL .
+    ops a1 a2 a3 b1 b2 b3 d1 d2 d3 : -> AtomicProg .
+    ops c c1 c2 : -> Channel .
+endfm
+
+--- red (a1 || a2) || a3 == a1 || (a2 || a3) .
+--- red (a1 ; (c <: 0) ; a2) || (b1 ; (c :> 0) ; b2) .
+--- red (a1 ; (c1 <: 0) ; a2 ; (c2 <: 0) ; a3) || (b1 ; (c2 :> 0) ; b2 ; (c1 :> 0) ; b3) .

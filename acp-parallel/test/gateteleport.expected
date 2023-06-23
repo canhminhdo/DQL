@@ -1,0 +1,5 @@
+==========================================
+reduce in GATE-TELEPORT : initQState |= [H(1) ; CX(1,2) ; H(3) ; CX(3,4) ; CX(
+    3,2) ; (Alice || Bob || Charlie)]P(3,2,qubitAt(targetQState, 0 1)) .
+result JudgmentSet: emptyJS
+Bye.

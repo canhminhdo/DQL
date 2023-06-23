@@ -1,0 +1,5 @@
+==========================================
+reduce in TELEPORT : initQState |= [H(1) ; CX(1,2) ; (Alice || Bob)]P(2,
+    qubitAt(initQState, 0)) .
+result JudgmentSet: emptyJS
+Bye.

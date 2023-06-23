@@ -1,0 +1,6 @@
+#!/bin/sh
+
+DIR=test
+cd ../ && maude < superdense.maude -no-banner -no-advise | sed -r '/^(rewrites:|Solution|states:)/d' > $DIR/superdense.out
+diff $DIR/superdense.expected $DIR/superdense.out
+rm $DIR/superdense.out

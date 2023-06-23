@@ -1,0 +1,6 @@
+#!/bin/sh
+
+DIR=test
+cd ../ && maude < networkcoding.maude -no-banner -no-advise | sed -r '/^(rewrites:|Solution|states:)/d' > $DIR/networkcoding.out
+diff $DIR/networkcoding.expected $DIR/networkcoding.out
+rm $DIR/networkcoding.out

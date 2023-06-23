@@ -1,0 +1,24 @@
+load BDQL-FULL.maude
+
+fmod SUPERDENSE is
+    pr BDQL-FULL .
+
+    --- defining initial states
+    op initQState : -> Qubit .
+    eq initQState = (q[0]: |0>) (q[1]: |0>) .
+
+    ops Alice0 Alice1 Alice2 Alice3 Bob : -> Prog .
+    eq Alice0 = skip .
+    eq Alice1 = X(0) .
+    eq Alice2 = Z(0) .
+    eq Alice3 = Y(0) .
+    eq Bob = CX(0, 1) ; H(0) .
+endfm
+
+in ../debug.maude .
+
+red in SUPERDENSE : initQState |=
+([ H(0) ; CX(0, 1) ; (Alice0 ||' Bob) ] (P(0, |0>) /\ P(1, |0>))) /\
+([ H(0) ; CX(0, 1) ; (Alice1 ||' Bob) ] (P(0, |0>) /\ P(1, |1>))) /\
+([ H(0) ; CX(0, 1) ; (Alice2 ||' Bob) ] (P(0, |1>) /\ P(1, |0>))) /\
+([ H(0) ; CX(0, 1) ; (Alice3 ||' Bob) ] (P(0, |1>) /\ P(1, |1>))) .

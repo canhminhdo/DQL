@@ -1,0 +1,6 @@
+==========================================
+reduce in TWO-TELEPORT : initQState |= [H(1) ; CX(1,2) ; H(3) ; CX(3,4) ; CX(5,
+    4) ; H(5) ; (Alice || Bob || Charlie)]P(2,qubitAt(initQState, 0)) /\ P(3,
+    qubitAt(initQState, 5)) .
+result JudgmentSet: emptyJS
+Bye.

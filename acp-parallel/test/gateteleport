@@ -1,0 +1,6 @@
+#!/bin/sh
+
+DIR=test
+cd ../ && maude < gateteleport.maude -no-banner -no-advise | sed -r '/^(rewrites:|Solution|states:)/d' > $DIR/gateteleport.out
+diff $DIR/gateteleport.expected $DIR/gateteleport.out
+rm $DIR/gateteleport.out

@@ -1,0 +1,5 @@
+==========================================
+reduce in ENTAGLE-SWAP : initQState |= [H(1) ; CX(1,0) ; H(3) ; CX(3,2) ; CX(0,
+    3) ; (Alice || Bob || Charlie)]P(1,2,EPR) .
+result JudgmentSet: emptyJS
+Bye.
