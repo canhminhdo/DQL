@@ -18,12 +18,14 @@ maude teleport.maude
 - For testing, go to the `test` folder and run the `./tester` file in CLI.
 
 ## Case Studies
-We successfully verified the correctness of five quantum protocols with the support tool as follows:
+We successfully verified the correctness of some quantum protocols with the support tool as follows:
 - Superdense Coding
 - Quantum Teleportation
 - Quantum Secret Sharing
 - Entanglement Swapping
 - Quantum Gate Teleportation
+- Quantum Network Coding
+- ...
 
 ## Publication
 - Tsubasa Takagi, Canh Minh Do and Kazuhiro Ogata: [Automated Quantum Program Verification in Dynamic Quantum Logic (To Appear)](#), DaLí 2023.
