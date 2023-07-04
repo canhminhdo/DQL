@@ -15,7 +15,7 @@ For example, we can type the following command in CLI in order to verify the cor
 ```console
 maude teleport.maude
 ```
-- For testing, go to the `test` folder and run the `./tester` file
+- For testing, go to the `test` folder and run the `./tester` file in CLI.
 
 ## Case Studies
 We successfully verified the correctness of five quantum protocols with the support tool as follows:
