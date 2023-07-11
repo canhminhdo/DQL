@@ -149,7 +149,6 @@ fmod MATRIX is
     eq 1 . M = M .
 
     eq O + M = M .
-    eq M + O = M .
 
     eq O x M = O .
     eq M x O = O .
