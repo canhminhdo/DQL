@@ -44,6 +44,10 @@ in ../debug.maude
 --- ] P(3, 2, qubitAt(targetQState, 0 1)) .
 
 red in GATE-TELEPORT : initQState |=
-[ H(1) ; CX(1, 2) ; H(3) ; CX(3, 4); CX(3, 2) ;
-(Alice || Bob || Charlie)
+[ 
+    H(1) ; CX(1, 2) ; H(3) ; CX(3, 4); CX(3, 2) ;
+    encap(Alice || Bob || Charlie)[
+        c023 <: 0, c023 <: 1, c12 <: 0, c12 <: 1, c43 <: 0, c43 <: 1, c523 <: 0, c523 <: 1,
+        c023 :> 0, c023 :> 1, c12 :> 0, c12 :> 1, c43 :> 0, c43 :> 1, c523 :> 0, c523 :> 1
+    ]
 ] P(3, 2, qubitAt(targetQState, 0 1)) .
