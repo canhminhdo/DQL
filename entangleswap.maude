@@ -11,7 +11,7 @@ fmod ENTAGLE-SWAP is
     eq S .* Pow(Abs(a), 2) .+ S .* Pow(Abs(b), 2) = S .
 
     ops EPR : -> Matrix .
-    eq EPR = (1 ./ Sqrt(2)) . |0>(x)|0> + (1 ./ Sqrt(2)) . |1>(x)|1> .
+    eq EPR = (1 ./ Sqrt(2)) . (|0>(x)|0> + |1>(x)|1>) .
 
     op initQState : -> Qubit .
     eq initQState = (q[0]: |0>) (q[1]: |0>) (q[2]: |0>) (q[3]: |0>) .
@@ -19,11 +19,11 @@ endfm
 
 in debug.maude
 
-red in ENTAGLE-SWAP : initQState |= [
-H(1) ; CX(1, 0) ; H(3) ; CX(3, 2) ; CX(0, 3) ; H(0) ;
-if P(3, |0>) then skip else X(2) fi ;
-if P(0, |0>) then skip else Z(2) fi
-] P(1, 2, EPR) .
+--- red in ENTAGLE-SWAP : initQState |= [
+--- H(1) ; CX(1, 0) ; H(3) ; CX(3, 2) ; CX(0, 3) ; H(0) ;
+--- if P(3, |0>) then skip else X(2) fi ;
+--- if P(0, |0>) then skip else Z(2) fi
+--- ] P(1, 2, EPR) .
 
 red in ENTAGLE-SWAP : initQState |= [
 H(0) ; CX(0, 1) ; H(2) ; CX(2, 3) ; CX(1, 2) ; H(1) ;
