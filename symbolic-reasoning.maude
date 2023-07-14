@@ -343,11 +343,8 @@ fmod SYMBOLIC-REASONING is
     ceq ((q[NL1 N1 N2 NL2]: M1) QS).P(N1, N2, P) = simplify((q[NL1 N1 N2 NL2]: M2) QS)
     if M2 := (iGates(size(NL1)) (x) (P x (P)^+) (x) iGates(size(NL2))) x M1 .
 
-    --- op _.P`(_,_,_`) : Qubit Nat Nat Matrix -> Qubit .
-    --- ceq ((q[NL1 N2 N1 NL2]: M1) QS).P(N1, N2, P) = simplify((q[NL1 N1 N2 NL2]: M4) QS)
-    --- if (q[NL1 N2 N1 NL2]: M2) := (q[NL1 N2 N1 NL2]: M1).SWAP(N2, N1) --- swap first
-    --- /\ M3 := (iGates(size(NL1)) (x) (P x (P)^+) (x) iGates(size(NL2))) x M2
-    --- /\ (q[NL1 N2 N1 NL2]: M4) := (q[NL1 N2 N1 NL2]: M3).SWAP(N2, N1) [print "M1 = " M1 "\nM2 = " M2 "\nM3 = " M3 "\nM4 = " M4] . --- swap again
+    op _.P`(_,_,_`) : Qubit Nat Nat Matrix -> Qubit .
+    eq ((q[NL1 N1 N2 NL2]: M1) QS).P(N2, N1, P) = ((q[NL1 N1 N2 NL2]: M1) QS).P(N1, N2, P) .
 
     --- N -> I (x) I (x) ...
     op iGates : Nat -> Matrix .
