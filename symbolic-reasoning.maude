@@ -216,12 +216,13 @@ fmod MATRIX is
     eq P1 = B3 .
 
     --- basic gates
-    ops X Y Z H CX : -> Matrix .
+    ops X Y Z H CX SWAP : -> Matrix .
     eq X = B1 + B2 .
     eq Y = ((-1) .* i) . B1 + i . B2 .
     eq Z = B0  + (-1) . B3 .
     eq H = 1 ./ Sqrt(2) . B0 + 1 ./ Sqrt(2) . B1 + 1 ./ Sqrt(2) . B2 + (-1) ./ Sqrt(2) . B3 .
     eq CX = B0 (x) I + B3 (x) X .
+    eq SWAP = CX x (I (x) B0 + X (x) B3) x CX .
 endfm
 
 fmod QUBIT is
@@ -251,7 +252,7 @@ fmod SYMBOLIC-REASONING is
     pr QUBIT .
 
     vars N N1 N2 N3 N4 : Nat .
-    vars M M1 M2 M3 G G1 G2 P : Matrix .
+    vars M M1 M2 M3 M4 G G1 G2 G3 G4 P : Matrix .
     vars NL NL1 NL2 NL3 NL4 : NatList .
     var QS : Qubit .
     vars S S1 S2 : Scalar .
@@ -302,6 +303,37 @@ fmod SYMBOLIC-REASONING is
     /\ G2 := iGates(size(NL1)) (x) X (x) iGates(size(NL2)) (x) B3 (x) iGates(size(NL3))
     /\ G := G1 + G2 .
 
+    --- applying SWAP gate
+    op _.SWAP(_,_) : Qubit Nat Nat -> Qubit .
+    ceq ((q[NL1 N1 NL2]: M1) (q[NL3 N2 NL4]: M2) QS).SWAP(N1, N2)
+    = simplify((q[NL1 N1 NL2 NL3 N2 NL4]: G x M)) QS
+    if M := M1 (x) M2
+    /\ G1 := iGates(size(NL1)) (x) B0 (x) iGates(size(NL2)) (x)
+            iGates(size(NL3)) (x) B0 (x) iGates(size(NL4))
+    /\ G2 := iGates(size(NL1)) (x) B1 (x) iGates(size(NL2)) (x)
+            iGates(size(NL3)) (x) B2 (x) iGates(size(NL4))
+    /\ G3 := iGates(size(NL1)) (x) B2 (x) iGates(size(NL2)) (x)
+            iGates(size(NL3)) (x) B1 (x) iGates(size(NL4))
+    /\ G4 := iGates(size(NL1)) (x) B3 (x) iGates(size(NL2)) (x)
+            iGates(size(NL3)) (x) B3 (x) iGates(size(NL4))
+    /\ G := 1 / 2 . (G1 + G2 + G3 + G4) .
+
+    ceq ((q[NL1 N1 NL2 N2 NL3]: M) QS).SWAP(N1, N2)
+    = simplify((q[NL1 N1 NL2 N2 NL3]: G x M)) QS
+    if G1 := iGates(size(NL1)) (x) B0 (x) iGates(size(NL2)) (x) B0 (x) iGates(size(NL3))
+    /\ G2 := iGates(size(NL1)) (x) B1 (x) iGates(size(NL2)) (x) B2 (x) iGates(size(NL3))
+    /\ G3 := iGates(size(NL1)) (x) B2 (x) iGates(size(NL2)) (x) B1 (x) iGates(size(NL3))
+    /\ G4 := iGates(size(NL1)) (x) B3 (x) iGates(size(NL2)) (x) B3 (x) iGates(size(NL3))
+    /\ G := 1 / 2 . (G1 + G2 + G3 + G4 ) .
+
+    ceq ((q[NL1 N2 NL2 N1 NL3]: M) QS).SWAP(N1, N2)
+    = simplify((q[NL1 N2 NL2 N1 NL3]: G x M)) QS
+    if G1 := iGates(size(NL1)) (x) B0 (x) iGates(size(NL2)) (x) B0 (x) iGates(size(NL3))
+    /\ G2 := iGates(size(NL1)) (x) B1 (x) iGates(size(NL2)) (x) B2 (x) iGates(size(NL3))
+    /\ G3 := iGates(size(NL1)) (x) B2 (x) iGates(size(NL2)) (x) B1 (x) iGates(size(NL3))
+    /\ G4 := iGates(size(NL1)) (x) B3 (x) iGates(size(NL2)) (x) B3 (x) iGates(size(NL3))
+    /\ G := 1 / 2 . (G1 + G2 + G3 + G4 ) .
+
     --- projections
     op _.P`(_,_`) : Qubit Nat Matrix -> Qubit .
     ceq ((q[NL1 N NL2]: M1) QS).P(N, P) = simplify((q[NL1 N NL2]: M2) QS)
@@ -310,6 +342,12 @@ fmod SYMBOLIC-REASONING is
     op _.P`(_,_,_`) : Qubit Nat Nat Matrix -> Qubit .
     ceq ((q[NL1 N1 N2 NL2]: M1) QS).P(N1, N2, P) = simplify((q[NL1 N1 N2 NL2]: M2) QS)
     if M2 := (iGates(size(NL1)) (x) (P x (P)^+) (x) iGates(size(NL2))) x M1 .
+
+    --- op _.P`(_,_,_`) : Qubit Nat Nat Matrix -> Qubit .
+    --- ceq ((q[NL1 N2 N1 NL2]: M1) QS).P(N1, N2, P) = simplify((q[NL1 N1 N2 NL2]: M4) QS)
+    --- if (q[NL1 N2 N1 NL2]: M2) := (q[NL1 N2 N1 NL2]: M1).SWAP(N2, N1) --- swap first
+    --- /\ M3 := (iGates(size(NL1)) (x) (P x (P)^+) (x) iGates(size(NL2))) x M2
+    --- /\ (q[NL1 N2 N1 NL2]: M4) := (q[NL1 N2 N1 NL2]: M3).SWAP(N2, N1) [print "M1 = " M1 "\nM2 = " M2 "\nM3 = " M3 "\nM4 = " M4] . --- swap again
 
     --- N -> I (x) I (x) ...
     op iGates : Nat -> Matrix .

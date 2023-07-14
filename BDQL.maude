@@ -14,6 +14,7 @@ fmod BDQL-SYNTAX is
     op Z`(_`) : Nat -> AtomicProg [ctor] .
     op H`(_`) : Nat -> AtomicProg [ctor] .
     op CX`(_,_`) : Nat Nat -> AtomicProg [ctor] .
+    op SWAP`(_,_`) : Nat Nat -> AtomicProg [ctor] .
 
     --- idenity denotes the end of programs
     ops abort skip : -> Prog [ctor] .
@@ -86,6 +87,7 @@ fmod BDQL-SEMANTICS is
     ceq Q |= [Z(N)] Phi = Q' |= Phi if Q' := (Q).Z(N) .
     ceq Q |= [H(N)] Phi = Q' |= Phi if Q' := (Q).H(N) .
     ceq Q |= [CX(N1, N2)] Phi = Q' |= Phi if Q' := (Q).CX(N1, N2) .
+    ceq Q |= [SWAP(N1, N2)] Phi = Q' |= Phi if Q' := (Q).SWAP(N1, N2) .
     --- a projection as test operator
     ceq Q |= [P(N, M)?] Phi = Q' |= Phi if Q' := (Q).P(N, M) .
     --- constant programs
