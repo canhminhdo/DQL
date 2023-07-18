@@ -20,9 +20,9 @@ fmod ENTAGLE-SWAP is
     ops Alice Bob Charlie : -> Prog .
     eq Alice = H(0) ;
         if P(0, |0>) then (c02 <: 0) else (c02 <: 1) fi .
-    eq Bob = ((c32 :> 1) ; X(2) U (c32 :> 0)) ;
+    eq Charlie = ((c32 :> 1) ; X(2) U (c32 :> 0)) ;
         ((c02 :> 1) ; Z(2) U (c02 :> 0)) .
-    eq Charlie = if P(3, |0>) then (c32 <: 0) else (c32 <: 1) fi .
+    eq Bob = if P(3, |0>) then (c32 <: 0) else (c32 <: 1) fi .
 endfm
 
 in ../debug.maude
@@ -33,7 +33,7 @@ in ../debug.maude
 --- ] P(1, 2, EPR) .
 
 red in ENTAGLE-SWAP : initQState |=
-[ 
+[
     H(1) ; CX(1, 0) ; H(3) ; CX(3, 2) ; CX(0, 3) ;
     encap(Alice || Bob || Charlie)[
         c02 <: 0, c02 <: 1, c32 <: 0, c32 <: 1,

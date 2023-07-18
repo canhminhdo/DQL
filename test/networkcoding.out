@@ -1,6 +1,0 @@
-==========================================
-reduce in NETWORK-CODING : initQState |= [H(0) ; CX(0,1) ; H(2) ; CX(2,3) ; H(
-    4) ; CX(4,5) ; H(6) ; CX(6,7) ; H(8) ; CX(8,9) ; H(10) ; CX(10,11) ; H(12)
-    ; CX(12,13) ; network-coding]P(4,1,EPR) /\ P(5,0,EPR) .
-result JudgmentSet: emptyJS
-Bye.

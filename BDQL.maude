@@ -92,7 +92,7 @@ fmod BDQL-SEMANTICS is
     eq Q |= [skip] Phi = Q |= Phi .
     eq Q |= [abort] Phi = emptyJS [print "ABORT"] .
     --- program composition
-    ceq Q |= [PROG' ; PROG] Phi = Q |= [PROG']([PROG] Phi) if PROG' =/= skip and-then PROG =/= skip .
+    eq Q |= [PROG' ; PROG] Phi = Q |= [PROG']([PROG] Phi) .
     --- choice programs
     eq [choice] : Q |= [PROG' U PROG] Phi = (Q |= [PROG'] Phi) /\ (Q |= [PROG] Phi) .
 endfm
