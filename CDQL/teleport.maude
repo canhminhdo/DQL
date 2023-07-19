@@ -38,8 +38,3 @@ red in TELEPORT : initQState |=
     ]
 ]
 P(2, qubitAt(initQState, 0)) .
-
-red encap(Alice || Bob)[
-        c12 <: 0, c12 <: 1, c02 <: 0, c02 <: 1,
-        c12 :> 0, c12 :> 1, c02 :> 0, c02 :> 1
-    ] .
