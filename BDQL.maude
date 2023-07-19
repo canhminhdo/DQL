@@ -20,7 +20,7 @@ fmod BDQL-SYNTAX is
     op _;_ : Prog Prog -> Prog [ctor assoc prec 25] .
     op _U_ : Prog Prog -> Prog [ctor assoc comm prec 26] .
     op _* : Prog -> Prog [ctor] .
-    op _? : Formula -> AtomicProg [ctor prec 24] .
+    op _? : Formula -> Prog [ctor prec 24] .
 
     --- formulas
     sorts AtomicFormula Formula .
