@@ -57,19 +57,19 @@ fmod BDQL-SEMANTICS is
     vars Phi Psi : Formula .
 
     --- skip is the identity element for ;
-    eq PROG ; skip = PROG .
-    eq skip ; PROG = PROG .
+    --- eq PROG ; skip = PROG .
+    --- eq skip ; PROG = PROG .
     --- abort is the identity element for U
-    eq PROG U abort = PROG .
-    eq abort U PROG = PROG .
+    --- eq PROG U abort = PROG .
+    --- eq abort U PROG = PROG .
     --- annihilation by abort
-    eq PROG ; abort = abort .
-    eq abort ; PROG = abort .
+    --- eq PROG ; abort = abort .
+    --- eq abort ; PROG = abort .
     --- choice is idempotent
     eq PROG U PROG = PROG .
     --- ; distributes over U
     --- ceq PROG ; (PROG' U PROG'') = (PROG ; PROG') U (PROG ; PROG'') if PROG =/= skip . ---> it does not hold in Basic Process Algebra (BPA)
-    eq (PROG U PROG') ; PROG'' = (PROG ; PROG'') U (PROG' ; PROG'') .
+    --- eq (PROG U PROG') ; PROG'' = (PROG ; PROG'') U (PROG' ; PROG'') .
 
     --- projections
     ceq Q |= P(N, M) = emptyJS if (Q).P(N, M) == Q [print "SUCCESS1"] .
@@ -90,7 +90,7 @@ fmod BDQL-SEMANTICS is
     ceq Q |= [P(N, M)?] Phi = Q' |= Phi if Q' := (Q).P(N, M) .
     --- constant programs
     eq Q |= [skip] Phi = Q |= Phi .
-    eq Q |= [abort] Phi = emptyJS [print "ABORT"] .
+    eq Q |= [abort] Phi = emptyJS .
     --- program composition
     eq Q |= [PROG' ; PROG] Phi = Q |= [PROG']([PROG] Phi) .
     --- choice programs

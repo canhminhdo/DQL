@@ -15,9 +15,6 @@ fmod BDQL-EXT is
     --- receiving
     ops _:>_ recv : Channel Nat -> AtomicProg [ctor] .
 
-    --- deadlock
-    op dlk : -> Prog [ctor] .
-
     --- communication function
     op _~_ : AtomicProg AtomicProg -> Prog [comm prec 24] .
 endfm
@@ -29,36 +26,26 @@ endv
 fmod BDQL-FULL is
     pr BDQL-EXT .
     pr SET{AtomicProg} * (
-        sort NeSet{AtomicProg} to NeAtomicProgSet, sort Set{AtomicProg} to AtomicProgSet
+        sort NeSet{AtomicProg} to NeAtomicProgSet,
+        sort Set{AtomicProg} to AtomicProgSet
     ) .
 
     --- encapsulation operator
     op encap(_)[_] : Prog AtomicProgSet -> Prog .
 
-    vars C C1 C2 : Channel .
-    vars N N1 N2 : Nat .
+    var N : Nat .
+    var C : Channel .
+    var A : Formula .
+    var APS : AtomicProgSet .
     vars AP AP' : AtomicProg .
-    vars PROG PROG' PROG'' : Prog .
-    vars APS APS' : AtomicProgSet .
-
-    var Q : QState .
-    var Phi : Formula .
-
-    --- for deadlock
-    eq Q |= [dlk] Phi = emptyJS [print "DEADLOCK"] .
-
-    --- axioms for deadlock
-    eq PROG U dlk = PROG .
-    eq dlk ; PROG = dlk .
-    eq dlk ||' PROG = dlk .
-    eq dlk | PROG = dlk .
+    vars PROG PROG' PROG1 PROG2 PROG3 PROG4 : Prog .
 
     --- encapsulation operator
     ceq encap(AP)[APS] = AP if not (AP in APS) .
-    ceq encap(AP)[APS] = dlk if AP in APS .
+    ceq encap(AP)[APS] = abort if AP in APS .
     eq encap(skip)[APS] = skip .
     eq encap(abort)[APS] = abort .
-    eq encap(dlk)[APS] = dlk .
+    eq encap((A ?))[APS] = (A ?) .
     eq encap(PROG ; PROG')[APS] = encap(PROG)[APS] ; encap(PROG')[APS] .
     eq encap(PROG U PROG')[APS] = encap(PROG)[APS] U encap(PROG')[APS] .
 
@@ -66,26 +53,40 @@ fmod BDQL-FULL is
     eq PROG || PROG' = (PROG ||' PROG') U (PROG' ||' PROG) U (PROG | PROG') .
 
     --- axioms for left operator
+    eq AP ||' PROG = AP ; PROG .
     eq skip ||' PROG = PROG .
     eq abort ||' PROG = abort .
-    eq AP ||' PROG = AP ; PROG [owise] .
+    eq (A ?) ||' PROG = (A ?) ; PROG .
 
+    eq (AP ; PROG) ||' PROG' = AP ; (PROG || PROG') .
+    eq (skip ; PROG) ||' PROG' = PROG || PROG' .
     eq (abort ; PROG) ||' PROG' = abort .
-    eq (AP ; PROG) ||' PROG' = AP ; (PROG || PROG') [owise] .
-    eq (PROG U PROG') ||' PROG'' = (PROG ||' PROG'') U (PROG' ||' PROG'') .
+    eq ((A ?) ; PROG) ||' PROG' = (A ?) ; (PROG || PROG') .
+
+    --- eq ((PROG1 ; PROG2) ; PROG3) ||' PROG4 = (PROG1 ; (PROG2 ; PROG3)) ||' PROG4 .
+    eq ((PROG1 U PROG2) ; PROG3) ||' PROG4 = ((PROG1 ; PROG3) U (PROG2 ; PROG3)) ||' PROG4 .
+    eq (PROG1 U PROG2) ||' PROG3 = (PROG1 ||' PROG3) U (PROG2 ||' PROG3) .
 
     --- communication function
-    eq send(C, N) ~ recv(C, N) = skip .
+    eq send(C,N) ~ recv(C, N) = skip .
     eq (C <: N) ~ (C :> N) = skip .
-    eq AP ~ AP' = dlk [owise] .
+    eq AP ~ AP' = abort [owise] .
 
     --- axioms for communication operator
-    eq AP | AP' =  AP ~ AP' .
-    eq AP | (AP' ; PROG') = (AP ~ AP') ; PROG' .
+    eq skip | PROG = abort .
+    eq abort | PROG = abort .
+    eq (A ?) | PROG = abort .
+    eq AP | AP' = AP ~ AP' .
+    eq AP | (AP' ; PROG) = (AP ~ AP') ; PROG .
+
+    eq (skip ; PROG) | PROG' = abort .
+    eq (abort ; PROG) | PROG' = abort .
+    eq ((A ?) ; PROG) | PROG' = abort .
     eq (AP ; PROG) | (AP' ; PROG') = (AP ~ AP') ; (PROG || PROG') .
-    eq (PROG U PROG') | PROG'' = (PROG | PROG'') U (PROG' | PROG'') .
-    eq skip | PROG = dlk .
-    eq abort | PROG = dlk .
+
+    --- eq ((PROG1 ; PROG2) ; PROG3) | PROG4 = (PROG1 ; (PROG2 ; PROG3)) | PROG4 .
+    eq ((PROG1 U PROG2) ; PROG3) | PROG4 = ((PROG1 ; PROG3) U (PROG2 ; PROG3)) | PROG4 .
+    eq (PROG1 U PROG2) | PROG3 = (PROG1 | PROG3) U (PROG2 | PROG3) .
 endfm
 
 --- in ../debug.maude
