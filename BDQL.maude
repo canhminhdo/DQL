@@ -17,8 +17,8 @@ fmod BDQL-SYNTAX is
 
     --- idenity denotes the end of programs
     ops abort skip : -> Prog [ctor] .
-    op _;_ : Prog Prog -> Prog [ctor assoc prec 25] .
-    op _U_ : Prog Prog -> Prog [ctor assoc comm prec 26] .
+    op _;_ : Prog Prog -> Prog [ctor prec 25 gather (E e)] .
+    op _U_ : Prog Prog -> Prog [ctor prec 26 gather (E e)] .
     op _* : Prog -> Prog [ctor] .
     op _? : Formula -> Prog [ctor prec 24] .
 

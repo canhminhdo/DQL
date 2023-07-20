@@ -1,7 +1,7 @@
-load BDQL-FULL.maude
+load CDQL.maude
 
 fmod GATE-TELEPORT is
-    pr BDQL-FULL .
+    pr CDQL-SEMANTICS .
 
     var S : Scalar .
 

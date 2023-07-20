@@ -1,7 +1,7 @@
 in ../BDQL.maude .
 
-fmod BDQL-EXT is
-    pr BDQL-SEMANTICS .
+fmod CDQL-SYNTAX is
+    pr BDQL-SYNTAX .
 
     sort Channel .
 
@@ -19,19 +19,23 @@ fmod BDQL-EXT is
     op _~_ : AtomicProg AtomicProg -> Prog [comm prec 24] .
 endfm
 
-view AtomicProg from TRIV to BDQL-EXT is
+view AtomicProg from TRIV to CDQL-SYNTAX is
     sort Elt to AtomicProg .
 endv
 
-fmod BDQL-FULL is
-    pr BDQL-EXT .
+fmod CDQL-SYNTAX-EXT is
+    pr CDQL-SYNTAX .
     pr SET{AtomicProg} * (
         sort NeSet{AtomicProg} to NeAtomicProgSet,
         sort Set{AtomicProg} to AtomicProgSet
     ) .
-
     --- encapsulation operator
     op encap(_)[_] : Prog AtomicProgSet -> Prog .
+endfm
+
+fmod CDQL-SEMANTICS is
+    pr CDQL-SYNTAX-EXT .
+    pr BDQL-SEMANTICS .
 
     var N : Nat .
     var C : Channel .
@@ -63,7 +67,7 @@ fmod BDQL-FULL is
     eq (abort ; PROG) ||' PROG' = abort .
     eq ((A ?) ; PROG) ||' PROG' = (A ?) ; (PROG || PROG') .
 
-    --- eq ((PROG1 ; PROG2) ; PROG3) ||' PROG4 = (PROG1 ; (PROG2 ; PROG3)) ||' PROG4 .
+    eq ((PROG1 ; PROG2) ; PROG3) ||' PROG4 = (PROG1 ; (PROG2 ; PROG3)) ||' PROG4 .
     eq ((PROG1 U PROG2) ; PROG3) ||' PROG4 = ((PROG1 ; PROG3) U (PROG2 ; PROG3)) ||' PROG4 .
     eq (PROG1 U PROG2) ||' PROG3 = (PROG1 ||' PROG3) U (PROG2 ||' PROG3) .
 
@@ -84,18 +88,18 @@ fmod BDQL-FULL is
     eq ((A ?) ; PROG) | PROG' = abort .
     eq (AP ; PROG) | (AP' ; PROG') = (AP ~ AP') ; (PROG || PROG') .
 
-    --- eq ((PROG1 ; PROG2) ; PROG3) | PROG4 = (PROG1 ; (PROG2 ; PROG3)) | PROG4 .
+    eq ((PROG1 ; PROG2) ; PROG3) | PROG4 = (PROG1 ; (PROG2 ; PROG3)) | PROG4 .
     eq ((PROG1 U PROG2) ; PROG3) | PROG4 = ((PROG1 ; PROG3) U (PROG2 ; PROG3)) | PROG4 .
     eq (PROG1 U PROG2) | PROG3 = (PROG1 | PROG3) U (PROG2 | PROG3) .
 endfm
 
 --- in ../debug.maude
 
-fmod BDQL-FULL-TEST is
-    pr BDQL-FULL .
-    ops a1 a2 a3 b1 b2 b3 d1 d2 d3 : -> AtomicProg .
-    ops c c1 c2 : -> Channel .
-endfm
+--- fmod BDQL-FULL-TEST is
+---     pr BDQL-FULL .
+---     ops a1 a2 a3 b1 b2 b3 d1 d2 d3 : -> AtomicProg .
+---     ops c c1 c2 : -> Channel .
+--- endfm
 
 --- red encap((send(c1, 0) U send(c2, 1)) || (recv(c1, 0) U recv(c2, 1)))[send(c1, 0), send(c2, 1), recv(c1, 0), recv(c2, 1)] .
 --- red send(c1, 0) || recv(c1, 0) .
