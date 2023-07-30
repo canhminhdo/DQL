@@ -6,9 +6,9 @@ fmod CDQL-SYNTAX is
     sort Channel .
 
     --- merge operator (parallel composition), left-merge operator, communcation operator
-    op _||_ : Prog Prog -> Prog [comm assoc] .
+    op _||_ : Prog Prog -> Prog [comm gather (E e)] .
     op _||'_ : Prog Prog -> Prog .
-    op _|_ : Prog Prog -> Prog [comm assoc] .
+    op _|_ : Prog Prog -> Prog [comm gather (E e)] .
 
     --- sending
     ops _<:_ send : Channel Nat -> AtomicProg [ctor] .

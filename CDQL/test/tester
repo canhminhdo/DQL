@@ -2,8 +2,8 @@
 
 ./superdense
 ./teleport
-./secretsharing
 ./entangleswap
-./gateteleport
-./twoteleport
+# ./twoteleport
+# ./secretsharing
+# ./gateteleport
 # ./networkcoding
