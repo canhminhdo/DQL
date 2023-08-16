@@ -1,0 +1,42 @@
+load CDQL.maude
+
+fmod TELEPORT is
+    pr CDQL-SEMANTICS .
+
+    var S : Scalar .
+
+    --- defining initial states
+    ops a b : -> Scalar .
+    eq Pow(Abs(a), 2) .+ Pow(Abs(b), 2) = 1 .
+    eq S .* Pow(Abs(a), 2) .+ S .* Pow(Abs(b), 2) = S .
+
+    op initQState : -> Qubit .
+    eq initQState = (q[0]: a . |0> + b . |1>) (q[1]: |0>) (q[2]: |0>) .
+
+    ops c02 c12 : -> Channel .
+    ops Alice Bob : -> Prog .
+    eq Alice = CX(0, 1) ; H(0) ;
+        if P(1, |0>) then (c12 <: 0) else (c12 <: 1) fi ;
+        if P(0, |0>) then (c02 <: 0) else (c02 <: 1) fi .
+    eq Bob = ((c12 :> 1) ; X(2) U (c12 :> 0)) ;
+        ((c02 :> 1) ; Z(2) U (c02 :> 0)) .
+endfm
+
+in ../debug.maude
+
+--- red in TELEPORT : initQState |= 
+--- [
+---     H(1) ; CX(1, 2) ; CX(0, 1) ; H(0) ;
+---     if P(1, |0>) then skip else X(2) fi ;
+---     if P(0, |0>) then skip else Z(2) fi
+--- ] P(2, qubitAt(initQState, 0)) .
+
+red in TELEPORT : initQState |=
+[
+    H(1) ; CX(1, 2) ;
+    encap(Alice || Bob)[
+        c12 <: 0, c12 <: 1, c02 <: 0, c02 <: 1,
+        c12 :> 0, c12 :> 1, c02 :> 0, c02 :> 1
+    ]
+]
+P(2, qubitAt(initQState, 0)) .

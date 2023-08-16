@@ -1,0 +1,45 @@
+load CDQL.maude
+
+fmod ENTAGLE-SWAP is
+    pr CDQL-SEMANTICS .
+
+    var S : Scalar .
+
+    --- defining initial states
+    ops a b : -> Scalar .
+    eq Pow(Abs(a), 2) .+ Pow(Abs(b), 2) = 1 .
+    eq S .* Pow(Abs(a), 2) .+ S .* Pow(Abs(b), 2) = S .
+
+    ops EPR : -> Matrix .
+    eq EPR = (1 ./ Sqrt(2)) . |0>(x)|0> + (1 ./ Sqrt(2)) . |1>(x)|1> .
+
+    op initQState : -> Qubit .
+    eq initQState = (q[0]: |0>) (q[1]: |0>) (q[2]: |0>) (q[3]: |0>) .
+
+    ops c02 c32 : -> Channel .
+    ops Alice Bob Charlie : -> Prog .
+    eq Alice = H(0) ;
+        if P(0, |0>) then (c02 <: 0) else (c02 <: 1) fi .
+    eq Charlie = ((c32 :> 1) ; X(2) U (c32 :> 0)) ;
+        ((c02 :> 1) ; Z(2) U (c02 :> 0)) .
+    eq Bob = if P(3, |0>) then (c32 <: 0) else (c32 <: 1) fi .
+endfm
+
+in ../debug.maude
+
+--- red in ENTAGLE-SWAP : initQState |= 
+--- [ 
+---     H(1) ; CX(1, 0) ; H(3) ; CX(3, 2) ; CX(0, 3) ; H(0) ;
+---     if P(3, |0>) then skip else X(2) fi ;
+---     if P(0, |0>) then skip else Z(2) fi
+--- ] P(1, 2, EPR) .
+
+red in ENTAGLE-SWAP : initQState |=
+[
+    H(1) ; CX(1, 0) ; H(3) ; CX(3, 2) ; CX(0, 3) ;
+    encap(Alice || Bob || Charlie)[
+        c02 <: 0, c02 <: 1, c32 <: 0, c32 <: 1,
+        c02 :> 0, c02 :> 1, c32 :> 0, c32 :> 1
+    ]
+] P(1, 2, EPR) .
+

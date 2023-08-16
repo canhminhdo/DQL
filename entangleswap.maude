@@ -19,7 +19,8 @@ endfm
 
 in debug.maude
 
-red in ENTAGLE-SWAP : initQState |= [
+red in ENTAGLE-SWAP : initQState |= 
+[
     H(0) ; CX(0, 1) ; H(2) ; CX(2, 3) ; CX(1, 2) ; H(1) ;
     if P(2, |0>) then skip else X(3) fi ;
     if P(1, |0>) then skip else Z(3) fi ;
