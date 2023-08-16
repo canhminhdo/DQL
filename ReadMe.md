@@ -1,4 +1,4 @@
-# Automated Quantum Protocol Verification Based on Basic Dynamic Quantum Logic (BDQL) and Concurrent Dynamic Quantum Logic (CDQL)
+# Automated Quantum Protocol Verification Based on Dynamic Quantum Logic
 
 This repository presents a support tool developed in Maude to verify sequential quantum protocols and concurrent quantum protocols using Basic Dynamic Quantum Logic (BDQL) and Concurrent Dynamic Quantum Logic (CDQL).
 
