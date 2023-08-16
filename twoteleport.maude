@@ -19,7 +19,7 @@ endfm
 
 in debug.maude
 
-red in TWO-TELEPORT : initQState |=
+red in TWO-TELEPORT : initQState |= 
 [ 
     H(1) ; CX(1, 2) ; H(3) ; CX(3, 4); CX(0, 1) ; H(0) ; CX(5, 4) ; H(5) ;
     if P(4, |0>) then skip else X(3) fi ;

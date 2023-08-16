@@ -33,7 +33,7 @@ red in GATE-TELEPORT : initQState |=
 ] P(2, 3, qubitAt(targetQState, 0 1)) .
 
 --- Following the circuit from the paper of D. Gottesman and I. L. Chuang with a revision
---- red in GATE-TELEPORT : initQState |= 
+--- red in GATE-TELEPORT : initQState |=
 --- [ 
 ---     H(1) ; CX(1, 2) ; H(3) ; CX(3, 4) ; CX(3, 2) ; CX(1, 0) ; H(1) ; CX(5, 4) ; H(5) ;
 ---     if P(4, |0>) then skip else X(2) ; X(3) fi ;
