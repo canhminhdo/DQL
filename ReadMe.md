@@ -16,7 +16,7 @@ For example, we can type the following command in CLI in order to verify the cor
 maude teleport.maude
 ```
 
-Note that for verifying sequential quantum protocols using BDQL, all necessary files are in the outermost folder. Meanwhile, verifying concurrent quantum protocols using CDQL, all necessary files are in the `CDQL`` folder.
+Note that for `verifying sequential quantum protocols using BDQL`, all necessary files are in the outermost folder. Meanwhile, `verifying concurrent quantum protocols using CDQL`, all necessary files are in the `CDQL` folder.
 
 - For testing, go to the `test` folder and run the `./tester` file in CLI.
 
