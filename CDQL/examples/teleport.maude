@@ -1,4 +1,4 @@
-load CDQL.maude
+load ../CDQL.maude
 
 fmod TELEPORT is
     pr CDQL-SEMANTICS .
@@ -22,7 +22,7 @@ fmod TELEPORT is
         ((c02 :> 1) ; Z(2) U (c02 :> 0)) .
 endfm
 
-in ../debug.maude
+in ../../debug.maude
 
 --- red in TELEPORT : initQState |= 
 --- [

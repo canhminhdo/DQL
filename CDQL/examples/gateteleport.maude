@@ -1,4 +1,4 @@
-load CDQL.maude
+load ../CDQL.maude
 
 fmod GATE-TELEPORT is
     pr CDQL-SEMANTICS .
@@ -33,7 +33,7 @@ fmod GATE-TELEPORT is
         if P(5, |0>) then (c523 <: 0) else (c523 <: 1) fi .
 endfm
 
-in ../debug.maude
+in ../../debug.maude
 
 --- Following the circuit from wikipedia
 --- red in GATE-TELEPORT : initQState |= 

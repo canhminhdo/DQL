@@ -1,4 +1,4 @@
-load BDQL.maude
+load ../BDQL.maude
 
 fmod GATE-TELEPORT is
     pr BDQL-SEMANTICS .
@@ -20,7 +20,7 @@ fmod GATE-TELEPORT is
     eq targetQState = ((q[0]: c . |0> + d . |1>) (q[1]: a . |0> + b . |1>)).CX(0, 1) .
 endfm
 
-in debug.maude
+in ../debug.maude
 
 --- Following the circuit from wikipedia
 red in GATE-TELEPORT : initQState |= 

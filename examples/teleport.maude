@@ -1,4 +1,4 @@
-load BDQL.maude
+load ../BDQL.maude
 
 fmod TELEPORT is
     pr BDQL-SEMANTICS .
@@ -14,7 +14,7 @@ fmod TELEPORT is
     eq initQState = (q[0]: a . |0> + b . |1>) (q[1]: |0>) (q[2]: |0>) .
 endfm
 
-in debug.maude
+in ../debug.maude
 
 red in TELEPORT : initQState |= 
 [

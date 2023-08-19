@@ -1,4 +1,4 @@
-load BDQL.maude
+load ../BDQL.maude
 
 fmod SUPERDENSE is
     pr BDQL-SEMANTICS .
@@ -15,7 +15,7 @@ fmod SUPERDENSE is
     eq decode = CX(0, 1) ; H(0) .
 endfm
 
-in debug.maude .
+in ../debug.maude .
 
 red in SUPERDENSE : initQState |=
 ([ encode00 ; decode ] (P(0, |0>) /\ P(1, |0>))) /\

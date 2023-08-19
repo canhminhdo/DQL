@@ -1,4 +1,4 @@
-load BDQL.maude
+load ../BDQL.maude
 
 fmod ENTAGLE-SWAP is
     pr BDQL-SEMANTICS .
@@ -17,7 +17,7 @@ fmod ENTAGLE-SWAP is
     eq initQState = (q[0]: |0>) (q[1]: |0>) (q[2]: |0>) (q[3]: |0>) .
 endfm
 
-in debug.maude
+in ../debug.maude
 
 red in ENTAGLE-SWAP : initQState |= 
 [

@@ -1,9 +1,8 @@
 #!/bin/sh
 
-./superdense
 ./teleport
-./secretsharing
 ./entangleswap
-./gateteleport
-./twoteleport
+# ./secretsharing
+# ./gateteleport
+# ./twoteleport
 # ./networkcoding

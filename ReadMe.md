@@ -13,7 +13,7 @@ This repository presents a support tool developed in Maude to verify sequential 
 For example, we can type the following command in CLI in order to verify the correctness of the quantum teleportation protocol:
 
 ```console
-maude teleport.maude
+maude examples/teleport.maude
 ```
 
 Note that for `verifying sequential quantum protocols using BDQL`, all necessary files are in the outermost folder. Meanwhile, `verifying concurrent quantum protocols using CDQL`, all necessary files are in the `CDQL` folder.

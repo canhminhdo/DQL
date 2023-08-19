@@ -1,4 +1,4 @@
-load BDQL.maude
+load ../BDQL.maude
 
 --- source: https://arxiv.org/abs/1205.3745
 fmod NETWORK-CODING is
@@ -32,7 +32,7 @@ fmod NETWORK-CODING is
                         rem(3 |-> 0) ; rem(7 |-> 4) .
 endfm
 
-in debug.maude
+in ../debug.maude
 
 red in NETWORK-CODING : initQState |=
 [

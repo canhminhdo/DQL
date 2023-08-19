@@ -1,4 +1,4 @@
-load CDQL.maude
+load ../CDQL.maude
 
 fmod ENTAGLE-SWAP is
     pr CDQL-SEMANTICS .
@@ -25,7 +25,7 @@ fmod ENTAGLE-SWAP is
     eq Bob = if P(3, |0>) then (c32 <: 0) else (c32 <: 1) fi .
 endfm
 
-in ../debug.maude
+in ../../debug.maude
 
 --- red in ENTAGLE-SWAP : initQState |= 
 --- [ 

@@ -1,4 +1,4 @@
-load CDQL.maude
+load ../CDQL.maude
 
 fmod TWO-TELEPORT is
     pr CDQL-SEMANTICS .
@@ -30,7 +30,7 @@ fmod TWO-TELEPORT is
         if P(5, |0>) then (c53 <: 0) else (c53 <: 1) fi .
 endfm
 
-in ../debug.maude
+in ../../debug.maude
 
 --- red in TWO-TELEPORT : initQState |= 
 --- [
