@@ -2,7 +2,6 @@
 
 ./teleport
 ./entangleswap
-# ./secretsharing
-# ./gateteleport
-# ./twoteleport
-# ./networkcoding
+./secretsharing
+./gateteleport
+./twoteleport

@@ -17,22 +17,23 @@ fmod BDQL-SYNTAX is
     op SWAP`(_,_`) : Nat Nat -> AtomicProg [ctor] .
 
     --- idenity denotes the end of programs
-    ops abort skip : -> Prog [ctor] .
-    op _;_ : Prog Prog -> Prog [ctor prec 25 gather (E e)] .
-    op _U_ : Prog Prog -> Prog [ctor prec 26 gather (E e)] .
-    op _* : Prog -> Prog [ctor] .
-    op _? : Formula -> Prog [ctor prec 24] .
+    ops abort skip : -> Prog [ctor] . --- constants
+    op _;_ : Prog Prog -> Prog [ctor prec 25 gather (e E)] . --- composition
+    op _U_ : Prog Prog -> Prog [ctor prec 26 gather (e E)] . --- non-deterministic choices
+    op _* : Prog -> Prog [ctor] . --- iteration
+    op _? : Formula -> Prog [ctor prec 24] . --- quantum test
 
     --- formulas
     sorts AtomicFormula Formula .
     subsort AtomicFormula < Formula .
 
     --- quantum dynamic logic formulas
-    op P`(_,_`) : Nat Matrix -> AtomicFormula [ctor] .
-    op P`(_,_,_`) : Nat Nat Matrix -> AtomicFormula [ctor] .
     op _/\_ : Formula Formula -> Formula [ctor assoc comm] .
     op neg_ : Formula -> Formula .
     op `[_`]_ : Prog Formula -> Formula [ctor] .
+    --- testable properties
+    op P`(_,_`) : Nat Matrix -> AtomicFormula [ctor] .
+    op P`(_,_,_`) : Nat Nat Matrix -> AtomicFormula [ctor] .
 
     --- if_then_else_fi commands
     op if_then_else_fi : Formula Prog Prog -> Prog .
@@ -52,12 +53,13 @@ fmod BDQL-SEMANTICS is
     op _/\_ : JudgmentSet JudgmentSet -> JudgmentSet [comm assoc id: emptyJS] .
 
     vars PROG PROG' PROG'' : Prog .
+    vars AP AP' : AtomicProg .
     vars Q Q' : QState .
     vars N N1 N2 : Nat .
     var M : Matrix .
     vars Phi Psi : Formula .
 
-    --- projections
+    --- testable properties for projections
     ceq Q |= P(N, M) = emptyJS if (Q).P(N, M) == Q .
     ceq Q |= P(N1, N2, M) = emptyJS if (Q).P(N1, N2, M) == Q .
     --- negation
@@ -79,7 +81,11 @@ fmod BDQL-SEMANTICS is
     eq Q |= [skip] Phi = Q |= Phi .
     eq Q |= [abort] Phi = emptyJS .
     --- program composition
-    eq Q |= [PROG' ; PROG] Phi = Q |= [PROG']([PROG] Phi) .
+    eq Q |= [AP ; PROG] Phi = Q |= [AP]([PROG] Phi) .
+    eq Q |= [skip ; PROG] Phi = Q |= [skip]([PROG] Phi) .
+    eq Q |= [abort ; PROG] Phi = Q |= [abort]([PROG] Phi) .
+    eq Q |= [P(N, M)? ; PROG] Phi = Q |= [P(N, M)?]([PROG] Phi) .
+    eq Q |= [PROG' ; PROG] Phi = Q |= [PROG']([PROG] Phi) [owise] .
     --- choice programs
     eq [choice] : Q |= [PROG' U PROG] Phi = (Q |= [PROG'] Phi) /\ (Q |= [PROG] Phi) .
 endfm

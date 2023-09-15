@@ -16,13 +16,14 @@ fmod ENTAGLE-SWAP is
     op initQState : -> Qubit .
     eq initQState = (q[0]: |0>) (q[1]: |0>) (q[2]: |0>) (q[3]: |0>) .
 
-    ops c02 c32 : -> Channel .
+    ops c13 c23 : -> Channel .
     ops Alice Bob Charlie : -> Prog .
-    eq Alice = H(0) ;
-        if P(0, |0>) then (c02 <: 0) else (c02 <: 1) fi .
-    eq Charlie = ((c32 :> 1) ; X(2) U (c32 :> 0)) ;
-        ((c02 :> 1) ; Z(2) U (c02 :> 0)) .
-    eq Bob = if P(3, |0>) then (c32 <: 0) else (c32 <: 1) fi .
+    eq Alice = skip .
+    eq Charlie = CX(1, 2) ; H(1) ;
+        if P(2, |0>) then (c23 <: 0) else (c23 <: 1) fi ;
+        if P(1, |0>) then (c13 <: 0) else (c13 <: 1) fi .
+    eq Bob = ((c23 :> 1) ; X(3) U (c23 :> 0)) ;
+        ((c13 :> 1) ; Z(3) U (c13 :> 0)) .
 endfm
 
 in ../../debug.maude
@@ -36,10 +37,10 @@ in ../../debug.maude
 
 red in ENTAGLE-SWAP : initQState |=
 [
-    H(1) ; CX(1, 0) ; H(3) ; CX(3, 2) ; CX(0, 3) ;
+    H(0) ; CX(0, 1) ; H(2) ; CX(2, 3) ;
     encap(Alice || Bob || Charlie)[
-        c02 <: 0, c02 <: 1, c32 <: 0, c32 <: 1,
-        c02 :> 0, c02 :> 1, c32 :> 0, c32 :> 1
-    ]
-] P(1, 2, EPR) .
+        c13 <: 0, c13 <: 1, c23 <: 0, c23 <: 1,
+        c13 :> 0, c13 :> 1, c23 :> 0, c23 :> 1
+    ] ; SWAP(1, 3)
+] P(0, 1, EPR) .
 

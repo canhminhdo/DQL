@@ -43,18 +43,53 @@ fmod CDQL-SEMANTICS is
     var APS : AtomicProgSet .
     vars AP AP' : AtomicProg .
     vars PROG PROG' PROG1 PROG2 PROG3 PROG4 : Prog .
+    vars Q Q' : QState .
+    vars Phi Psi : Formula .
 
-    --- encapsulation operator
-    ceq encap(AP)[APS] = AP if not (AP in APS) .
-    ceq encap(AP)[APS] = abort if AP in APS .
-    eq encap(skip)[APS] = skip .
-    eq encap(abort)[APS] = abort .
-    eq encap((A ?))[APS] = (A ?) .
-    eq encap(PROG ; PROG')[APS] = encap(PROG)[APS] ; encap(PROG')[APS] .
-    eq encap(PROG U PROG')[APS] = encap(PROG)[APS] U encap(PROG')[APS] .
+    --- encapsulation for a single element
+    ceq Q |= [encap(AP)[APS]] Phi = Q |= [AP] Phi if not (AP in APS) .
+    ceq Q |= [encap(AP)[APS]] Phi = Q |= [abort] Phi if AP in APS .
+    eq Q |= [encap(skip)[APS]] Phi = Q |= [skip] Phi .
+    eq Q |= [encap(abort)[APS]] Phi = Q |= [abort] Phi .
+    eq Q |= [encap((A ?))[APS]] Phi = Q |= [(A ?)] Phi .
+    
+    ceq Q |= [encap(AP)[APS] ; PROG] Phi = Q |= [AP ; PROG] Phi if not (AP in APS) .
+    ceq Q |= [encap(AP)[APS] ; PROG] Phi = Q |= [abort ; PROG] Phi if AP in APS .
+    eq Q |= [encap(skip)[APS] ; PROG] Phi = Q |= [skip ; PROG] Phi .
+    eq Q |= [encap(abort)[APS] ; PROG] Phi = Q |= [abort ; PROG] Phi .
+    eq Q |= [encap((A ?))[APS] ; PROG] Phi = Q |= [(A ?) ; PROG] Phi .
+    
+    --- encapsulation for a single element followed by a program
+    ceq Q |= [encap(AP ; PROG)[APS]] Phi = Q |= [AP ; encap(PROG) [APS]] Phi if not (AP in APS) .
+    ceq Q |= [encap(AP ; PROG)[APS]] Phi = Q |= [abort ; encap(PROG)[APS]] Phi if AP in APS .
+    eq Q |= [encap(skip ; PROG)[APS]] Phi = Q |= [skip ; encap(PROG)[APS]] Phi .
+    eq Q |= [encap(abort ; PROG)[APS]] Phi = Q |= [abort ; encap(PROG)[APS]] Phi .
+    eq Q |= [encap((A ?) ; PROG)[APS]] Phi = Q |= [(A ?) ; encap(PROG)[APS]] Phi .
 
-    --- axioms for merge operator
-    eq PROG || PROG' = (PROG ||' PROG') U (PROG' ||' PROG) U (PROG | PROG') .
+    ceq Q |= [encap(AP ; PROG)[APS] ; PROG'] Phi = Q |= [AP ; encap(PROG)[APS] ; PROG'] Phi if not (AP in APS) .
+    ceq Q |= [encap(AP ; PROG)[APS] ; PROG'] Phi = Q |= [abort ; encap(PROG)[APS] ; PROG'] Phi if AP in APS .
+    eq Q |= [encap(skip ; PROG)[APS] ; PROG'] Phi = Q |= [skip ; encap(PROG)[APS] ; PROG'] Phi .
+    eq Q |= [encap(abort ; PROG)[APS] ; PROG'] Phi = Q |= [abort ; encap(PROG)[APS] ; PROG'] Phi .
+    eq Q |= [encap((A ?) ; PROG)[APS] ; PROG'] Phi = Q |= [(A ?) ; encap(PROG)[APS] ; PROG'] Phi .
+    
+    --- [hack]
+    eq Q |= [encap(PROG || PROG')[APS]] Phi = Q |= [encap((PROG ||' PROG') U (PROG' ||' PROG) U (PROG | PROG'))[APS]] Phi .
+    
+    --- encapsulation for non-deterministic choices
+    eq Q |= [encap(PROG U PROG')[APS]] Phi = Q |= [encap(PROG)[APS] U encap(PROG')[APS]] Phi .
+    eq Q |= [encap(PROG1 U PROG2)[APS] ; PROG3] Phi = Q |= [(encap(PROG1)[APS] U encap(PROG2)[APS]) ; PROG3] Phi .
+    
+    --- --- encapsulation operator
+    --- ceq encap(AP)[APS] = AP if not (AP in APS) .
+    --- ceq encap(AP)[APS] = abort if AP in APS .
+    --- eq encap(skip)[APS] = skip .
+    --- eq encap(abort)[APS] = abort .
+    --- eq encap((A ?))[APS] = (A ?) .
+    --- eq encap(PROG ; PROG')[APS] = encap(PROG)[APS] ; encap(PROG')[APS] .
+    --- eq encap(PROG U PROG')[APS] = encap(PROG)[APS] U encap(PROG')[APS] .
+
+    --- --- axioms for merge operator
+    --- eq PROG || PROG' = (PROG ||' PROG') U (PROG' ||' PROG) U (PROG | PROG') .
 
     --- axioms for left operator
     eq AP ||' PROG = AP ; PROG .
@@ -70,6 +105,8 @@ fmod CDQL-SEMANTICS is
     eq ((PROG1 ; PROG2) ; PROG3) ||' PROG4 = (PROG1 ; (PROG2 ; PROG3)) ||' PROG4 .
     eq ((PROG1 U PROG2) ; PROG3) ||' PROG4 = ((PROG1 ; PROG3) U (PROG2 ; PROG3)) ||' PROG4 .
     eq (PROG1 U PROG2) ||' PROG3 = (PROG1 ||' PROG3) U (PROG2 ||' PROG3) .
+    --- [hack]
+    eq (PROG1 || PROG2) ||' PROG3 = ((PROG1 ||' PROG2) U (PROG2 ||' PROG1) U (PROG1 | PROG2)) ||' PROG3 .
 
     --- communication function
     eq send(C,N) ~ recv(C, N) = skip .
@@ -91,6 +128,8 @@ fmod CDQL-SEMANTICS is
     eq ((PROG1 ; PROG2) ; PROG3) | PROG4 = (PROG1 ; (PROG2 ; PROG3)) | PROG4 .
     eq ((PROG1 U PROG2) ; PROG3) | PROG4 = ((PROG1 ; PROG3) U (PROG2 ; PROG3)) | PROG4 .
     eq (PROG1 U PROG2) | PROG3 = (PROG1 | PROG3) U (PROG2 | PROG3) .
+    --- [hack]
+    eq (PROG1 || PROG2) | PROG3 = ((PROG1 ||' PROG2) U (PROG2 ||' PROG1) U (PROG1 | PROG2)) | PROG3 .
 endfm
 
 --- in ../debug.maude
