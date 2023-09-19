@@ -90,6 +90,7 @@ fmod CDQL-SEMANTICS is
 
     --- --- axioms for merge operator
     --- eq PROG || PROG' = (PROG ||' PROG') U (PROG' ||' PROG) U (PROG | PROG') .
+    eq Q |= [PROG || PROG'] Phi = Q |= [(PROG ||' PROG') U (PROG' ||' PROG) U (PROG | PROG')] Phi .
 
     --- axioms for left operator
     eq AP ||' PROG = AP ; PROG .
