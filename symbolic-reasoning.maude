@@ -210,6 +210,8 @@ fmod MATRIX is
     --- additive normal forms
     eq S . (M1 + M2) = S . M1 + S . M2 .
     eq (S1 . M) + (S2 . M) = (S1 .+ S2) . M .
+    eq (S1 . M) + M = (S1 .+ 1) . M .
+    eq M + M = 2 . M .
     --- multiplicative normal forms
     eq (S1 . M1) x (S2 . M2) = (S1 .* S2) . (M1 x M2) .
     eq (S . M1) x M2 = S . (M1 x M2) .
