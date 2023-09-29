@@ -1,0 +1,28 @@
+load ../../BDQL.maude
+
+fmod ENTAGLE-SWAP is
+    pr BDQL-SEMANTICS .
+
+    var S : Scalar .
+
+    --- defining initial states
+    ops a b : -> Scalar .
+    eq Pow(Abs(a), 2) .+ Pow(Abs(b), 2) = 1 .
+    eq S .* Pow(Abs(a), 2) .+ S .* Pow(Abs(b), 2) = S .
+
+    ops EPR : -> Matrix .
+    eq EPR = (1 ./ Sqrt(2)) . (|0>(x)|0> + |1>(x)|1>) .
+
+    op initQState : -> Qubit .
+    eq initQState = (q[0]: |0>) (q[1]: |0>) (q[2]: |0>) (q[3]: |0>) .
+endfm
+
+in ../../debug.maude
+
+red in ENTAGLE-SWAP : initQState |= 
+[
+    H(0) ; CX(0, 1) ; H(2) ; CX(2, 3) ; CX(1, 2) ; H(1) ;
+    if P(2, |0>) then skip else X(3) fi ;
+    if P(1, |0>) then skip else Z(3) fi ;
+    SWAP(1, 3)
+] (P(0, 1, EPR) with prob == 1) .

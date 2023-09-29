@@ -1,0 +1,43 @@
+load ../../BDQL.maude
+
+fmod GATE-TELEPORT is
+    pr BDQL-SEMANTICS .
+
+    var S : Scalar .
+
+    --- defining initial states
+    ops a b c d : -> Scalar .
+    eq Pow(Abs(a), 2) .+ Pow(Abs(b), 2) = 1 .
+    eq S .* Pow(Abs(a), 2) .+ S .* Pow(Abs(b), 2) = S .
+
+    eq Pow(Abs(c), 2) .+ Pow(Abs(d), 2) = 1 .
+    eq S .* Pow(Abs(c), 2) .+ S .* Pow(Abs(d), 2) = S .
+
+    op initQState : -> Qubit .
+    eq initQState = (q[0]: a . |0> + b . |1>) (q[1]: |0>) (q[2]: |0>) (q[3]: |0>) (q[4]: |0>) (q[5]: c . |0> + d . |1>) .
+
+    op targetQState : -> Qubit .
+    eq targetQState = ((q[0]: c . |0> + d . |1>) (q[1]: a . |0> + b . |1>)).CX(0, 1) .
+endfm
+
+in ../../debug.maude
+
+--- Following the circuit from wikipedia
+red in GATE-TELEPORT : initQState |= 
+[
+    H(1) ; CX(1, 2) ; H(3) ; CX(3, 4); CX(3, 2) ; CX(0, 1) ; H(0) ; CX(4, 5) ; H(4) ;
+    if P(0, |0>) then skip else Z(2) ; Z(3) fi ;
+    if P(1, |0>) then skip else X(2) fi ;
+    if P(5, |0>) then skip else X(2) ; X(3) fi ;
+    if P(4, |0>) then skip else Z(3) fi
+] (P(2, 3, qubitAt(targetQState, 0 1)) with prob == 1) .
+
+--- Following the circuit from the paper of D. Gottesman and I. L. Chuang with a revision
+--- red in GATE-TELEPORT : initQState |=
+--- [ 
+---     H(1) ; CX(1, 2) ; H(3) ; CX(3, 4) ; CX(3, 2) ; CX(1, 0) ; H(1) ; CX(5, 4) ; H(5) ;
+---     if P(4, |0>) then skip else X(2) ; X(3) fi ;
+---     if P(5, |0>) then skip else Z(3) fi ;
+---     if P(0, |0>) then skip else X(2) fi ;
+---     if P(1, |0>) then skip else Z(2) ; Z(3) fi
+--- ] P(3, 2, qubitAt(targetQState, 0 1)) .

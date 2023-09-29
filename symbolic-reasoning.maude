@@ -27,17 +27,23 @@ fmod SYMBOLIC-REASONING is
     pr QUBIT .
 
     vars N N1 N2 N3 N4 : Nat .
-    vars M M1 M2 M3 M4 P : Matrix .
-    vars NL NL1 NL2 NL3 NL4 : NatList .
+    vars M M1 M2 M3 M4 M5 M6 P : Matrix .
+    vars NL NL1 NL2 NL3 NL4 NL5 NL6 : NatList .
     var QS : Qubit .
-    vars S S1 S2 Prob : Scalar .
+    vars S S1 S2 Prob Prob' : Scalar .
     vars Ket Ket1 Ket2 : Ket .
     vars V V1 V2 V3 : Vector .
+
+    --- buiding gate
+    op buildGate1 : Nat Matrix Nat -> Matrix .
+    op buildGate2 : Nat Matrix Nat Matrix Nat -> Matrix . 
+    eq buildGate1(N1, M, N2) = I[N1] (x) M (x) I[N2] .
+    eq buildGate2(N1, M1, N2, M2, N3) = I[N1] (x) M1 (x) I[N2] (x) M2 (x) I[N3] .
 
     --- applying hadmard gate
     op _.H(_) : Qubit Nat -> Qubit .
     ceq ((q[NL1 N NL2]: V) QS).H(N) = (q[NL1 N NL2]: M x V) QS
-    if M := I[size(NL1)] (x) H (x) I[size(NL2)] .
+    if M := buildGate1(size(NL1), H, size(NL2)) .
 
     --- applying I gate
     op _.I(_) : Qubit Nat -> Qubit .
@@ -46,74 +52,104 @@ fmod SYMBOLIC-REASONING is
     --- applying X gate
     op _.X(_) : Qubit Nat -> Qubit .
     ceq ((q[NL1 N NL2]: V) QS).X(N) = (q[NL1 N NL2]: M x V) QS
-    if M := I[size(NL1)] (x) X (x) I[size(NL2)] .
+    if M := buildGate1(size(NL1), X, size(NL2)) .
 
     --- applying Y gate
     op _.Y(_) : Qubit Nat -> Qubit .
     ceq ((q[NL1 N NL2]: V) QS).Y(N) = (q[NL1 N NL2]: M x V) QS
-    if M := I[size(NL1)] (x) Y (x) I[size(NL2)] .
+    if M := buildGate1(size(NL1), Y, size(NL2)) .
 
     --- applying Z gate
     op _.Z(_) : Qubit Nat -> Qubit .
     ceq ((q[NL1 N NL2]: V) QS).Z(N) = (q[NL1 N NL2]: M x V) QS
-    if M := I[size(NL1)] (x) Z (x) I[size(NL2)] .
+    if M := buildGate1(size(NL1), Z, size(NL2)) .
 
     --- applying CX gate
     op _.CX(_,_) : Qubit Nat Nat -> Qubit .
     ceq ((q[NL1 N1 NL2]: V1) (q[NL3 N2 NL4]: V2) QS).CX(N1, N2)
     = simplify((q[NL1 N1 NL2 NL3 N2 NL4]: M x V)) QS
     if V := V1 (x) V2
-    /\ M1 := I[size(NL1)] (x) B0 (x) I[size(NL2)] (x)
-            I[size(NL3)] (x) I (x) I[size(NL4)]
-    /\ M2 := I[size(NL1)] (x) B3 (x) I[size(NL2)] (x)
-            I[size(NL3)] (x) X (x) I[size(NL4)]
+    /\ M1 := buildGate1(size(NL1), B0, size(NL2)) (x)
+             buildGate1(size(NL3), I, size(NL4))
+    /\ M2 := buildGate1(size(NL1), B3, size(NL2)) (x)
+             buildGate1(size(NL3), X, size(NL4))
     /\ M := M1 + M2 .
 
     ceq ((q[NL1 N1 NL2 N2 NL3]: V) QS).CX(N1, N2) = simplify((q[NL1 N1 NL2 N2 NL3]: M x V)) QS
-    if M1 := I[size(NL1)] (x) B0 (x) I[size(NL2)] (x) I (x) I[size(NL3)]
-    /\ M2 := I[size(NL1)] (x) B3 (x) I[size(NL2)] (x) X (x) I[size(NL3)]
+    if M1 := buildGate2(size(NL1), B0, size(NL2), I, size(NL3))
+    /\ M2 := buildGate2(size(NL1), B3, size(NL2), X, size(NL3))
     /\ M := M1 + M2 .
 
     ceq ((q[NL1 N2 NL2 N1 NL3]: V) QS).CX(N1, N2) = simplify((q[NL1 N2 NL2 N1 NL3]: M x V)) QS
-    if M1 := I[size(NL1)] (x) I (x) I[size(NL2)] (x) B0 (x) I[size(NL3)]
-    /\ M2 := I[size(NL1)] (x) X (x) I[size(NL2)] (x) B3 (x) I[size(NL3)]
+    if M1 := buildGate2(size(NL1), I, size(NL2), B0, size(NL3))
+    /\ M2 := buildGate2(size(NL1), X, size(NL2), B3, size(NL3))
     /\ M := M1 + M2 .
 
     --- applying SWAP gate
+    --- SWAP = CX(N1, N2) x CX(N2, N1) x CX(N1, N2)
+    --- SWAP = (B0 (x) I + B3 (x) X) x (I (x) B0 + X (x) B3) x (B0 (x) I + B3 (x) X) .
     op _.SWAP(_,_) : Qubit Nat Nat -> Qubit .
     ceq ((q[NL1 N1 NL2]: V1) (q[NL3 N2 NL4]: V2) QS).SWAP(N1, N2)
     = simplify((q[NL1 N1 NL2 NL3 N2 NL4]: M x V)) QS
     if V := V1 (x) V2
-    /\ M1 := I[size(NL1)] (x) B0 (x) I[size(NL2)] (x)
-            I[size(NL3)] (x) B0 (x) I[size(NL4)]
-    /\ M2 := I[size(NL1)] (x) B1 (x) I[size(NL2)] (x)
-            I[size(NL3)] (x) B2 (x) I[size(NL4)]
-    /\ M3 := I[size(NL1)] (x) B2 (x) I[size(NL2)] (x)
-            I[size(NL3)] (x) B1 (x) I[size(NL4)]
-    /\ M4 := I[size(NL1)] (x) B3 (x) I[size(NL2)] (x)
-            I[size(NL3)] (x) B3 (x) I[size(NL4)]
-    /\ M := 1 / 2 . (M1 + M2 + M3 + M4) .
+    /\ M1 := buildGate1(size(NL1), B0, size(NL2)) (x)
+             buildGate1(size(NL3), I, size(NL4)) +
+             buildGate1(size(NL1), B3, size(NL2)) (x)
+             buildGate1(size(NL3), X, size(NL4))
+    /\ M2 := buildGate1(size(NL1), I, size(NL2)) (x)
+             buildGate1(size(NL3), B0, size(NL4)) +
+             buildGate1(size(NL1), X, size(NL2)) (x)
+             buildGate1(size(NL3), B3, size(NL4))
+    /\ M := M1 x M2 x M1 .
 
     ceq ((q[NL1 N1 NL2 N2 NL3]: V) QS).SWAP(N1, N2)
     = simplify((q[NL1 N1 NL2 N2 NL3]: M x V)) QS
-    if M1 := I[size(NL1)] (x) B0 (x) I[size(NL2)] (x) B0 (x) I[size(NL3)]
-    /\ M2 := I[size(NL1)] (x) B1 (x) I[size(NL2)] (x) B2 (x) I[size(NL3)]
-    /\ M3 := I[size(NL1)] (x) B2 (x) I[size(NL2)] (x) B1 (x) I[size(NL3)]
-    /\ M4 := I[size(NL1)] (x) B3 (x) I[size(NL2)] (x) B3 (x) I[size(NL3)]
-    /\ M := 1 / 2 . (M1 + M2 + M3 + M4) .
+    if M1 := buildGate2(size(NL1), B0, size(NL2), I, size(NL3)) +
+             buildGate2(size(NL1), B3, size(NL2), X, size(NL3))
+    /\ M2 := buildGate2(size(NL1), I, size(NL2), B0, size(NL3)) +
+             buildGate2(size(NL1), X, size(NL2), B3, size(NL3))
+    /\ M := M1 x M2 x M1 .
 
     ceq ((q[NL1 N2 NL2 N1 NL3]: V) QS).SWAP(N1, N2)
     = simplify((q[NL1 N2 NL2 N1 NL3]: M x V)) QS
-    if M1 := I[size(NL1)] (x) B0 (x) I[size(NL2)] (x) B0 (x) I[size(NL3)]
-    /\ M2 := I[size(NL1)] (x) B1 (x) I[size(NL2)] (x) B2 (x) I[size(NL3)]
-    /\ M3 := I[size(NL1)] (x) B2 (x) I[size(NL2)] (x) B1 (x) I[size(NL3)]
-    /\ M4 := I[size(NL1)] (x) B3 (x) I[size(NL2)] (x) B3 (x) I[size(NL3)]
-    /\ M := 1 / 2 . (M1 + M2 + M3 + M4) .
+    if M1 := buildGate2(size(NL1), B0, size(NL2), I, size(NL3)) +
+             buildGate2(size(NL1), B3, size(NL2), X, size(NL3))
+    /\ M2 := buildGate2(size(NL1), I, size(NL2), B0, size(NL3)) +
+             buildGate2(size(NL1), X, size(NL2), B3, size(NL3))
+    /\ M := M1 x M2 x M1 .
+
+    --- applying CSWAP gate
+    --- CSWAP = B0(x)I(x)I + B3(x)B0(x)B0 + B3(x)B1(x)B2 + B3(x)B2(x)B1 + B3(x)B3(x)B3
+    --- suppose that N1 < N2 < N3
+    op _.CSWAP(_,_,_) : Qubit Nat Nat Nat -> Qubit .
+    ceq ((q[NL1 N1 NL2]: V1) (q[NL3 N2 NL4]: V2) (q[NL5 N3 NL6]: V3) QS).CSWAP(N1, N2, N3)
+    = simplify((q[NL1 N1 NL2 NL3 N2 NL4 NL5 N3 NL6]: M x V)) QS
+    if N1 < N2 /\ N2 < N3
+    /\ V := V1 (x) V2 (x) V3
+    /\ M1 := buildGate1(size(NL1), B0, size(NL2)) (x)
+             buildGate1(size(NL3), I, size(NL4)) (x)
+             buildGate1(size(NL5), I, size(NL6))
+    /\ M2 := buildGate1(size(NL1), B3, size(NL2)) (x)
+             buildGate1(size(NL3), B0, size(NL4)) (x)
+             buildGate1(size(NL5), B0, size(NL6))
+    /\ M3 := buildGate1(size(NL1), B3, size(NL2)) (x)
+             buildGate1(size(NL3), B1, size(NL4)) (x)
+             buildGate1(size(NL5), B2, size(NL6))
+    /\ M4 := buildGate1(size(NL1), B3, size(NL2)) (x)
+             buildGate1(size(NL3), B2, size(NL4)) (x)
+             buildGate1(size(NL5), B1, size(NL6))
+    /\ M5 := buildGate1(size(NL1), B3, size(NL2)) (x)
+             buildGate1(size(NL3), B3, size(NL4)) (x)
+             buildGate1(size(NL5), B3, size(NL6))
+    /\ M := M1 + M2 + M3 + M4 + M5 .
+    --- [todo] suppose that N1 > N2 > N3
 
     --- projections
     op _.P`(_,_`) : Qubit Nat Matrix -> Qubit .
-    ceq ((q[NL1 N NL2]: V1) QS).P(N, P) = simplify((q[NL1 N NL2]: V2) QS)
-    if V2 := (I[size(NL1)] (x) (P x (P)^+) (x) I[size(NL2)]) x V1 .
+    ceq ((q[NL1 N NL2]: V1) QS).P(N, P) = simplify((q[NL1 N NL2]: (1 ./ Sqrt(Prob)) . V2) QS)
+    if V2 := (I[size(NL1)] (x) (P x (P)^+) (x) I[size(NL2)]) x V1 
+    /\ Prob := SP(V1, V2) .
+    eq ((q[NL1 N NL2]: V1) QS).P(N, P) = (q[NL1 N NL2]: O) QS [owise] .
 
     op _.P`(_,_,_`) : Qubit Nat Nat Matrix -> Qubit .
     ceq ((q[NL1 N1 N2 NL2]: V1) QS).P(N1, N2, P) = simplify((q[NL1 N1 N2 NL2]: V2) QS)
@@ -121,6 +157,18 @@ fmod SYMBOLIC-REASONING is
 
     op _.P`(_,_,_`) : Qubit Nat Nat Matrix -> Qubit .
     eq ((q[NL1 N1 N2 NL2]: V1) QS).P(N2, N1, P) = ((q[NL1 N1 N2 NL2]: V1) QS).P(N1, N2, P) .
+
+    --- projections with probabilistics
+    op _.Prob`(_,_`) : Qubit Nat Matrix -> Scalar .
+    ceq ((q[NL1 N NL2]: V1) QS).Prob(N, P) = SP(V1, V2)
+    if V2 := (I[size(NL1)] (x) (P x (P)^+) (x) I[size(NL2)]) x V1 .
+
+    op _.Prob`(_,_,_`) : Qubit Nat Nat Matrix -> Scalar .
+    ceq ((q[NL1 N1 N2 NL2]: V1) QS).Prob(N1, N2, P) = SP(V1, V2)
+    if V2 := (I[size(NL1)] (x) (P x (P)^+) (x) I[size(NL2)]) x V1 .
+
+    op _.Prob`(_,_,_`) : Qubit Nat Nat Matrix -> Scalar .
+    eq ((q[NL1 N1 N2 NL2]: V1) QS).Prob(N2, N1, P) = ((q[NL1 N1 N2 NL2]: V1) QS).Prob(N1, N2, P) .
 
     --- N -> I (x) I (x) ...
     op I[_] : Nat -> Matrix .
@@ -197,11 +245,6 @@ fmod SYMBOLIC-REASONING is
     eq sameKet?**(N1 NL, N2, Ket1 (x) M, Ket2) = if N1 == N2 then Ket1 == Ket2 else sameKet?**(NL, N2, M, Ket2) fi .
     eq sameKet?**(N, N, Ket1, Ket2) = Ket1 == Ket2 .
 
-    --- qubit information
-    op qubitAt : Qubit NatList -> Matrix .
-    ceq qubitAt((q[NL]: M) QS, NL) = M if NL =/= nil .
-    eq qubitAt(QS, NL) = errM [owise] .
-
     --- remove qubit at a index after a measurement
     op rmQubitAt : NatList Nat Matrix -> Matrix .
     eq rmQubitAt(NL, N, S . M) = S . rmQubitAt(NL, N, M) .
@@ -211,4 +254,9 @@ fmod SYMBOLIC-REASONING is
     op rmQubitAt* : NatList Nat Matrix -> Matrix .
     eq rmQubitAt*(N1 NL, N2, Ket (x) M) = if N1 == N2 then M else Ket (x) rmQubitAt*(NL, N2, M) fi .
     eq rmQubitAt*(N, N, Ket) = nil .
+
+    --- qubit information
+    op qubitAt : Qubit NatList -> Matrix .
+    ceq qubitAt((q[NL]: M) QS, NL) = M if NL =/= nil .
+    eq qubitAt(QS, NL) = errM [owise] .
 endfm

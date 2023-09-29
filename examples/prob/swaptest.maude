@@ -1,0 +1,33 @@
+load ../../BDQL.maude
+
+fmod SWAPTEST is
+    pr BDQL-SEMANTICS .
+
+    var S : Scalar .
+
+    --- defining initial states
+    ops a b : -> Scalar .
+    eq Pow(Abs(a), 2) .+ Pow(Abs(b), 2) = 1 .
+    eq S .* Pow(Abs(a), 2) .+ S .* Pow(Abs(b), 2) = S .
+
+    ops c d : -> Scalar .
+    eq Pow(Abs(c), 2) .+ Pow(Abs(d), 2) = 1 .
+    eq S .* Pow(Abs(c), 2) .+ S .* Pow(Abs(d), 2) = S .
+
+    op initQState : -> Qubit .
+    --- eq initQState = (q[0]: |0>)  (q[1]: a . |0> + b . |1>) (q[2]: c . |0> + d . |1>) .
+    --- eq initQState = (q[0]: |0>)  (q[1]: |0>) (q[2]: |0>) .
+    --- eq initQState = (q[0]: |0>)  (q[1]: |0>) (q[2]: |1>) .
+    --- eq initQState = (q[0]: |0>)  (q[1]: |1>) (q[2]: |0>) .
+    eq initQState = (q[0]: |0>)  (q[1]: |1>) (q[2]: |1>) .
+
+    op PROB : -> Scalar .
+    eq PROB = (1 / 2) + (-1 / 2) .* Pow(Abs(SP(qubitAt(initQState, 2), qubitAt(initQState, 1))), 2) .
+endfm
+
+in ../../debug.maude
+
+red in SWAPTEST : initQState |= 
+[
+    H(0) ; CSWAP(0, 1, 2) ; H(0) ; (P(0, |1>) with prob == PROB)?
+] P(0, |1>) .

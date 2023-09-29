@@ -1,0 +1,29 @@
+load ../../BDQL.maude
+
+fmod TWO-TELEPORT is
+    pr BDQL-SEMANTICS .
+
+    var S : Scalar .
+
+    --- defining initial states
+    ops a b c d : -> Scalar .
+    eq Pow(Abs(a), 2) .+ Pow(Abs(b), 2) = 1 .
+    eq S .* Pow(Abs(a), 2) .+ S .* Pow(Abs(b), 2) = S .
+
+    eq Pow(Abs(c), 2) .+ Pow(Abs(d), 2) = 1 .
+    eq S .* Pow(Abs(c), 2) .+ S .* Pow(Abs(d), 2) = S .
+
+    op initQState : -> Qubit .
+    eq initQState = (q[0]: a . |0> + b . |1>) (q[1]: |0>) (q[2]: |0>) (q[3]: |0>) (q[4]: |0>) (q[5]: c . |0> + d . |1>) .
+endfm
+
+in ../../debug.maude
+
+red in TWO-TELEPORT : initQState |= 
+[ 
+    H(1) ; CX(1, 2) ; H(3) ; CX(3, 4); CX(0, 1) ; H(0) ; CX(5, 4) ; H(5) ;
+    if P(4, |0>) then skip else X(3) fi ;
+    if P(5, |0>) then skip else Z(3) fi ;
+    if P(1, |0>) then skip else X(2) fi ;
+    if P(0, |0>) then skip else Z(2) fi
+] ((P(2, qubitAt(initQState, 0)) /\ P(3, qubitAt(initQState, 5))) with prob == 1) .

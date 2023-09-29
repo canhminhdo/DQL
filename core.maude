@@ -38,6 +38,7 @@ fmod SCALAR is
     --- absolute values of a postive number is a positive number
     eq Abs((Abs(S))) = Abs(S) .
     eq Abs((Pow(Abs(S), N))) = Pow(Abs(S), N) .
+    eq Abs(R) = abs(R) .
 
     --- Pow properties
     eq Pow(R1, R2) = (R1)^(R2) .
@@ -122,7 +123,8 @@ fmod MATRIX is
     subsorts Vector Bra < Matrix .
 
     --- zero matrix
-    op O : -> Matrix [ctor] .
+    op O : -> Vector [ctor] .
+    op mO : -> Matrix [ctor] .
     --- identity matrix
     op I : -> Matrix [ctor] .
     --- fake matrix
@@ -132,11 +134,12 @@ fmod MATRIX is
     --- scalar multiplication with matrix
     op _._ : Scalar Vector -> Vector [prec 31] .
     op _._ : Scalar Matrix -> Matrix [prec 31] .
-    --- matrix product
-    op _x_ : Matrix Matrix -> Matrix [assoc prec 31] .
     --- matrix addition
     op _+_ : Vector Vector -> Vector [comm assoc prec 33] .
     op _+_ : Matrix Matrix -> Matrix [comm assoc prec 33] .
+    --- matrix product
+    op _x_ : Matrix Matrix -> Matrix [assoc prec 31] .
+    op _x_ : Matrix Vector -> Vector [assoc prec 31] .
     --- tensor product
     op _(x)_ : Vector Vector -> Vector [assoc prec 31] .
     op _(x)_ : Matrix Matrix -> Matrix [assoc prec 31] .
@@ -146,11 +149,14 @@ fmod MATRIX is
     op SP(_,_) : Vector Vector -> Scalar .
 
     vars M M1 M2 M3 M4 : Matrix .
-    vars V1 V2 V3 : Vector .
+    vars V V1 V2 V3 : Vector .
     vars S S1 S2 : Scalar .
     vars K1 K2 : Ket .
+    vars Bra : Bra .
 
     --- scalar product
+    eq SP(V, O) = 0 .
+    eq SP(O, V) = 0 .
     eq SP(|0>, |0>) = 1 .
     eq SP(|0>, |1>) = 0 .
     eq SP(|1>, |0>) = 0 .
@@ -162,71 +168,108 @@ fmod MATRIX is
     eq SP(K1 (x) V1, K2 (x) V2) = SP(K1, K2) .* SP(V1, V2) .
     eq (SP(V1, V2))^* = SP(V2, V1) .
 
-    --- zero matrix properties
-    eq 0 . M = O .
-    eq S . O = O .
-    eq 1 . M = M .
+    --- zero vector
+    eq [scalar-O1] : 0 . V = O .
+    eq [scalar-O2] : S . O = O .
+    eq [add-O1] : O + V = V .
+    eq [mul-O1] : M x O = O .
+    eq [mul-O2] : mO x V = O .
+    eq [tensor-O1] : V (x) O = O .
+    eq [tensor-O2] : O (x) V = O .
 
-    eq O + M = M .
-    eq M + O = M .
-
-    eq O x M = O .
-    eq M x O = O .
-
-    eq M (x) O = O .
-    eq O (x) M = O .
+    --- zero matrix
+    eq [scalar-mO1] : 0 . M = mO .
+    eq [scalar-mO2] : S . mO = mO .
+    eq [add-mO1] : M + mO = M .
+    eq [mul-mO1] : M x mO = mO .
+    eq [mul-mO2] : mO x M = mO .
+    eq [tensor-mO1] : mO (x) M = mO .
+    eq [tensor-mO2] : M (x) mO = mO .
+    eq [bra-mO1] : O x Bra = mO .
 
     --- nil matrix
-    eq nil (x) M = M .
-    eq M (x) nil = M .
-    eq M + nil = M .
-    eq S . nil = nil .
+    --- [todo] remove nil matrix
+    eq [nil-M1] : S . nil = nil .
+    eq [nil-M2] : M + nil = M .
+    eq [nil-M3] : nil (x) M = M .
+    eq [nil-M4] : M (x) nil = M .
 
     --- identity matrix properties
-    eq I x M = M .
-    eq M x I = M .
-    eq <0| x |0> = I .
-    eq <1| x |1> = I .
-    eq <0| x |1> = O .
-    eq <1| x |0> = O .
+    eq [mul-I1] : I x M = M .
+    eq [mul-I2] : M x I = M .
+    
+    --- Bra & Ket
+    eq [braket1] : <0| x |0> = I .
+    eq [braket2] : <1| x |1> = I .
+    eq [braket3] : <0| x |1> = O .
+    eq [braket4] : <1| x |0> = O .
 
     --- dagger properties
-    eq (I)^+ = I .
-    eq (O)^+ = O .
-    eq (|0>)^+ = <0| .
-    eq (|1>)^+ = <1| .
-    eq (<0|)^+ = |0> .
-    eq (<1|)^+ = |1> .
-    eq (S . M)^+ = ((S)^*) . (M)^+ .
-    eq (M1 x M2)^+ = (M2)^+ x (M1)^+ .
-    eq (M1 + M2)^+ = (M1)^+ + (M2)^+ .
-    eq (M1 (x) M2)^+ = (M1)^+ (x) (M2)^+ .
-    eq ((M)^+)^+ = M .
+    eq [dagger-V1] : (O)^+ = O .
+    eq [dagger-V2] : (|0>)^+ = <0| .
+    eq [dagger-V3] : (|1>)^+ = <1| .
+    eq [dagger-V4] : (S . V)^+ = ((S)^*) . (V)^+ .
+    eq [dagger-V5] : (V1 + V2)^+ = (V1)^+ + (V2)^+ .
+    eq [dagger-V6] : (V1 (x) V2)^+ = (V1)^+ (x) (V2)^+ .
+    eq [dagger-V7] : ((V)^+)^+ = V .
 
-    --- ditributive properties
-    eq M1 x (M2 + M3) = M1 x M2 + M1 x M3 .
-    eq (M1 + M2) x M3 = M1 x M3 + M2 x M3 .
+    eq [dagger-M1] : (mO)^+ = mO .
+    eq [dagger-M2] : (I)^+ = I .
+    eq [dagger-M3] : (<0|)^+ = |0> .
+    eq [dagger-M4] : (<1|)^+ = |1> .
+    eq [dagger-M5] : (S . M)^+ = ((S)^*) . (M)^+ .
+    eq [dagger-M6] : (M1 + M2)^+ = (M1)^+ + (M2)^+ .
+    eq [dagger-M7] : (M1 x M2)^+ = (M2)^+ x (M1)^+ .
+    eq [dagger-M8] : (M1 (x) M2)^+ = (M1)^+ (x) (M2)^+ .
+    eq [dagger-M9] : ((M)^+)^+ = M .
+
+    --- multiplication distributes over addition
+    eq [dist-mul-V1] : M x (V1 + V2) = M x V1 + M x V2 .
+    eq [dist-mul-V2] : (M1 + M2) x V = M1 x V + M2 x V .
+
+    eq [dist-mul-M1] : M1 x (M2 + M3) = M1 x M2 + M1 x M3 .
+    eq [dist-mul-M2] : (M1 + M2) x M3 = M1 x M3 + M2 x M3 .
+
+    --- scalar normal forms
+    eq [scalar-V1] : 1 . V = V .
+    eq [scalar-V2] : S1 . (S2 . V) = (S1 .* S2) . V .
+    eq [scalar-V3] : S . (V1 + V2) = S . V1 + S . V2 .
+
+    eq [scalar-M1] : 1 . M = M .
+    eq [scalar-M2] : S1 . (S2 . M) = (S1 .* S2) . M .
+    eq [scalar-M3] : S . (M1 + M2) = S . M1 + S . M2 .
 
     --- additive normal forms
-    eq S . (M1 + M2) = S . M1 + S . M2 .
-    eq (S1 . M) + (S2 . M) = (S1 .+ S2) . M .
-    eq (S1 . M) + M = (S1 .+ 1) . M .
-    eq M + M = 2 . M .
-    --- multiplicative normal forms
-    eq (S1 . M1) x (S2 . M2) = (S1 .* S2) . (M1 x M2) .
-    eq (S . M1) x M2 = S . (M1 x M2) .
-    eq M1 x (S . M2) = S . (M1 x M2) .
-    --- scalar normal forms
-    eq S1 . (S2 . M) = (S1 .* S2) . M .
-    --- tensor product normal forms
-    --- eq (S1 . M1) (x) (S2 . M2) = (S1 .* S2) . (M1 (x) M2) . --- may ignore
-    eq (S . M1) (x) M2 = S . (M1 (x) M2) .
-    eq M1 (x) (S . M2) = S . (M1 (x) M2) .
+    eq [add-V1] : V + V = 2 . V .
+    eq [add-V2] : (S . V) + V = (S .+ 1) . V .
+    eq [add-V3] : (S1 . V) + (S2 . V) = (S1 .+ S2) . V .
 
-    --- tensor product properties
-    eq (M1 (x) M2) x (M3 (x) M4) = (M1 x M3) (x) (M2 x M4) .
-    eq M1 (x) (M2 + M3) = M1 (x) M2 + M1 (x) M3 .
-    eq (M1 + M2) (x) M3 = M1 (x) M3 + M2 (x) M3 .
+    eq [add-M4] : M + M = 2 . M .
+    eq [add-M3] : (S . M) + M = (S .+ 1) . M .
+    eq [add-M2] : (S1 . M) + (S2 . M) = (S1 .+ S2) . M .
+    
+    --- multiplicative normal forms
+    eq [mul-MV1] : (S . M) x V = S . (M x V) .
+    eq [mul-MV2] : M x (S . V) = S . (M x V) .
+    eq [mul-MV3] : (M1 (x) M2) x (V1 (x) V2) = (M1 x V1) (x) (M2 x V2) .
+
+    eq [mul-MM1] : (S . M1) x M2 = S . (M1 x M2) .
+    eq [mul-MM2] : M1 x (S . M2) = S . (M1 x M2) .
+    eq [mul-MM3] : (M1 (x) M2) x (M3 (x) M4) = (M1 x M3) (x) (M2 x M4) .
+    
+    --- tensor product normal forms
+    eq [tensor-V1] : (S . V1) (x) V2 = S . (V1 (x) V2) .
+    eq [tensor-V2] : V1 (x) (S . V2) = S . (V1 (x) V2) .
+    
+    eq [tensor-M1] : (S . M1) (x) M2 = S . (M1 (x) M2) .
+    eq [tensor-M2] : M1 (x) (S . M2) = S . (M1 (x) M2) .
+    
+    --- tensor distributes over addition
+    eq [dist-tensor-V1] : V1 (x) (V2 + V3) = V1 (x) V2 + V1 (x) V3 .
+    eq [dist-tensor-V2] : (V1 + V2) (x) V3 = V1 (x) V3 + V2 (x) V3 .
+
+    eq [dist-tensor-M1] : M1 (x) (M2 + M3) = M1 (x) M2 + M1 (x) M3 .
+    eq [dist-tensor-M2] : (M1 + M2) (x) M3 = M1 (x) M3 + M2 (x) M3 .
 
     --- basic matrices
     ops B0 B1 B2 B3 P0 P1 : -> Matrix .

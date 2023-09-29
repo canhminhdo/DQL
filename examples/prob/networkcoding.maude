@@ -1,0 +1,43 @@
+load ../../BDQL.maude
+
+--- source: https://arxiv.org/abs/1205.3745
+fmod NETWORK-CODING is
+    pr BDQL-SEMANTICS .
+
+    op initQState : -> Qubit .
+    eq initQState = (q[0]: |0>) (q[1]: |0>) (q[2]: |0>) (q[3]: |0>) (q[4]: |0>)
+                    (q[5]: |0>) (q[6]: |0>) (q[7]: |0>) (q[8]: |0>) (q[9]: |0>)
+                    (q[10]: |0>) (q[11]: |0>) (q[12]: |0>) (q[13]: |0>) .
+
+    op EPR : -> Matrix .
+    eq EPR = (1 ./ Sqrt(2)) . |0>(x)|0> + (1 ./ Sqrt(2)) . |1>(x)|1> .
+
+    op con(_,(_ |-> _)) : Nat Nat Nat -> Prog .
+    op fanout(_,(_ |-> _),(_ |-> _)) : Nat Nat Nat Nat Nat -> Prog .
+    op add(_,_,(_ |-> _)) : Nat Nat Nat Nat -> Prog .
+    op rem(_ |-> _) : Nat Nat -> Prog .
+    op remadd(_ |-> (_,_)) : Nat Nat Nat -> Prog .
+    op network-coding : -> Prog .
+
+    vars N1 N2 N3 N4 N5 : Nat .
+
+    eq con(N1, (N2 |-> N3)) = CX(N1, N2) ; if P(N2, |0>) then skip else X(N3) fi .
+    eq fanout(N1, (N2 |-> N3), (N4 |-> N5)) = con(N1, (N2 |-> N3)) ; con(N1, (N4 |-> N5)) .
+    eq add(N1, N2, (N3 |-> N4)) = CX(N1, N3) ; CX(N2, N3) ; if P(N3, |0>) then skip else X(N4) fi .
+    eq rem(N1 |-> N2) = H(N1) ; if P(N1, |0>) then skip else Z(N2) fi .
+    eq remadd(N3 |-> (N1, N2)) = H(N3) ; if P(N3, |0>) then skip else (Z(N1) ; Z(N2)) fi .
+    eq network-coding = con(0, (2 |-> 3)) ; con(4, (6 |-> 7)) ; add(3, 7, (8 |-> 9)) ;
+                        fanout(9, (10 |-> 11), (12 |-> 13)) ; CX(13, 5) ; CX(11, 1) ;
+                        rem(11 |-> 9) ; rem(13 |-> 9) ; remadd(9 |-> (3, 7)) ;
+                        rem(3 |-> 0) ; rem(7 |-> 4) .
+endfm
+
+in ../../debug.maude
+
+red in NETWORK-CODING : initQState |=
+[
+    H(0) ; CX(0, 1) ; H(2) ; CX(2, 3) ;
+    H(4) ; CX(4, 5) ; H(6) ; CX(6, 7) ;
+    H(8) ; CX(8, 9) ; H(10) ; CX(10, 11) ;
+    H(12) ; CX(12, 13); network-coding
+] ((P(0, 5, EPR) /\ P(1, 4, EPR)) with prob == 1) .
