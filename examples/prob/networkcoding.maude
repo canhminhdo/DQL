@@ -21,11 +21,19 @@ fmod NETWORK-CODING is
 
     vars N1 N2 N3 N4 N5 : Nat .
 
-    eq con(N1, (N2 |-> N3)) = CX(N1, N2) ; if P(N2, |0>) then skip else X(N3) fi .
+    eq con(N1, (N2 |-> N3)) = CX(N1, N2) ; (
+        ((P(N2, |0>)? with prob == 1/2) ; skip) U ((P(N2, |1>)? with prob == 1/2); X(N3))
+    ) .
     eq fanout(N1, (N2 |-> N3), (N4 |-> N5)) = con(N1, (N2 |-> N3)) ; con(N1, (N4 |-> N5)) .
-    eq add(N1, N2, (N3 |-> N4)) = CX(N1, N3) ; CX(N2, N3) ; if P(N3, |0>) then skip else X(N4) fi .
-    eq rem(N1 |-> N2) = H(N1) ; if P(N1, |0>) then skip else Z(N2) fi .
-    eq remadd(N3 |-> (N1, N2)) = H(N3) ; if P(N3, |0>) then skip else (Z(N1) ; Z(N2)) fi .
+    eq add(N1, N2, (N3 |-> N4)) = CX(N1, N3) ; CX(N2, N3) ; (
+        ((P(N3, |0>)? with prob == 1/2) ; skip) U ((P(N3, |1>)? with prob == 1/2); X(N4))
+    ) .
+    eq rem(N1 |-> N2) = H(N1) ; (
+        ((P(N1, |0>)? with prob == 1/2) ; skip) U ((P(N1, |1>)? with prob == 1/2); Z(N2))
+    ) .
+    eq remadd(N3 |-> (N1, N2)) = H(N3) ; (
+        ((P(N3, |0>)? with prob == 1/2) ; skip) U ((P(N3, |1>)? with prob == 1/2); Z(N1) ; Z(N2))
+    ) .
     eq network-coding = con(0, (2 |-> 3)) ; con(4, (6 |-> 7)) ; add(3, 7, (8 |-> 9)) ;
                         fanout(9, (10 |-> 11), (12 |-> 13)) ; CX(13, 5) ; CX(11, 1) ;
                         rem(11 |-> 9) ; rem(13 |-> 9) ; remadd(9 |-> (3, 7)) ;
@@ -40,4 +48,4 @@ red in NETWORK-CODING : initQState |=
     H(4) ; CX(4, 5) ; H(6) ; CX(6, 7) ;
     H(8) ; CX(8, 9) ; H(10) ; CX(10, 11) ;
     H(12) ; CX(12, 13); network-coding
-] ((P(0, 5, EPR) /\ P(1, 4, EPR)) with prob == 1) .
+] (P(0, 5, EPR) /\ P(1, 4, EPR)) .

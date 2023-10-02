@@ -17,9 +17,10 @@ fmod SWAPTEST is
     op initQState : -> Qubit .
     --- eq initQState = (q[0]: |0>)  (q[1]: a . |0> + b . |1>) (q[2]: c . |0> + d . |1>) .
     --- eq initQState = (q[0]: |0>)  (q[1]: |0>) (q[2]: |0>) .
-    --- eq initQState = (q[0]: |0>)  (q[1]: |0>) (q[2]: |1>) .
+    eq initQState = (q[0]: |0>)  (q[1]: |0>) (q[2]: |1>) .
     --- eq initQState = (q[0]: |0>)  (q[1]: |1>) (q[2]: |0>) .
-    eq initQState = (q[0]: |0>)  (q[1]: |1>) (q[2]: |1>) .
+    --- eq initQState = (q[0]: |0>)  (q[1]: |1>) (q[2]: |1>) .
+    --- eq initQState = (q[0]: |0>)  (q[1]: 1 ./ Sqrt(2) . (|0> + |1>)) (q[2]: |1>) .
 
     op PROB : -> Scalar .
     eq PROB = (1 / 2) + (-1 / 2) .* Pow(Abs(SP(qubitAt(initQState, 2), qubitAt(initQState, 1))), 2) .
@@ -27,7 +28,14 @@ endfm
 
 in ../../debug.maude
 
+red PROB .
+
 red in SWAPTEST : initQState |= 
 [
-    H(0) ; CSWAP(0, 1, 2) ; H(0) ; (P(0, |1>) with prob == PROB)?
+    H(0) ; CSWAP(0, 1, 2) ; H(0) ; (P(0, |1>)? with prob == PROB)
 ] P(0, |1>) .
+
+red in SWAPTEST : initQState |= 
+[
+    H(0) ; CSWAP(0, 1, 2) ; H(0)
+] (P(0, |1>) with prob == PROB) .

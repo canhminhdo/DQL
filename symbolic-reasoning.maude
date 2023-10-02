@@ -158,7 +158,7 @@ fmod SYMBOLIC-REASONING is
     op _.P`(_,_,_`) : Qubit Nat Nat Matrix -> Qubit .
     eq ((q[NL1 N1 N2 NL2]: V1) QS).P(N2, N1, P) = ((q[NL1 N1 N2 NL2]: V1) QS).P(N1, N2, P) .
 
-    --- projections with probabilistics
+    --- projections with probability
     op _.Prob`(_,_`) : Qubit Nat Matrix -> Scalar .
     ceq ((q[NL1 N NL2]: V1) QS).Prob(N, P) = SP(V1, V2)
     if V2 := (I[size(NL1)] (x) (P x (P)^+) (x) I[size(NL2)]) x V1 .
