@@ -36,11 +36,11 @@ fmod BDQL-SYNTAX is
     op P`(_,_`) : Nat Matrix -> AtomicFormula [ctor] .
     op P`(_,_,_`) : Nat Nat Matrix -> AtomicFormula [ctor] .
     --- with probabilistics
-    op _with prob <=_ : Formula Scalar -> Formula [ctor] .
-    op _with prob <_ : Formula Scalar -> Formula [ctor] .
-    op _with prob >=_ : Formula Scalar -> Formula [ctor] .
-    op _with prob >_ : Formula Scalar -> Formula [ctor] .
-    op _with prob ==_ : Formula Scalar -> Formula [ctor] .
+    op _with prob <=_  : Formula Scalar -> Formula [ctor] .
+    op _with prob <_   : Formula Scalar -> Formula [ctor] .
+    op _with prob >=_  : Formula Scalar -> Formula [ctor] .
+    op _with prob >_   : Formula Scalar -> Formula [ctor] .
+    op _with prob ==_  : Formula Scalar -> Formula [ctor] .
     op _with prob =/=_ : Formula Scalar -> Formula [ctor] .
 
     --- if_then_else_fi commands
@@ -69,29 +69,29 @@ fmod BDQL-SEMANTICS is
     vars Prob Prob' : Scalar .
     
     --- testable properties with probabilistics for projections
-    ceq Q |= P(N, M) with prob <=  Prob = emptyJS if (Q).Prob(N, M) .<= Prob .
-    ceq Q |= P(N, M) with prob <   Prob = emptyJS if (Q).Prob(N, M) .< Prob .
     ceq Q |= P(N, M) with prob >=  Prob = emptyJS if (Q).Prob(N, M) .>= Prob .
     ceq Q |= P(N, M) with prob >   Prob = emptyJS if (Q).Prob(N, M) .> Prob .
+    ceq Q |= P(N, M) with prob <=  Prob = emptyJS if (Q).Prob(N, M) .<= Prob .
+    ceq Q |= P(N, M) with prob <   Prob = emptyJS if (Q).Prob(N, M) .< Prob .
     ceq Q |= P(N, M) with prob ==  Prob = emptyJS if (Q).Prob(N, M) == Prob .
     ceq Q |= P(N, M) with prob =/= Prob = emptyJS if (Q).Prob(N, M) =/= Prob .
-    eq  Q |= P(N, M) with prob <=  Prob = failure [owise] .
-    eq  Q |= P(N, M) with prob <   Prob = failure [owise] .
     eq  Q |= P(N, M) with prob >=  Prob = failure [owise] .
     eq  Q |= P(N, M) with prob >   Prob = failure [owise] .
+    eq  Q |= P(N, M) with prob <=  Prob = failure [owise] .
+    eq  Q |= P(N, M) with prob <   Prob = failure [owise] .
     eq  Q |= P(N, M) with prob ==  Prob = failure [owise] .
     eq  Q |= P(N, M) with prob =/= Prob = failure [owise] .
 
-    ceq Q |= P(N1, N2, M) with prob <=  Prob = emptyJS if (Q).Prob(N1, N2, M) .<= Prob .
-    ceq Q |= P(N1, N2, M) with prob <   Prob = emptyJS if (Q).Prob(N1, N2, M) .< Prob .
     ceq Q |= P(N1, N2, M) with prob >=  Prob = emptyJS if (Q).Prob(N1, N2, M) .>= Prob .
     ceq Q |= P(N1, N2, M) with prob >   Prob = emptyJS if (Q).Prob(N1, N2, M) .> Prob .
+    ceq Q |= P(N1, N2, M) with prob <=  Prob = emptyJS if (Q).Prob(N1, N2, M) .<= Prob .
+    ceq Q |= P(N1, N2, M) with prob <   Prob = emptyJS if (Q).Prob(N1, N2, M) .< Prob .
     ceq Q |= P(N1, N2, M) with prob ==  Prob = emptyJS if (Q).Prob(N1, N2, M) == Prob .
     ceq Q |= P(N1, N2, M) with prob =/= Prob = emptyJS if (Q).Prob(N1, N2, M) =/= Prob .
-    eq  Q |= P(N1, N2, M) with prob <=  Prob = failure [owise] .
-    eq  Q |= P(N1, N2, M) with prob <   Prob = failure [owise] .
     eq  Q |= P(N1, N2, M) with prob >=  Prob = failure [owise] .
     eq  Q |= P(N1, N2, M) with prob >   Prob = failure [owise] .
+    eq  Q |= P(N1, N2, M) with prob <=  Prob = failure [owise] .
+    eq  Q |= P(N1, N2, M) with prob <   Prob = failure [owise] .
     eq  Q |= P(N1, N2, M) with prob ==  Prob = failure [owise] .
     eq  Q |= P(N1, N2, M) with prob =/= Prob = failure [owise] .
     --- testable properties for projections
@@ -102,10 +102,10 @@ fmod BDQL-SEMANTICS is
     eq neg P(N, |1>) = P(N, |0>) .
     --- conjunction
     eq Q |= Phi /\ Psi = (Q |= Phi) /\ (Q |= Psi) .
-    eq Q |= (Phi /\ Psi) with prob <=  Prob = (Q |= Phi with prob <=  Prob) /\ (Q |= Psi with prob <=  Prob) .
-    eq Q |= (Phi /\ Psi) with prob <   Prob = (Q |= Phi with prob <   Prob) /\ (Q |= Psi with prob <   Prob) .
     eq Q |= (Phi /\ Psi) with prob >=  Prob = (Q |= Phi with prob >=  Prob) /\ (Q |= Psi with prob >=  Prob) .
     eq Q |= (Phi /\ Psi) with prob >   Prob = (Q |= Phi with prob >   Prob) /\ (Q |= Psi with prob >   Prob) .
+    eq Q |= (Phi /\ Psi) with prob <=  Prob = (Q |= Phi with prob <=  Prob) /\ (Q |= Psi with prob <=  Prob) .
+    eq Q |= (Phi /\ Psi) with prob <   Prob = (Q |= Phi with prob <   Prob) /\ (Q |= Psi with prob <   Prob) .
     eq Q |= (Phi /\ Psi) with prob ==  Prob = (Q |= Phi with prob ==  Prob) /\ (Q |= Psi with prob ==  Prob) .
     eq Q |= (Phi /\ Psi) with prob =/= Prob = (Q |= Phi with prob =/= Prob) /\ (Q |= Psi with prob =/= Prob) .
     --- atomic programs
