@@ -18,7 +18,7 @@ endfm
 in ../../debug.maude .
 
 red in SUPERDENSE : initQState |=
-([ encode00 ; decode ] (P(0, |0>) /\ P(1, |0>))) /\
-([ encode01 ; decode ] (P(0, |0>) /\ P(1, |1>))) /\
-([ encode10 ; decode ] (P(0, |1>) /\ P(1, |0>))) /\
-([ encode11 ; decode ] (P(0, |1>) /\ P(1, |1>))) .
+([ encode00 ; decode ] ((P(0, |0>) with prob == 1)) /\ (P(1, |0>) with prob == 1)) /\
+([ encode01 ; decode ] ((P(0, |0>) with prob == 1)) /\ (P(1, |1>) with prob == 1)) /\
+([ encode10 ; decode ] ((P(0, |1>) with prob == 1)) /\ (P(1, |0>) with prob == 1)) /\
+([ encode11 ; decode ] ((P(0, |1>) with prob == 1)) /\ (P(1, |1>) with prob == 1)) .
