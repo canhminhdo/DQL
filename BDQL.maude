@@ -52,8 +52,19 @@ fmod BDQL-SYNTAX is
 
     --- if_then_else_fi commands
     op if_then_else_fi : Formula Prog Prog -> Prog .
-    eq if F:Formula then P1:Prog else P2:Prog fi =
-    (F:Formula ? ; P1:Prog) U ((neg F:Formula) ? ; P2:Prog) .
+    eq if F:Formula with prob >= Prob:Scalar then P1:Prog else P2:Prog fi =
+    ((F:Formula ? with prob >= Prob:Scalar) ; P1:Prog) U (((neg F:Formula) ? with prob <= (1 - Prob:Scalar)) ; P2:Prog) .
+    eq if F:Formula with prob > Prob:Scalar then P1:Prog else P2:Prog fi =
+    ((F:Formula ? with prob > Prob:Scalar) ; P1:Prog) U (((neg F:Formula) ? with prob < (1 - Prob:Scalar)) ; P2:Prog) .
+    eq if F:Formula with prob <= Prob:Scalar then P1:Prog else P2:Prog fi =
+    ((F:Formula ? with prob <= Prob:Scalar) ; P1:Prog) U (((neg F:Formula) ? with prob >= (1 - Prob:Scalar)) ; P2:Prog) .
+    eq if F:Formula with prob < Prob:Scalar then P1:Prog else P2:Prog fi =
+    ((F:Formula ? with prob < Prob:Scalar) ; P1:Prog) U (((neg F:Formula) ? with prob > (1 - Prob:Scalar)) ; P2:Prog) .
+    eq if F:Formula with prob == Prob:Scalar then P1:Prog else P2:Prog fi =
+    ((F:Formula ? with prob == Prob:Scalar) ; P1:Prog) U (((neg F:Formula) ? with prob == (1 - Prob:Scalar)) ; P2:Prog) .
+    eq if F:Formula with prob =/= Prob:Scalar then P1:Prog else P2:Prog fi =
+    ((F:Formula ? with prob =/= Prob:Scalar) ; P1:Prog) U (((neg F:Formula) ? with prob =/= (1 - Prob:Scalar)) ; P2:Prog) .
+    eq if F:Formula then P1:Prog else P2:Prog fi = (F:Formula ? ; P1:Prog) U ((neg F:Formula) ? ; P2:Prog) [owise] .
 endfm
 
 fmod BDQL-SEMANTICS is

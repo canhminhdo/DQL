@@ -1,10 +1,9 @@
 ==========================================
 reduce in GATE-TELEPORT : initQState |= [H(1) ; CX(1,2) ; H(3) ; CX(3,4) ; CX(
-    3,2) ; CX(0,1) ; H(0) ; CX(4,5) ; H(4) ; ((P(0,|0>) ? with prob == 1/2) ;
-    skip U (P(0,|1>) ? with prob == 1/2) ; Z(2) ; Z(3)) ; ((P(1,|0>) ? with
-    prob == 1/2) ; skip U (P(1,|1>) ? with prob == 1/2) ; X(2)) ; ((P(5,|0>) ?
-    with prob == 1/2) ; skip U (P(5,|1>) ? with prob == 1/2) ; X(2) ; X(3)) ; (
-    (P(4,|0>) ? with prob == 1/2) ; skip U (P(4,|1>) ? with prob == 1/2) ; Z(
-    3))]P(2,3,qubitAt(targetQState, 0 1)) .
+    3,2) ; CX(0,1) ; H(0) ; CX(4,5) ; H(4) ; if P(0,|0>) with prob >= 1/2 then
+    skip else Z(2) ; Z(3) fi ; if P(1,|0>) with prob >= 1/2 then skip else X(2)
+    fi ; if P(5,|0>) with prob >= 1/2 then skip else X(2) ; X(3) fi ; if P(4,
+    |0>) with prob >= 1/2 then skip else Z(3) fi]P(2,3,qubitAt(targetQState, 0
+    1)) .
 result JudgmentSet: emptyJS
 Bye.

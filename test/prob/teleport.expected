@@ -1,7 +1,6 @@
 ==========================================
-reduce in TELEPORT : initQState |= [H(1) ; CX(1,2) ; CX(0,1) ; H(0) ; ((P(1,
-    |0>) ? with prob == 1/2) ; skip U (P(1,|1>) ? with prob == 1/2) ; X(2)) ; (
-    (P(0,|0>) ? with prob == 1/2) ; skip U (P(0,|1>) ? with prob == 1/2) ; Z(
-    2))]P(2,qubitAt(initQState, 0)) .
+reduce in TELEPORT : initQState |= [H(1) ; CX(1,2) ; CX(0,1) ; H(0) ; if P(1,
+    |0>) with prob >= 1/2 then skip else X(2) fi ; if P(0,|0>) with prob >= 1/2
+    then skip else Z(2) fi]P(2,qubitAt(initQState, 0)) .
 result JudgmentSet: emptyJS
 Bye.
