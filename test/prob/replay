@@ -1,0 +1,6 @@
+#!/bin/sh
+
+DIR=../../test/prob
+cd ../../examples/prob && maude < replay.maude -no-banner -no-advise | sed -r '/^(rewrites:|Solution|states:)/d' > $DIR/replay.out
+diff $DIR/replay.expected $DIR/replay.out
+rm $DIR/replay.out

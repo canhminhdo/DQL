@@ -28,6 +28,9 @@ We successfully verified the correctness of some quantum protocols with the supp
 - Entanglement Swapping
 - Quantum Gate Teleportation
 - Quantum Network Coding
+- Quantum Replay Scheme
+- Bidirectional Quantum Teleportation
+- Two-qubit Quantum Teleportation
 - ...
 
 ## Publication

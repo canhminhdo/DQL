@@ -1,0 +1,27 @@
+load ../BDQL.maude
+
+fmod REPLAY-SCHEME is
+    pr BDQL-SEMANTICS .
+
+    var S : Scalar .
+
+    --- defining initial states
+    ops a b : -> Scalar .
+    eq Pow(Abs(a), 2) .+ Pow(Abs(b), 2) = 1 .
+    eq S .* Pow(Abs(a), 2) .+ S .* Pow(Abs(b), 2) = S .
+
+    op initQState : -> Qubit .
+    eq initQState = (q[0]: a . |0> + b . |1>) (q[1]: |0>) (q[2]: |0>) (q[3]: |0>) (q[4]: |0>) .
+endfm
+
+in ../debug.maude
+
+red in REPLAY-SCHEME : initQState |= 
+[
+    H(1) ; CX(1, 2) ; H(3) ; CX(3, 4) ; CX(0, 1) ; H(0) ;
+    if P(1, |0>) then skip else X(2) fi ;
+    if P(0, |0>) then skip else Z(2) fi ;
+    CX(2, 3) ; H(2) ;
+    if P(3, |0>) then skip else X(4) fi ;
+    if P(2, |0>) then skip else Z(4) fi 
+] P(4, qubitAt(initQState, 0)) .

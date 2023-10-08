@@ -1,0 +1,30 @@
+load ../../BDQL.maude
+
+fmod BIDIRECTIONAL-TELEPORT is
+    pr BDQL-SEMANTICS .
+
+    var S : Scalar .
+
+    --- defining initial states
+    ops a b c d : -> Scalar .
+    eq Pow(Abs(a), 2) .+ Pow(Abs(b), 2) = 1 .
+    eq S .* Pow(Abs(a), 2) .+ S .* Pow(Abs(b), 2) = S .
+
+    eq Pow(Abs(c), 2) .+ Pow(Abs(d), 2) = 1 .
+    eq S .* Pow(Abs(c), 2) .+ S .* Pow(Abs(d), 2) = S .
+
+    op initQState : -> Qubit .
+    eq initQState = (q[0]: a . |0> + b . |1>) (q[1]: c . |0> + d . |1>)
+                    (q[2]: |0>) (q[3]: |0>) (q[4]: |0>) (q[5]: |0>)  .
+endfm
+
+in ../../debug.maude
+
+red in BIDIRECTIONAL-TELEPORT : initQState |= 
+[
+    H(2) ; CX(2, 3) ; H(4) ; CX(4, 5); CX(0, 2) ; CX(1, 5) ; H(0) ; H(1) ;
+    if P(2, |0>) with prob >= 1/2 then skip else X(3) fi ;
+    if P(0, |0>) with prob >= 1/2 then skip else Z(3) fi ;
+    if P(5, |0>) with prob >= 1/2 then skip else X(4) fi ;
+    if P(1, |0>) with prob >= 1/2 then skip else Z(4) fi
+] (P(3, qubitAt(initQState, 0)) /\ P(4, qubitAt(initQState, 1))) .
