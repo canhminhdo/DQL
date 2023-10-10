@@ -1,6 +1,6 @@
 # Automated Quantum Protocol Verification Based on Dynamic Quantum Logic
 
-This repository presents a support tool developed in Maude to verify sequential quantum protocols and concurrent quantum protocols using Basic Dynamic Quantum Logic (BDQL) and Concurrent Dynamic Quantum Logic (CDQL).
+This repository presents a support tool developed in Maude to verify sequential quantum protocols and concurrent quantum protocols using Basic Dynamic Quantum Logic (BDQL), Probabilistic Dynamic Quantum Logic (PDQL), and Concurrent Dynamic Quantum Logic (CDQL).
 
 ## Dependencies
 - Maude is a programming/specification language based on rewriting logic. How to download and install Maude can be found [here](http://maude.cs.illinois.edu/w/index.php/The_Maude_System).
@@ -10,13 +10,25 @@ This repository presents a support tool developed in Maude to verify sequential 
 
 - Feed a Maude file that is the formal specification of a protocol being verified into Maude.
 
-For example, we can type the following command in CLI in order to verify the correctness of the quantum teleportation protocol:
+For example, we can type the following command in CLI in order to verify the correctness of the quantum teleportation protocol with `BDQL`:
 
 ```console
 maude examples/teleport.maude
 ```
 
-Note that for `verifying sequential quantum protocols using BDQL`, all necessary files are in the outermost folder. Meanwhile, `verifying concurrent quantum protocols using CDQL`, all necessary files are in the `CDQL` folder.
+We can verify the correctness of the quantum teleportation protocol with `PDQL`:
+
+```console
+maude examples/prob/teleport.maude
+```
+
+We can verify the correctness of the quantum teleportation protocol with `CDQL`:
+
+```console
+cd CDQL && maude examples/teleport.maude
+```
+
+Note that for `verifying sequential quantum protocols using BDQL and PDQL`, all necessary files are in the outermost folder. Meanwhile, `verifying concurrent quantum protocols using CDQL`, all necessary files are in the `CDQL` folder.
 
 - For testing, go to the `test` folder and run the `./tester` file in CLI.
 
@@ -28,7 +40,7 @@ We successfully verified the correctness of some quantum protocols with the supp
 - Entanglement Swapping
 - Quantum Gate Teleportation
 - Quantum Network Coding
-- Quantum Replay Scheme
+- Quantum Relay Scheme
 - Bidirectional Quantum Teleportation
 - Two-qubit Quantum Teleportation
 - ...
