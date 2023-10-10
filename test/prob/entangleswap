@@ -1,6 +1,0 @@
-#!/bin/sh
-
-DIR=../../test/prob
-cd ../../examples/prob && maude < entangleswap.maude -no-banner -no-advise | sed -r '/^(rewrites:|Solution|states:)/d' > $DIR/entangleswap.out
-diff $DIR/entangleswap.expected $DIR/entangleswap.out
-rm $DIR/entangleswap.out

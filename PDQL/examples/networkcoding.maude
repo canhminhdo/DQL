@@ -1,8 +1,8 @@
-load ../../BDQL.maude
+load ../PDQL.maude
 
 --- source: https://arxiv.org/abs/1205.3745
 fmod NETWORK-CODING is
-    pr BDQL-SEMANTICS .
+    pr PDQL-SEMANTICS .
 
     op initQState : -> Qubit .
     eq initQState = (q[0]: |0>) (q[1]: |0>) (q[2]: |0>) (q[3]: |0>) (q[4]: |0>)

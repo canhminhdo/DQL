@@ -1,6 +1,0 @@
-#!/bin/sh
-
-DIR=../../test/prob
-cd ../../examples/prob && maude < twoQteleport.maude -no-banner -no-advise | sed -r '/^(rewrites:|Solution|states:)/d' > $DIR/twoQteleport.out
-diff $DIR/twoQteleport.expected $DIR/twoQteleport.out
-rm $DIR/twoQteleport.out

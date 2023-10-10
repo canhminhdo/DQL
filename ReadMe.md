@@ -19,7 +19,7 @@ maude examples/teleport.maude
 We can verify the correctness of the quantum teleportation protocol with `PDQL`:
 
 ```console
-maude examples/prob/teleport.maude
+cd PDQL && maude examples/teleport.maude
 ```
 
 We can verify the correctness of the quantum teleportation protocol with `CDQL`:
@@ -28,7 +28,7 @@ We can verify the correctness of the quantum teleportation protocol with `CDQL`:
 cd CDQL && maude examples/teleport.maude
 ```
 
-Note that for `verifying sequential quantum protocols using BDQL and PDQL`, all necessary files are in the outermost folder. Meanwhile, `verifying concurrent quantum protocols using CDQL`, all necessary files are in the `CDQL` folder.
+Note that for `verifying sequential quantum protocols using BDQL and PDQL`, all necessary files are in the outermost folder and the `PDQL` folder, respectively. Meanwhile, `verifying concurrent quantum protocols using CDQL`, all necessary files are in the `CDQL` folder.
 
 - For testing, go to the `test` folder and run the `./tester` file in CLI.
 

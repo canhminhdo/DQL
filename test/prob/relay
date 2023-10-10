@@ -1,6 +1,0 @@
-#!/bin/sh
-
-DIR=../../test/prob
-cd ../../examples/prob && maude < relay.maude -no-banner -no-advise | sed -r '/^(rewrites:|Solution|states:)/d' > $DIR/relay.out
-diff $DIR/relay.expected $DIR/relay.out
-rm $DIR/relay.out

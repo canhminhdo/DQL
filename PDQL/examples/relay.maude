@@ -1,7 +1,7 @@
-load ../../BDQL.maude
+load ../PDQL.maude
 
 fmod REPLAY-SCHEME is
-    pr BDQL-SEMANTICS .
+    pr PDQL-SEMANTICS .
 
     var S : Scalar .
 

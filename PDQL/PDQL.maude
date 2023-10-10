@@ -1,0 +1,161 @@
+in ../symbolic-reasoning.maude .
+
+fmod PDQL-SYNTAX is
+    pr MATRIX .
+
+    --- programs
+    sorts AtomicProg Prog .
+    subsort AtomicProg < Prog .
+
+    --- atomic programs
+    op I`(_`) : Nat -> AtomicProg [ctor] .
+    op X`(_`) : Nat -> AtomicProg [ctor] .
+    op Y`(_`) : Nat -> AtomicProg [ctor] .
+    op Z`(_`) : Nat -> AtomicProg [ctor] .
+    op H`(_`) : Nat -> AtomicProg [ctor] .
+    op CX`(_,_`) : Nat Nat -> AtomicProg [ctor] .
+    op SWAP`(_,_`) : Nat Nat -> AtomicProg [ctor] .
+    op CSWAP`(_,_,_`) : Nat Nat Nat -> AtomicProg [ctor] .
+
+    --- idenity denotes the end of programs
+    ops abort skip : -> Prog [ctor] . --- constants
+    op _;_ : Prog Prog -> Prog [ctor prec 25 gather (e E)] . --- composition
+    op _U_ : Prog Prog -> Prog [ctor prec 26 gather (e E)] . --- non-deterministic choices
+    op _* : Prog -> Prog [ctor] . --- iteration
+    op _? : Formula -> Prog [ctor prec 24] . --- quantum test
+    --- quantum test with probability
+    op _? with prob >=_  : Formula Scalar -> Prog [ctor] .
+    op _? with prob >_   : Formula Scalar -> Prog [ctor] .
+    op _? with prob <=_  : Formula Scalar -> Prog [ctor] .
+    op _? with prob <_   : Formula Scalar -> Prog [ctor] .
+    op _? with prob ==_  : Formula Scalar -> Prog [ctor] .
+    op _? with prob =/=_ : Formula Scalar -> Prog [ctor] .
+
+    --- formulas
+    sorts AtomicFormula Formula .
+    subsort AtomicFormula < Formula .
+
+    --- quantum dynamic logic formulas
+    op _/\_ : Formula Formula -> Formula [ctor assoc comm] .
+    op neg_ : Formula -> Formula .
+    op `[_`]_ : Prog Formula -> Formula [ctor] .
+    --- testable properties
+    op P`(_,_`) : Nat Matrix -> AtomicFormula [ctor] .
+    op P`(_,_,_`) : Nat Nat Matrix -> AtomicFormula [ctor] .
+    --- with probability
+    op _with prob >=_  : Formula Scalar -> Formula [ctor] .
+    op _with prob >_   : Formula Scalar -> Formula [ctor] .
+    op _with prob <=_  : Formula Scalar -> Formula [ctor] .
+    op _with prob <_   : Formula Scalar -> Formula [ctor] .
+    op _with prob ==_  : Formula Scalar -> Formula [ctor] .
+    op _with prob =/=_ : Formula Scalar -> Formula [ctor] .
+
+    --- if_then_else_fi commands
+    op if_then_else_fi : Formula Prog Prog -> Prog .
+    eq if F:Formula with prob >= Prob:Scalar then P1:Prog else P2:Prog fi =
+    ((F:Formula ? with prob >= Prob:Scalar) ; P1:Prog) U (((neg F:Formula) ? with prob <= (1 - Prob:Scalar)) ; P2:Prog) .
+    eq if F:Formula with prob > Prob:Scalar then P1:Prog else P2:Prog fi =
+    ((F:Formula ? with prob > Prob:Scalar) ; P1:Prog) U (((neg F:Formula) ? with prob < (1 - Prob:Scalar)) ; P2:Prog) .
+    eq if F:Formula with prob <= Prob:Scalar then P1:Prog else P2:Prog fi =
+    ((F:Formula ? with prob <= Prob:Scalar) ; P1:Prog) U (((neg F:Formula) ? with prob >= (1 - Prob:Scalar)) ; P2:Prog) .
+    eq if F:Formula with prob < Prob:Scalar then P1:Prog else P2:Prog fi =
+    ((F:Formula ? with prob < Prob:Scalar) ; P1:Prog) U (((neg F:Formula) ? with prob > (1 - Prob:Scalar)) ; P2:Prog) .
+    eq if F:Formula with prob == Prob:Scalar then P1:Prog else P2:Prog fi =
+    ((F:Formula ? with prob == Prob:Scalar) ; P1:Prog) U (((neg F:Formula) ? with prob == (1 - Prob:Scalar)) ; P2:Prog) .
+    eq if F:Formula with prob =/= Prob:Scalar then P1:Prog else P2:Prog fi =
+    ((F:Formula ? with prob =/= Prob:Scalar) ; P1:Prog) U (((neg F:Formula) ? with prob =/= (1 - Prob:Scalar)) ; P2:Prog) .
+    eq if F:Formula then P1:Prog else P2:Prog fi = (F:Formula ? ; P1:Prog) U ((neg F:Formula) ? ; P2:Prog) [owise] .
+endfm
+
+fmod PDQL-SEMANTICS is
+    pr SYMBOLIC-REASONING .
+    pr PDQL-SYNTAX .
+
+    sorts Judgment JudgmentSet .
+    subsort Judgment < JudgmentSet .
+
+    op _|=_ : QState Formula -> Judgment .
+    ops emptyJS failure : -> JudgmentSet [ctor] .
+    op _/\_ : JudgmentSet JudgmentSet -> JudgmentSet [comm assoc id: emptyJS] .
+
+    vars PROG PROG' PROG'' : Prog .
+    vars AP AP' : AtomicProg .
+    vars Q Q' : QState .
+    vars N N1 N2 N3 : Nat .
+    var M : Matrix .
+    vars Phi Psi : Formula .
+    vars Prob Prob' : Scalar .
+    
+    --- testable properties with probability for projections
+    ceq Q |= P(N, M) with prob >=  Prob = emptyJS if (Q).Prob(N, M) .>= Prob .
+    ceq Q |= P(N, M) with prob >   Prob = emptyJS if (Q).Prob(N, M) .> Prob .
+    ceq Q |= P(N, M) with prob <=  Prob = emptyJS if (Q).Prob(N, M) .<= Prob .
+    ceq Q |= P(N, M) with prob <   Prob = emptyJS if (Q).Prob(N, M) .< Prob .
+    ceq Q |= P(N, M) with prob ==  Prob = emptyJS if (Q).Prob(N, M) == Prob .
+    ceq Q |= P(N, M) with prob =/= Prob = emptyJS if (Q).Prob(N, M) =/= Prob .
+    eq  Q |= P(N, M) with prob >=  Prob = failure [owise] .
+    eq  Q |= P(N, M) with prob >   Prob = failure [owise] .
+    eq  Q |= P(N, M) with prob <=  Prob = failure [owise] .
+    eq  Q |= P(N, M) with prob <   Prob = failure [owise] .
+    eq  Q |= P(N, M) with prob ==  Prob = failure [owise] .
+    eq  Q |= P(N, M) with prob =/= Prob = failure [owise] .
+
+    ceq Q |= P(N1, N2, M) with prob >=  Prob = emptyJS if (Q).Prob(N1, N2, M) .>= Prob .
+    ceq Q |= P(N1, N2, M) with prob >   Prob = emptyJS if (Q).Prob(N1, N2, M) .> Prob .
+    ceq Q |= P(N1, N2, M) with prob <=  Prob = emptyJS if (Q).Prob(N1, N2, M) .<= Prob .
+    ceq Q |= P(N1, N2, M) with prob <   Prob = emptyJS if (Q).Prob(N1, N2, M) .< Prob .
+    ceq Q |= P(N1, N2, M) with prob ==  Prob = emptyJS if (Q).Prob(N1, N2, M) == Prob .
+    ceq Q |= P(N1, N2, M) with prob =/= Prob = emptyJS if (Q).Prob(N1, N2, M) =/= Prob .
+    eq  Q |= P(N1, N2, M) with prob >=  Prob = failure [owise] .
+    eq  Q |= P(N1, N2, M) with prob >   Prob = failure [owise] .
+    eq  Q |= P(N1, N2, M) with prob <=  Prob = failure [owise] .
+    eq  Q |= P(N1, N2, M) with prob <   Prob = failure [owise] .
+    eq  Q |= P(N1, N2, M) with prob ==  Prob = failure [owise] .
+    eq  Q |= P(N1, N2, M) with prob =/= Prob = failure [owise] .
+
+    --- testable properties for projections
+    ceq Q |= P(N, M) = emptyJS if (Q).P(N, M) == Q .
+    ceq Q |= P(N1, N2, M) = emptyJS if (Q).P(N1, N2, M) == Q .
+    --- negation
+    eq neg P(N, |0>) = P(N, |1>) .
+    eq neg P(N, |1>) = P(N, |0>) .
+    --- conjunction
+    eq Q |= Phi /\ Psi = (Q |= Phi) /\ (Q |= Psi) .
+    --- atomic programs
+    eq Q |= [I(N)] Phi = Q |= Phi .
+    ceq Q |= [X(N)] Phi = Q' |= Phi if Q' := (Q).X(N) .
+    ceq Q |= [Y(N)] Phi = Q' |= Phi if Q' := (Q).Y(N) .
+    ceq Q |= [Z(N)] Phi = Q' |= Phi if Q' := (Q).Z(N) .
+    ceq Q |= [H(N)] Phi = Q' |= Phi if Q' := (Q).H(N) .
+    ceq Q |= [CX(N1, N2)] Phi = Q' |= Phi if Q' := (Q).CX(N1, N2) .
+    ceq Q |= [SWAP(N1, N2)] Phi = Q' |= Phi if Q' := (Q).SWAP(N1, N2) .
+    ceq Q |= [CSWAP(N1, N2, N3)] Phi = Q' |= Phi if Q' := (Q).CSWAP(N1, N2, N3) .
+    --- a projection as test operator
+    ceq Q |= [P(N, M)?] Phi = Q' |= Phi 
+    if Prob := (Q).Prob(N, M) /\ Prob =/= 0 /\ Q' := (Q).P(N, M) .
+    eq Q |= [P(N, M)?] Phi = emptyJS [owise] .
+    --- a projection with probability
+    ceq Q |= [(P(N, M)? with prob >=  Prob)] Phi = Q |= [P(N, M)?] Phi if (Q).Prob(N, M) .>= Prob .
+    ceq Q |= [(P(N, M)? with prob >   Prob)] Phi = Q |= [P(N, M)?] Phi if (Q).Prob(N, M) .>  Prob .
+    ceq Q |= [(P(N, M)? with prob <=  Prob)] Phi = Q |= [P(N, M)?] Phi if (Q).Prob(N, M) .<= Prob .
+    ceq Q |= [(P(N, M)? with prob <   Prob)] Phi = Q |= [P(N, M)?] Phi if (Q).Prob(N, M) .<  Prob .
+    ceq Q |= [(P(N, M)? with prob ==  Prob)] Phi = Q |= [P(N, M)?] Phi if (Q).Prob(N, M) == Prob .
+    ceq Q |= [(P(N, M)? with prob =/= Prob)] Phi = Q |= [P(N, M)?] Phi if (Q).Prob(N, M) =/= Prob .
+    eq  Q |= [(P(N, M)? with prob >=  Prob)] Phi = failure [owise] .
+    eq  Q |= [(P(N, M)? with prob >   Prob)] Phi = failure [owise] .
+    eq  Q |= [(P(N, M)? with prob <=  Prob)] Phi = failure [owise] .
+    eq  Q |= [(P(N, M)? with prob <   Prob)] Phi = failure [owise] .
+    eq  Q |= [(P(N, M)? with prob ==  Prob)] Phi = failure [owise] .
+    eq  Q |= [(P(N, M)? with prob =/= Prob)] Phi = failure [owise] .
+    --- constant programs
+    eq Q |= [skip] Phi = Q |= Phi .
+    eq Q |= [abort] Phi = emptyJS .
+    --- program composition
+    eq Q |= [AP ; PROG] Phi = Q |= [AP]([PROG] Phi) .
+    eq Q |= [skip ; PROG] Phi = Q |= [skip]([PROG] Phi) .
+    eq Q |= [abort ; PROG] Phi = Q |= [abort]([PROG] Phi) .
+    eq Q |= [P(N, M)? ; PROG] Phi = Q |= [P(N, M)?]([PROG] Phi) .
+    eq Q |= [PROG' ; PROG] Phi = Q |= [PROG']([PROG] Phi) [owise] .
+    --- choice programs
+    eq [choice] : Q |= [PROG' U PROG] Phi = (Q |= [PROG'] Phi) /\ (Q |= [PROG] Phi) .
+endfm
