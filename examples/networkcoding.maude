@@ -39,5 +39,6 @@ red in NETWORK-CODING : initQState |=
     H(0) ; CX(0, 1) ; H(2) ; CX(2, 3) ;
     H(4) ; CX(4, 5) ; H(6) ; CX(6, 7) ;
     H(8) ; CX(8, 9) ; H(10) ; CX(10, 11) ;
-    H(12) ; CX(12, 13); network-coding
-] P(0, 5, EPR) /\ P(1, 4, EPR) .
+    H(12) ; CX(12, 13); network-coding ;
+    SWAP(2, 4) ; SWAP(0, 4)
+] P(1, 2, EPR) /\ P(4, 5, EPR) .

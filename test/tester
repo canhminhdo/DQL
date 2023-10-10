@@ -7,6 +7,6 @@
 ./gateteleport
 ./twoteleport
 ./networkcoding
-./replay
+./relay
 ./biteleport
 ./twoQteleport
