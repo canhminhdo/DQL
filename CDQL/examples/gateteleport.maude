@@ -35,6 +35,7 @@ endfm
 
 in ../../debug.maude
 
+--- for sequential version
 --- Following the circuit from wikipedia
 --- red in GATE-TELEPORT : initQState |= 
 --- [
@@ -45,6 +46,7 @@ in ../../debug.maude
 ---     if P(4, |0>) then skip else Z(3) fi
 --- ] P(3, 2, qubitAt(targetQState, 0 1)) .
 
+--- for concurrent version
 red in GATE-TELEPORT : initQState |=
 [ 
     H(1) ; CX(1, 2) ; H(3) ; CX(3, 4); CX(3, 2) ;

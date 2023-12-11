@@ -28,6 +28,7 @@ endfm
 
 in ../../debug.maude
 
+--- for sequential version
 --- red in ENTAGLE-SWAP : initQState |= 
 --- [ 
 ---     H(1) ; CX(1, 0) ; H(3) ; CX(3, 2) ; CX(0, 3) ; H(0) ;
@@ -35,6 +36,7 @@ in ../../debug.maude
 ---     if P(0, |0>) then skip else Z(2) fi
 --- ] P(1, 2, EPR) .
 
+--- for concurent version
 red in ENTAGLE-SWAP : initQState |=
 [
     H(0) ; CX(0, 1) ; H(2) ; CX(2, 3) ;
