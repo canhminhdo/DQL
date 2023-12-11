@@ -48,12 +48,12 @@ fmod BDQL-SEMANTICS is
     sorts Judgment JudgmentSet .
     subsort Judgment < JudgmentSet .
 
-    op _|=_ : QState Formula -> Judgment .
+    op _|=_ : QState Formula -> Judgment [memo] .
     op emptyJS : -> JudgmentSet [ctor] .
     op _/\_ : JudgmentSet JudgmentSet -> JudgmentSet [comm assoc id: emptyJS] .
 
-    vars PROG PROG' PROG'' : Prog .
-    vars AP AP' : AtomicProg .
+    vars PROG PROG' : Prog .
+    vars AP : AtomicProg .
     vars Q Q' : QState .
     vars N N1 N2 : Nat .
     var M : Matrix .
@@ -62,12 +62,12 @@ fmod BDQL-SEMANTICS is
     --- testable properties for projections
     ceq Q |= P(N, M) = emptyJS if (Q).P(N, M) == Q .
     ceq Q |= P(N1, N2, M) = emptyJS if (Q).P(N1, N2, M) == Q .
-    --- negation
+    --- negation of testable properties
     eq neg P(N, |0>) = P(N, |1>) .
     eq neg P(N, |1>) = P(N, |0>) .
     --- conjunction
     eq Q |= Phi /\ Psi = (Q |= Phi) /\ (Q |= Psi) .
-    --- atomic programs
+    --- atomic programs for unitary evolutions
     eq Q |= [I(N)] Phi = Q |= Phi .
     ceq Q |= [X(N)] Phi = Q' |= Phi if Q' := (Q).X(N) .
     ceq Q |= [Y(N)] Phi = Q' |= Phi if Q' := (Q).Y(N) .
@@ -86,6 +86,6 @@ fmod BDQL-SEMANTICS is
     eq Q |= [abort ; PROG] Phi = Q |= [abort]([PROG] Phi) .
     eq Q |= [P(N, M)? ; PROG] Phi = Q |= [P(N, M)?]([PROG] Phi) .
     eq Q |= [PROG' ; PROG] Phi = Q |= [PROG']([PROG] Phi) [owise] .
-    --- choice programs
+    --- non−deterministic choice programs
     eq [choice] : Q |= [PROG' U PROG] Phi = (Q |= [PROG'] Phi) /\ (Q |= [PROG] Phi) .
 endfm
