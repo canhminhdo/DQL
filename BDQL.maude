@@ -48,7 +48,7 @@ fmod BDQL-SEMANTICS is
     sorts Judgment JudgmentSet .
     subsort Judgment < JudgmentSet .
 
-    op _|=_ : QState Formula -> Judgment [memo] .
+    op _|=_ : QState Formula -> Judgment .
     op emptyJS : -> JudgmentSet [ctor] .
     op _/\_ : JudgmentSet JudgmentSet -> JudgmentSet [comm assoc id: emptyJS] .
 
