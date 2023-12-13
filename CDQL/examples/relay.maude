@@ -1,0 +1,51 @@
+load ../CDQL.maude
+
+fmod REPLAY-SCHEME is
+    pr CDQL-SEMANTICS .
+
+    var S : Scalar .
+
+    --- defining initial states
+    ops a b : -> Scalar .
+    eq Pow(Abs(a), 2) .+ Pow(Abs(b), 2) = 1 .
+    eq S .* Pow(Abs(a), 2) .+ S .* Pow(Abs(b), 2) = S .
+
+    op initQState : -> Qubit .
+    eq initQState = (q[0]: a . |0> + b . |1>) (q[1]: |0>) (q[2]: |0>) (q[3]: |0>) (q[4]: |0>) .
+
+    ops c02 c12 c24 c34 : -> Channel .
+    ops Alice Bob Charlie : -> Prog .
+    eq Alice =  CX(0, 1) ; H(0) ;
+                if P(1, |0>) then (c12 <: 0) else (c12 <: 1) fi ;
+                if P(0, |0>) then (c02 <: 0) else (c02 <: 1) fi .
+    eq Charlie = ((c12 :> 1) ; X(2) U (c12 :> 0)) ;
+                 ((c02 :> 1) ; Z(2) U (c02 :> 0)) ;
+                 CX(2, 3) ; H(2) ;
+                 if P(3, |0>) then (c34 <: 0) else (c34 <: 1) fi ;
+                 if P(2, |0>) then (c24 <: 0) else (c24 <: 1) fi .
+    eq Bob = ((c34 :> 1) ; X(4) U (c34 :> 0)) ;
+             ((c24 :> 1) ; Z(4) U (c24 :> 0)) .
+endfm
+
+in ../../debug.maude
+
+--- for sequential version
+--- red in REPLAY-SCHEME : initQState |= 
+--- [
+---     H(1) ; CX(1, 2) ; H(3) ; CX(3, 4) ; CX(0, 1) ; H(0) ;
+---     if P(1, |0>) then skip else X(2) fi ;
+---     if P(0, |0>) then skip else Z(2) fi ;
+---     CX(2, 3) ; H(2) ;
+---     if P(3, |0>) then skip else X(4) fi ;
+---     if P(2, |0>) then skip else Z(4) fi 
+--- ] P(4, qubitAt(initQState, 0)) .
+
+--- for concurrent version
+red in REPLAY-SCHEME : initQState |= 
+[
+    H(1) ; CX(1, 2) ; H(3) ; CX(3, 4) ;
+    encap(Alice || Bob || Charlie)[
+        c02 <: 0, c02 <: 1, c12 <: 0, c12 <: 1, c24 <: 0, c24 <: 1, c34 <: 0, c34 <: 1,
+        c02 :> 0, c02 :> 1, c12 :> 0, c12 :> 1, c24 :> 0, c24 :> 1, c34 :> 0, c34 :> 1
+    ]
+] P(4, qubitAt(initQState, 0)) .
