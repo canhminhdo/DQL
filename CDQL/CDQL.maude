@@ -8,7 +8,7 @@ fmod CDQL-SYNTAX is
     --- merge operator (parallel composition), left-merge operator, communcation operator
     op _||_ : Prog Prog -> Prog [comm assoc] .
     op _||'_ : Prog Prog -> Prog .
-    op _|_ : Prog Prog -> Prog [comm assoc] .
+    op _|_ : Prog Prog -> Prog [comm] .
 
     --- sending
     ops _<:_ send : Channel Nat -> AtomicProg [ctor] .
@@ -37,26 +37,45 @@ fmod CDQL-SEMANTICS is
     pr CDQL-SYNTAX-EXT .
     pr BDQL-SEMANTICS .
 
-    var N : Nat .
     var C : Channel .
-    var A : Formula .
-    var APS : AtomicProgSet .
+    vars Q Q' : QState .
+    vars Phi Psi A : Formula .
     vars AP AP' : AtomicProg .
+    var APS : AtomicProgSet .
+    var N : Nat .
     vars PROG PROG' PROG1 PROG2 PROG3 PROG4 : Prog .
+    
+    --------------------------------
+    --- encapsulation operator   ---
+    --------------------------------
+    --- for a single element
+    eq Q |= [encap(AP)[APS]] Phi = Q |= [if AP in APS then abort else AP fi] Phi .
+    eq Q |= [encap(skip)[APS]] Phi = Q |= [skip] Phi .
+    eq Q |= [encap(abort)[APS]] Phi = Q |= [abort] Phi .
+    eq Q |= [encap(A ?)[APS]] Phi = Q |= [A ?] Phi .
+    eq Q |= [encap(PROG U PROG')[APS]] Phi = Q |= [encap(PROG)[APS] U encap(PROG')[APS]] Phi .
+    
+    --- for a single element followed by a program
+    eq Q |= [encap(AP ; PROG)[APS]] Phi = Q |= [encap(AP)[APS] ; encap(PROG)[APS]] Phi .
+    eq Q |= [encap(skip ; PROG)[APS]] Phi = Q |= [encap(skip)[APS] ; encap(PROG)[APS]] Phi .
+    eq Q |= [encap(abort ; PROG)[APS]] Phi = Q |= [encap(abort)[APS] ; encap(PROG)[APS]] Phi .
+    eq Q |= [encap((A ?) ; PROG)[APS]] Phi = Q |= [encap(A ?)[APS] ; encap(PROG)[APS]] Phi .
+    eq Q |= [encap((PROG1 U PROG2) ; PROG3) [APS]] Phi = Q |= [encap(PROG1 U PROG2)[APS] ; encap(PROG3)[APS]] Phi .
+    
+    --- for program compostion
+    eq Q |= [encap(PROG1)[APS] ; PROG2] Phi = Q |= [encap(PROG1)[APS]] ([PROG2] Phi) .
 
-    --- encapsulation operator
-    ceq encap(AP)[APS] = AP if not (AP in APS) .
-    ceq encap(AP)[APS] = abort if AP in APS .
-    eq encap(skip)[APS] = skip .
-    eq encap(abort)[APS] = abort .
-    eq encap((A ?))[APS] = (A ?) .
-    eq encap(PROG ; PROG')[APS] = encap(PROG)[APS] ; encap(PROG')[APS] .
-    eq encap(PROG U PROG')[APS] = encap(PROG)[APS] U encap(PROG')[APS] .
+    --------------------------------
+    --- merge operator           ---
+    --------------------------------
+    --- eq PROG || PROG' = (PROG ||' PROG') U (PROG' ||' PROG) U (PROG | PROG') .
+    eq Q |= [PROG || PROG'] Phi = Q |= [(PROG ||' PROG') U (PROG' ||' PROG) U (PROG | PROG')] Phi .
+    --- [hack]
+    eq Q |= [encap(PROG || PROG')[APS]] Phi = Q |= [encap((PROG ||' PROG') U (PROG' ||' PROG) U (PROG | PROG'))[APS]] Phi .
 
-    --- axioms for merge operator
-    eq PROG || PROG' = (PROG ||' PROG') U (PROG' ||' PROG) U (PROG | PROG') .
-
-    --- axioms for left operator
+    --------------------------------
+    --- left operator            ---
+    --------------------------------
     eq AP ||' PROG = AP ; PROG .
     eq skip ||' PROG = PROG .
     eq abort ||' PROG = abort .
@@ -70,13 +89,19 @@ fmod CDQL-SEMANTICS is
     eq ((PROG1 ; PROG2) ; PROG3) ||' PROG4 = (PROG1 ; (PROG2 ; PROG3)) ||' PROG4 .
     eq ((PROG1 U PROG2) ; PROG3) ||' PROG4 = ((PROG1 ; PROG3) U (PROG2 ; PROG3)) ||' PROG4 .
     eq (PROG1 U PROG2) ||' PROG3 = (PROG1 ||' PROG3) U (PROG2 ||' PROG3) .
+    --- [hack]
+    eq (PROG1 || PROG2) ||' PROG3 = ((PROG1 ||' PROG2) U (PROG2 ||' PROG1) U (PROG1 | PROG2)) ||' PROG3 .
 
-    --- communication function
+    --------------------------------
+    --- communicaiton function   ---
+    --------------------------------
     eq send(C,N) ~ recv(C, N) = skip .
     eq (C <: N) ~ (C :> N) = skip .
     eq AP ~ AP' = abort [owise] .
 
-    --- axioms for communication operator
+    --------------------------------
+    --- communicaiton operator   ---
+    --------------------------------
     eq skip | PROG = abort .
     eq abort | PROG = abort .
     eq (A ?) | PROG = abort .
@@ -91,6 +116,8 @@ fmod CDQL-SEMANTICS is
     eq ((PROG1 ; PROG2) ; PROG3) | PROG4 = (PROG1 ; (PROG2 ; PROG3)) | PROG4 .
     eq ((PROG1 U PROG2) ; PROG3) | PROG4 = ((PROG1 ; PROG3) U (PROG2 ; PROG3)) | PROG4 .
     eq (PROG1 U PROG2) | PROG3 = (PROG1 | PROG3) U (PROG2 | PROG3) .
+    --- [hack]
+    eq (PROG1 || PROG2) | PROG3 = ((PROG1 ||' PROG2) U (PROG2 ||' PROG1) U (PROG1 | PROG2)) | PROG3 .
 endfm
 
 --- in ../debug.maude

@@ -1,5 +1,8 @@
 ==========================================
 reduce in GATE-TELEPORT : initQState |= [H(1) ; CX(1,2) ; H(3) ; CX(3,4) ; CX(
-    3,2) ; (Alice || Bob || Charlie)]P(3,2,qubitAt(targetQState, 0 1)) .
+    3,2) ; encap(Alice || Bob || Charlie)[c03 <: 0, c03 <: 1, c123 <: 0, c123
+    <: 1, c423 <: 0, c423 <: 1, c52 <: 0, c52 <: 1, c03 :> 0, c03 :> 1, c123 :>
+    0, c123 :> 1, c423 :> 0, c423 :> 1, c52 :> 0, c52 :> 1]]P(3,2,qubitAt(
+    targetQState, 0 1)) .
 result JudgmentSet: emptyJS
 Bye.

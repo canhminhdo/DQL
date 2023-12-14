@@ -19,22 +19,23 @@ fmod GATE-TELEPORT is
     op targetQState : -> Qubit .
     eq targetQState = ((q[0]: c . |0> + d . |1>) (q[1]: a . |0> + b . |1>)).CX(0, 1) .
 
-    ops c023 c12 c523 c43 : -> Channel .
+    ops c03 c123 c52 c423 : -> Channel .
     ops Alice Bob Charlie : -> Prog .
     eq Alice = CX(0, 1) ; H(0) ;
-        if P(0, |0>) then (c023 <: 0) else (c023 <: 1) fi ;
-        if P(1, |0>) then (c12 <: 0) else (c12 <: 1) fi .
-    eq Bob = ((c023 :> 1) ; Z(2) ; Z(3) U (c023 :> 0)) ;
-        ((c523 :> 1) ; X(2) ; X(3) U (c523 :> 0)) ;
-        ((c12 :> 1) ; X(2) U (c12 :> 0)) ;
-        ((c43 :> 1) ; Z(3) U (c43 :> 0)) .
+        if P(0, |0>) then (c03 <: 0) else (c03 <: 1) fi ;
+        if P(1, |0>) then (c123 <: 0) else (c123 <: 1) fi .
+    eq Bob = ((c423 :> 1) ; Z(3) U (c423 :> 0)) ;
+        ((c52 :> 1) ; X(2) ; X(3) U (c52 :> 0)) ;
+        ((c03 :> 1) ; Z(2) ; Z(3) U (c03 :> 0)) ;
+        ((c123 :> 1) ; X(2) U (c123 :> 0)) .
     eq Charlie = CX(4, 5) ; H(4) ;
-        if P(4, |0>) then (c43 <: 0) else (c43 <: 1) fi ;
-        if P(5, |0>) then (c523 <: 0) else (c523 <: 1) fi .
+        if P(4, |0>) then (c423 <: 0) else (c423 <: 1) fi ;
+        if P(5, |0>) then (c52 <: 0) else (c52 <: 1) fi .
 endfm
 
 in ../../debug.maude
 
+--- for sequential version
 --- Following the circuit from wikipedia
 --- red in GATE-TELEPORT : initQState |= 
 --- [
@@ -45,11 +46,12 @@ in ../../debug.maude
 ---     if P(4, |0>) then skip else Z(3) fi
 --- ] P(3, 2, qubitAt(targetQState, 0 1)) .
 
+--- for concurrent version
 red in GATE-TELEPORT : initQState |=
 [ 
     H(1) ; CX(1, 2) ; H(3) ; CX(3, 4); CX(3, 2) ;
     encap(Alice || Bob || Charlie)[
-        c023 <: 0, c023 <: 1, c12 <: 0, c12 <: 1, c43 <: 0, c43 <: 1, c523 <: 0, c523 <: 1,
-        c023 :> 0, c023 :> 1, c12 :> 0, c12 :> 1, c43 :> 0, c43 :> 1, c523 :> 0, c523 :> 1
+        c03 <: 0, c03 <: 1, c123 <: 0, c123 <: 1, c423 <: 0, c423 <: 1, c52 <: 0, c52 <: 1,
+        c03 :> 0, c03 :> 1, c123 :> 0, c123 :> 1, c423 :> 0, c423 :> 1, c52 :> 0, c52 :> 1
     ]
 ] P(3, 2, qubitAt(targetQState, 0 1)) .

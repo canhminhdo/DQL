@@ -19,13 +19,13 @@ fmod TWO-TELEPORT is
     ops c02 c12 c53 c43 : -> Channel .
     ops Alice Bob Charlie : -> Prog .
     eq Alice =  CX(0, 1) ; H(0) ;
-        if P(0, |0>) then (c02 <: 0) else (c02 <: 1) fi ;
-        if P(1, |0>) then (c12 <: 0) else (c12 <: 1) fi .
+        if P(1, |0>) then (c12 <: 0) else (c12 <: 1) fi ;
+        if P(0, |0>) then (c02 <: 0) else (c02 <: 1) fi .
     eq Bob = ((c43 :> 1) ; X(3) U (c43 :> 0)) ;
         ((c53 :> 1) ; Z(3) U (c53 :> 0)) ;
         ((c12 :> 1) ; X(2) U (c12 :> 0)) ;
         ((c02 :> 1) ; Z(2) U (c02 :> 0)) .
-    eq Charlie = CX(4, 5) ; H(4) ;
+    eq Charlie = CX(5, 4) ; H(5) ;
         if P(4, |0>) then (c43 <: 0) else (c43 <: 1) fi ;
         if P(5, |0>) then (c53 <: 0) else (c53 <: 1) fi .
 endfm
@@ -43,7 +43,7 @@ in ../../debug.maude
 
 red in TWO-TELEPORT : initQState |=
 [ 
-    H(1) ; CX(1, 2) ; H(3) ; CX(3, 4); CX(5, 4) ; H(5) ;
+    H(1) ; CX(1, 2) ; H(3) ; CX(3, 4);
     encap(Alice || Bob || Charlie)[
         c02 <: 0, c02 <: 1, c12 <: 0, c12 <: 1, c43 <: 0, c43 <: 1, c53 <: 0, c53 <: 1,
         c02 :> 0, c02 :> 1, c12 :> 0, c12 :> 1, c43 :> 0, c43 :> 1, c53 :> 0, c53 :> 1
