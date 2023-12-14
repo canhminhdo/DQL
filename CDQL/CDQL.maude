@@ -8,7 +8,7 @@ fmod CDQL-SYNTAX is
     --- merge operator (parallel composition), left-merge operator, communcation operator
     op _||_ : Prog Prog -> Prog [comm assoc] .
     op _||'_ : Prog Prog -> Prog .
-    op _|_ : Prog Prog -> Prog [comm assoc] .
+    op _|_ : Prog Prog -> Prog [comm] .
 
     --- sending
     ops _<:_ send : Channel Nat -> AtomicProg [ctor] .
