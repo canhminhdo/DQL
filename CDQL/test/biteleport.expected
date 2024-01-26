@@ -1,0 +1,8 @@
+==========================================
+reduce in BIDIRECTIONAL-TELEPORT : initQState |= [H(2) ; CX(2,3) ; H(4) ; CX(4,
+    5) ; encap(Alice || Bob)[c03 <: 0, c03 <: 1, c14 <: 0, c14 <: 1, c23 <: 0,
+    c23 <: 1, c54 <: 0, c54 <: 1, c03 :> 0, c03 :> 1, c14 :> 0, c14 :> 1, c23
+    :> 0, c23 :> 1, c54 :> 0, c54 :> 1]]P(3,qubitAt(initQState, 0)) /\ P(4,
+    qubitAt(initQState, 1)) .
+result JudgmentSet: emptyJS
+Bye.

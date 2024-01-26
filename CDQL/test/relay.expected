@@ -1,0 +1,7 @@
+==========================================
+reduce in REPLAY-SCHEME : initQState |= [H(1) ; CX(1,2) ; H(3) ; CX(3,4) ;
+    encap(Alice || Bob || Charlie)[c02 <: 0, c02 <: 1, c12 <: 0, c12 <: 1, c24
+    <: 0, c24 <: 1, c34 <: 0, c34 <: 1, c02 :> 0, c02 :> 1, c12 :> 0, c12 :> 1,
+    c24 :> 0, c24 :> 1, c34 :> 0, c34 :> 1]]P(4,qubitAt(initQState, 0)) .
+result JudgmentSet: emptyJS
+Bye.

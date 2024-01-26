@@ -1,6 +1,6 @@
 ==========================================
 reduce in ENTAGLE-SWAP : initQState |= [H(0) ; CX(0,1) ; H(2) ; CX(2,3) ;
     encap(Alice || Bob || Charlie)[c13 <: 0, c13 <: 1, c23 <: 0, c23 <: 1, c13
-    :> 0, c13 :> 1, c23 :> 0, c23 :> 1] ; SWAP(1,3)]P(0,1,EPR) .
+    :> 0, c13 :> 1, c23 :> 0, c23 :> 1]]P(0,3,EPR) .
 result JudgmentSet: emptyJS
 Bye.

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+DIR=../test
+cd ../examples && maude < biteleport.maude -no-banner -no-advise | sed -r '/^(rewrites:|Solution|states:)/d' > $DIR/biteleport.out
+diff $DIR/biteleport.expected $DIR/biteleport.out
+rm $DIR/biteleport.out

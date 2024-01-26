@@ -1,0 +1,7 @@
+==========================================
+reduce in TWO-QUBIT-TELEPORT : initQState |= [H(2) ; H(3) ; CX(2,4) ; CX(3,5) ;
+    encap(Alice || Bob)[c04 <: 0, c04 <: 1, c15 <: 0, c15 <: 1, c24 <: 0, c24
+    <: 1, c35 <: 0, c35 <: 1, c04 :> 0, c04 :> 1, c15 :> 0, c15 :> 1, c24 :> 0,
+    c24 :> 1, c35 :> 0, c35 :> 1]]P(4,5,qubitAt(initQState, 0 1)) .
+result JudgmentSet: emptyJS
+Bye.

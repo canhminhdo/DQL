@@ -5,3 +5,6 @@
 ./secretsharing
 ./gateteleport
 ./twoteleport
+./biteleport
+./relay
+./twoQteleport

@@ -120,9 +120,6 @@ fmod SYMBOLIC-REASONING is
     ceq ((q[NL1 N1 N2 NL2]: V1) QS).P(N1, N2, P) = simplify((q[NL1 N1 N2 NL2]: V2) QS)
     if V2 := (I[size(NL1)] (x) (P x (P)^+) (x) I[size(NL2)]) x V1 .
 
-    op _.P`(_,_,_`) : Qubit Nat Nat Matrix -> Qubit .
-    eq ((q[NL1 N1 N2 NL2]: V1) QS).P(N2, N1, P) = ((q[NL1 N1 N2 NL2]: V1) QS).P(N1, N2, P) .
-
     --- N -> I (x) I (x) ...
     op I[_] : Nat -> Matrix .
     eq I[0] = nil .
@@ -156,16 +153,56 @@ fmod SYMBOLIC-REASONING is
 
     op simplifyEPR* : Qubit -> Qubit .
     --- case 1
-    eq simplifyEPR*((q[N1 N2 N3 N4]: S . |0>(x)|0>(x)|0>(x)|0> + S . |0>(x)|1>(x)|1>(x)|0> +
+    ceq simplifyEPR*((q[N1 N2 N3 N4]: S . |0>(x)|0>(x)|0>(x)|0> + S . |0>(x)|1>(x)|1>(x)|0> +
                                      S . |1>(x)|0>(x)|0>(x)|1> + S . |1>(x)|1>(x)|1>(x)|1>))
-    = (q[N1 N4]: Sqrt(S) . (|0>(x)|0> + |1>(x) |1>)) (q[N2 N3]: Sqrt(S) . (|0>(x)|0> + |1>(x) |1>)) .
-    --- case 2
-    ceq simplifyEPR*((q[N1 N2 N3 N4]: S1 . |0>(x)|0>(x)|0>(x)|0> + S1 . |0>(x)|1>(x)|1>(x)|0> +
-                                     S2 . |1>(x)|0>(x)|0>(x)|1> + S2 . |1>(x)|1>(x)|1>(x)|1>))
-    = (q[N1 N4]: Sqrt(S1) . (|0>(x)|0> + (-1) . |1>(x) |1>)) (q[N2 N3]: Sqrt(S2) . (|0>(x)|0> + |1>(x) |1>))
-    if S1 == (-1) .* S2 .
+    = (q[N1 N4]: Sqrt(S) . (|0>(x)|0> + |1>(x) |1>)) (q[N2 N3]: Sqrt(S) . (|0>(x)|0> + |1>(x) |1>)) 
+    if S == 1/2 .
+    --- [todo] case 2 ...
     --- otherwise
     eq simplifyEPR*(QS) = QS [owise] .
+
+    --- simplify order
+    op simplifyOrder : Qubit -> Qubit .
+    eq simplifyOrder((q[NL]: M) QS) = (q[qsort(NL)]: simplifyOrder*(NL, M)) simplifyOrder(QS) .
+    eq simplifyOrder(emp) = emp .
+    
+    op simplifyOrder* : NatList Matrix -> Matrix .
+    eq simplifyOrder*(NL, S . M) = S . simplifyOrder*(NL, M) .
+    eq simplifyOrder*(NL, S . M1 + M2) = S . simplifyOrder*(NL, M1) + simplifyOrder*(NL, M2) .
+    eq simplifyOrder*(NL, M) = qsort*(NL, M) [owise] .
+
+    --- quick sort for NatList
+    op qsort : NatList -> NatList .
+    op partition : Nat NatList NatList NatList -> NatList .
+    --- qsort
+    eq qsort(nil) = nil .
+    eq qsort(N nil) = N nil . 
+    eq qsort(N1 N2 NL) = partition(N1, N2 NL, nil, nil) .
+    --- partition
+    eq partition(N, nil, NL1, NL2) = qsort(NL1) N qsort(NL2) .
+    eq partition(N, N1 NL, NL1, NL2) = if N1 < N then partition(N, NL, N1 NL1, NL2) else partition(N, NL, NL1, N1 NL2) fi .
+
+    --- quick sort for qubits
+    op qsort* : NatList Matrix -> Matrix .
+    op partition* : Nat NatList NatList NatList Ket Matrix Matrix Matrix -> Matrix .
+    eq qsort*(nil, nil) = nil .
+    eq qsort*(N nil, Ket) = Ket .
+    eq qsort*(N1 N2, Ket1 (x) Ket2) = if N1 < N2 then Ket1 (x) Ket2 else Ket2 (x) Ket1 fi .
+    eq qsort*(N1 N2 NL, Ket1 (x) Ket2 (x) M) = partition*(N1, N2 NL, nil, nil, Ket1, Ket2 (x) M, nil, nil) .
+    --- partition*
+    eq partition*(N, nil, NL1, NL2, Ket, nil, M1, M2) = qsort*(NL1, M1) (x) Ket (x) qsort*(NL2, M2) .
+    eq partition*(N, N1, NL1, NL2, Ket, Ket1, M1, M2) =
+    if N1 < N then 
+        partition*(N, nil, N1 NL1, NL2, Ket, nil, Ket1 (x) M1, M2)
+    else
+        partition*(N, nil, NL1, N1 NL2, Ket, nil, M1, Ket1 (x) M2)
+    fi .
+    eq partition*(N, N1 NL, NL1, NL2, Ket, Ket1 (x) M, M1, M2) =
+    if N1 < N then 
+        partition*(N, NL, N1 NL1, NL2, Ket, M, Ket1 (x) M1, M2)
+    else
+        partition*(N, NL, NL1, N1 NL2, Ket, M, M1, Ket1 (x) M2)
+    fi .
 
     --- remove an index from a natural list
     op rmIndex : NatList Nat -> NatList .

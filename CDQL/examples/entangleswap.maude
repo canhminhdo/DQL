@@ -43,6 +43,6 @@ red in ENTAGLE-SWAP : initQState |=
     encap(Alice || Bob || Charlie)[
         c13 <: 0, c13 <: 1, c23 <: 0, c23 <: 1,
         c13 :> 0, c13 :> 1, c23 :> 0, c23 :> 1
-    ] ; SWAP(1, 3)
-] P(0, 1, EPR) .
+    ]
+] P(0, 3, EPR) .
 

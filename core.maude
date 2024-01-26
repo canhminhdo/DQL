@@ -2,11 +2,11 @@ fmod SCALAR is
     pr CONVERSION .
     pr EXT-BOOL .
 
-    sorts Scalar iNumber .
-    subsort Rat iNumber < Scalar .
+    sorts Real Scalar .
+    subsort Rat < Real < Scalar .
 
     --- imaginary unit
-    op i : -> iNumber [ctor].
+    op i : -> Scalar [ctor].
 
     --- basic operators
     op _.*_ : Scalar Scalar -> Scalar [comm assoc prec 32] .
@@ -15,20 +15,21 @@ fmod SCALAR is
     op (_)^* : Scalar -> Scalar [prec 30] .
 
     --- comparative operators
-    op _.>_ : Scalar Scalar -> Bool .
-    op _.>=_ : Scalar Scalar -> Bool .
-    op _.<_ : Scalar Scalar -> Bool .
-    op _.<=_ : Scalar Scalar -> Bool .
+    op _.>_ : Real Real -> Bool .
+    op _.>=_ : Real Real -> Bool .
+    op _.<_ : Real Real -> Bool .
+    op _.<=_ : Real Real -> Bool .
 
     --- error scalar
-    op errS : -> Scalar .
+    op errS : -> [Scalar] .
 
     --- some functions
+    op Abs : Scalar -> Real .
     op Sqrt : Scalar -> Scalar .
-    op Abs : Scalar -> Scalar .
     op Pow : Scalar Rat -> Scalar .
 
     vars R R1 R2 : Rat .
+    vars PR PR' : PosRat .
     vars S S1 S2 S3 S4 : Scalar .
     var N : Nat .
 
@@ -87,20 +88,15 @@ fmod SCALAR is
     eq 1 ./ (S .* (R1 / R2)) =  (R2 / R1) .* (1 ./ S) .
 
     --- Sqrt calculation
-    eq Sqrt(- N) = i .* N .
+    eq Sqrt(- 1) = i .
     eq Sqrt(1) = 1 .
     eq Sqrt(0) = 0 .
-    eq Sqrt(S) .* Sqrt(S) = S .
-    eq Sqrt(R1 / R2) = Sqrt(R1) .* (1 ./ Sqrt(R2)) .
-    ceq Sqrt(1 ./ S) = 1 ./ Sqrt(S) if not S :: Rat .
-    ceq Sqrt(S1 .* S2) = Sqrt(S1) .* Sqrt(S2) if not S1 :: Rat or-else not S2 :: Rat .
-    eq Sqrt(S) .* (R ./ S) = R .* (1 ./ Sqrt(S)) .
-    eq Sqrt(S1) .* (S2 / S1) = S2 .* (1 ./ Sqrt(S1)) .
-    eq Sqrt(Pow(Abs(S), 2)) = Abs(S) .
-    eq Sqrt(Pow(Pow(S, 2), 2)) = Pow(S, 2) .
+    eq Sqrt(PR) .* Sqrt(PR) = PR .
+    eq Sqrt(PR / PR') = Sqrt(PR) .* (1 ./ Sqrt(PR')) .
+    eq Sqrt(PR) .* (PR' / PR) = PR' .* (1 ./ Sqrt(PR)) .
 
     --- transpose of Sqrt
-    eq (Sqrt(R))^* = Sqrt(R) .
+    eq (Sqrt(PR))^* = Sqrt(PR) .
     eq (S1 .* S2)^* = (S1)^* .* (S2)^* .
     eq (S1 ./ S2)^* = (S1)^* ./ (S2)^* .
     eq (S1 .+ S2)^* = (S1)^* .+ (S2)^* .
