@@ -92,8 +92,10 @@ fmod SCALAR is
     eq Sqrt(1) = 1 .
     eq Sqrt(0) = 0 .
     eq Sqrt(PR) .* Sqrt(PR) = PR .
+    eq Sqrt(PR) .* (1 ./ Sqrt(PR)) = 1 .
+    eq PR .* (1 ./ Sqrt(PR)) = Sqrt(PR) .
     eq Sqrt(PR / PR') = Sqrt(PR) .* (1 ./ Sqrt(PR')) .
-    eq Sqrt(PR) .* (PR' / PR) = PR' .* (1 ./ Sqrt(PR)) .
+    eq Sqrt(PR) .* (R / PR) = R .* (1 ./ Sqrt(PR)) .
 
     --- transpose of Sqrt
     eq (Sqrt(PR))^* = Sqrt(PR) .
