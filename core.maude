@@ -20,9 +20,6 @@ fmod SCALAR is
     op _.<_ : Real Real -> Bool .
     op _.<=_ : Real Real -> Bool .
 
-    --- error scalar
-    op errS : -> [Scalar] .
-
     --- some functions
     op Abs : Scalar -> Real .
     op Sqrt : Scalar -> Scalar .
@@ -64,17 +61,14 @@ fmod SCALAR is
     ceq S .+ S = S .* 2 if not S :: Rat .
 
     --- constructing normal form: S1 .* (1 ./ S2)
-    ceq S1 ./ S2 = S1 .* (1 ./ S2) if not S1 :: Rat .
-    ceq R ./ S = R .* (1 ./ S) if not S :: Rat /\ R =/= 1 .
+    ceq S1 ./ S2 = S1 .* (1 ./ S2) if S1 =/= 1 .
 
     --- multiplicative properties
     eq S .* 1 = S .
     eq S .* 0 = 0 .
     ceq S .* (1 ./ S) = 1 if not S :: Rat .
-    ceq (1 ./ S1) .* (1 ./ S2) = 1 ./ (S1 .* S2)
-    if not S1 :: Rat /\ not S2 :: Rat .
-    ceq S1 .* (1 ./ (S1 .* S2)) = 1 ./ S2
-    if not S1 :: Rat /\ not S2 :: Rat .
+    ceq 1 ./ (S1 .* S2) = (1 ./ S1) .* (1 ./ S2)
+    if not S1 :: Rat or-else not S2 :: Rat .
 
     --- additive properties
     eq S .+ 0 = S .
@@ -82,17 +76,15 @@ fmod SCALAR is
     --- fraction properties
     eq 0 ./ S = 0 .
     eq S ./ 1 = S .
-    ceq S ./ 0 = errS if S =/= 0 .
-    eq 1 ./ (1 ./ S) =  S .
-    eq 1 ./ (S1 .* (1 ./ S2)) =  S2 .* (1 ./ S1) .
-    eq 1 ./ (S .* (R1 / R2)) =  (R2 / R1) .* (1 ./ S) .
+    ceq 1 ./ (1 ./ S) =  S if S =/= 0 .
+    ceq 1 ./ (R1 / R2) =  (R2 / R1) if R1 =/= 0 /\ R2 =/= 0 .
 
     --- Sqrt calculation
     eq Sqrt(- 1) = i .
     eq Sqrt(1) = 1 .
     eq Sqrt(0) = 0 .
     eq Sqrt(PR) .* Sqrt(PR) = PR .
-    eq Sqrt(PR) .* (1 ./ Sqrt(PR)) = 1 .
+    eq 1 ./ Sqrt(PR) .* 1 ./ Sqrt(PR) = 1 ./ PR .
     eq PR .* (1 ./ Sqrt(PR)) = Sqrt(PR) .
     eq Sqrt(PR / PR') = Sqrt(PR) .* (1 ./ Sqrt(PR')) .
     eq Sqrt(PR) .* (R / PR) = R .* (1 ./ Sqrt(PR)) .
