@@ -74,8 +74,6 @@ fmod SCALAR is
     eq S .+ 0 = S .
 
     --- fraction properties
-    eq 0 ./ S = 0 .
-    eq S ./ 1 = S .
     ceq 1 ./ (1 ./ S) =  S if S =/= 0 .
     ceq 1 ./ (R1 / R2) =  (R2 / R1) if R1 =/= 0 /\ R2 =/= 0 .
 
