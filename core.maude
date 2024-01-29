@@ -75,7 +75,6 @@ fmod SCALAR is
 
     --- fraction properties
     ceq 1 ./ (1 ./ S) =  S if S =/= 0 .
-    ceq 1 ./ (R1 / R2) =  (R2 / R1) if R1 =/= 0 /\ R2 =/= 0 .
 
     --- Sqrt calculation
     eq Sqrt(- 1) = i .
